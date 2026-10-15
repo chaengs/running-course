@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: running-course
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/running_course}
+    username: ${DATABASE_USERNAME:running_course}
+    password: ${DATABASE_PASSWORD:local_password}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+server:
+  port: ${PORT:8080}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
