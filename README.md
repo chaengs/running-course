@@ -40,7 +40,7 @@ npm ci
 npm run dev
 ```
 
-http://localhost:3000 에서 연결 상태를 확인하세요.
+http://localhost:3000 에서 공개 코스 목록을 확인하세요.
 
 - `GET http://localhost:8080/api/courses`: 공개 코스 목록 ([API 문서](docs/api/courses.md))
 - `GET http://localhost:8080/api/health`: DB에서 PostGIS 버전을 실제 조회
@@ -83,7 +83,7 @@ cd backend
 
 백엔드 테스트는 상태 확인, 목록 응답, 페이지 검증을 확인합니다.
 실제 DB 조회 테스트는 `RUN_DB_TESTS=true ./gradlew test --rerun-tasks`로 실행합니다. 실제 DB 연결은 DB와 앱을 실행하고
-`/api/health`에서 확인하세요. 프론트엔드는 백엔드가 꺼져 있어도 연결 대기 화면을 표시합니다.
+`/api/health`에서 확인하세요. 프론트엔드는 조회 실패 시 오류 안내와 재시도 버튼을 표시합니다.
 
 ## DB 관리
 
