@@ -2,6 +2,7 @@ package com.runningcourse.course
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,4 +22,7 @@ class CourseController(private val courseService: CourseService) {
         @RequestParam(defaultValue = "0") @Min(0) page: Int,
         @RequestParam(defaultValue = "20") @Min(1) @Max(100) size: Int,
     ): CourseListResponse = courseService.list(page, size)
+
+    @GetMapping("/{id}")
+    fun detail(@PathVariable @Min(1) id: Long): CourseDetail = courseService.detail(id)
 }

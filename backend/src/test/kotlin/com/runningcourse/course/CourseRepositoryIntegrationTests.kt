@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import tools.jackson.databind.json.JsonMapper
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
@@ -26,7 +28,7 @@ class CourseRepositoryIntegrationTests {
         )
         jdbc = JdbcTemplate(dataSource)
         jdbc.execute("CREATE TEMP TABLE courses (LIKE public.courses INCLUDING ALL)")
-        repository = CourseRepository(jdbc)
+        repository = CourseRepository(jdbc, JsonMapper.builder().build())
         insert("공개 첫 코스", true)
         insert("비공개 코스", false)
         insert("공개 두 번째 코스", true)
@@ -40,8 +42,8 @@ class CourseRepositoryIntegrationTests {
     private fun insert(name: String, published: Boolean) {
         jdbc.update(
             """
-            INSERT INTO courses (name, start_location, route_geojson, distance_meters, course_type, published)
-            VALUES (?, ST_SetSRID(ST_MakePoint(126.934, 37.528), 4326)::geography,
+            INSERT INTO courses (name, description, start_location, route_geojson, distance_meters, course_type, published)
+            VALUES (?, '코스 상세 설명', ST_SetSRID(ST_MakePoint(126.934, 37.528), 4326)::geography,
                     '{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}'::jsonb,
                     4800, 'LOOP', ?)
             """.trimIndent(), name, published,
@@ -63,5 +65,29 @@ class CourseRepositoryIntegrationTests {
         jdbc.update("UPDATE pg_temp.courses SET published = FALSE")
         assertEquals(0L, repository.countPublished())
         assertEquals(emptyList<CourseSummary>(), repository.findPublished(20, 0))
+    }
+
+    @Test
+    fun `detail maps stored description and full GeoJSON without double encoding`() {
+        val id = repository.findPublished(1, 0).single().id
+        val detail = requireNotNull(repository.findPublishedById(id))
+        assertEquals("공개 첫 코스", detail.name)
+        assertEquals("코스 상세 설명", detail.description)
+        assertEquals(4800, detail.distanceMeters)
+        assertEquals(CourseType.LOOP, detail.courseType)
+        assertEquals(StartLocation(37.528, 126.934), detail.startLocation)
+        val expected = JsonMapper.builder().build().readTree(
+            """{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}""",
+        )
+        assertEquals(expected, detail.routeGeojson)
+    }
+
+    @Test
+    fun `private and nonexistent courses both have no public detail`() {
+        val privateId = requireNotNull(jdbc.queryForObject(
+            "SELECT id FROM pg_temp.courses WHERE name = ?", Long::class.java, "비공개 코스",
+        ))
+        assertNull(repository.findPublishedById(privateId))
+        assertNull(repository.findPublishedById(Long.MAX_VALUE))
     }
 }

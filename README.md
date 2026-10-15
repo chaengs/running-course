@@ -43,6 +43,7 @@ npm run dev
 http://localhost:3000 에서 공개 코스 목록을 확인하세요.
 
 - `GET http://localhost:8080/api/courses`: 공개 코스 목록 ([API 문서](docs/api/courses.md))
+- `GET http://localhost:8080/api/courses/{id}`: 공개 코스 상세와 전체 경로 ([API 문서](docs/api/course-detail.md))
 - `GET http://localhost:8080/api/health`: DB에서 PostGIS 버전을 실제 조회
 - `GET http://localhost:8080/actuator/health`: 운영용 상태 확인 (상세 비공개)
 

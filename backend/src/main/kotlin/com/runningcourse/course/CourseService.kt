@@ -21,4 +21,8 @@ class CourseService(private val courseRepository: CourseRepository) {
             totalPages = total / size + if (total % size == 0L) 0 else 1,
         )
     }
+
+    @Transactional(readOnly = true)
+    fun detail(id: Long): CourseDetail = courseRepository.findPublishedById(id)
+        ?: throw CourseNotFoundException()
 }

@@ -1,6 +1,8 @@
 package com.runningcourse.course
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import tools.jackson.databind.json.JsonMapper
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 
@@ -33,5 +35,21 @@ class CourseServiceTests {
         `when`(repository.findPublished(100, 214748364700L)).thenReturn(emptyList())
         assertEquals(1L, service.list(Int.MAX_VALUE, 100).totalPages)
         verify(repository).findPublished(100, 214748364700L)
+    }
+
+    @Test
+    fun `detail returns published course including its route`() {
+        val route = JsonMapper.builder().build().readTree(
+            """{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}""",
+        )
+        val detail = CourseDetail(1, "테스트 코스", "설명", 4800, CourseType.LOOP, StartLocation(37.528, 126.934), route)
+        `when`(repository.findPublishedById(1)).thenReturn(detail)
+        assertEquals(detail, service.detail(1))
+    }
+
+    @Test
+    fun `unavailable detail raises not found instead of returning null`() {
+        `when`(repository.findPublishedById(99)).thenReturn(null)
+        assertThrows(CourseNotFoundException::class.java) { service.detail(99) }
     }
 }
