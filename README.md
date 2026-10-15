@@ -42,6 +42,7 @@ npm run dev
 
 http://localhost:3000 에서 연결 상태를 확인하세요.
 
+- `GET http://localhost:8080/api/courses`: 공개 코스 목록 ([API 문서](docs/api/courses.md))
 - `GET http://localhost:8080/api/health`: DB에서 PostGIS 버전을 실제 조회
 - `GET http://localhost:8080/actuator/health`: 운영용 상태 확인 (상세 비공개)
 
@@ -80,7 +81,8 @@ cd backend
 ./gradlew test bootJar
 ```
 
-현재 백엔드 단위 테스트는 상태 확인 로직을 검증합니다. 실제 DB 연결은 DB와 앱을 실행하고
+백엔드 테스트는 상태 확인, 목록 응답, 페이지 검증을 확인합니다.
+실제 DB 조회 테스트는 `RUN_DB_TESTS=true ./gradlew test --rerun-tasks`로 실행합니다. 실제 DB 연결은 DB와 앱을 실행하고
 `/api/health`에서 확인하세요. 프론트엔드는 백엔드가 꺼져 있어도 연결 대기 화면을 표시합니다.
 
 ## DB 관리
@@ -89,7 +91,8 @@ Flyway가 시작 시 `backend/src/main/resources/db/migration/`의 SQL을 적용
 적용한 파일은 수정하지 않고 `V2__...sql`처럼 새 파일을 추가하세요.
 JPA는 `ddl-auto=validate`로 스키마를 검증하고 자동 변경하지 않습니다.
 초기 스키마는 코스 정보, WGS84 출발점(공간 인덱스), GeoJSON 경로를 저장합니다.
-사용자/북마크 테이블은 인증 설계 시 추가합니다. 데모 코스 데이터는 포함하지 않았습니다.
+사용자/북마크 테이블은 인증 설계 시 추가합니다.
+개발용 가상 코스 5개는 별도 SQL로 제공합니다. 실행 방법과 주의사항은 [샘플 코스 안내](docs/sample-courses.md)를 참고하세요.
 
 DB 종료: `docker compose stop` (데이터 유지).
 DB 이미지는 linux/amd64로 지정했습니다. Apple Silicon에서는 Docker의 에뮬레이션을 사용합니다.
