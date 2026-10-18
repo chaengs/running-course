@@ -158,6 +158,14 @@ h3 { margin: 24px 0 12px; font-size: 18px; line-height: 1.6; letter-spacing: -.0
 .map-status-overlay p, .map-placeholder p { font-size: 13px; line-height: 1.8; }
 .map-tools button:disabled { opacity: .5; cursor: not-allowed; }
 .editor-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.editor-save-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.account-nav { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 12px; font-size: 12px; }
+.account-nav button, .owner-actions button, .share-button { min-height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; background: white; color: var(--green); }
+.auth-form { max-width: 460px; margin: auto; }
+.owner-actions { border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+.owner-actions > button, .owner-actions > a { margin-inline: 6px; }
+@media (max-width: 600px) { .site-header { height: auto; min-height: 76px; padding-block: 14px; flex-wrap: wrap; } .account-nav { justify-content: flex-start; } }
+.editor-save-fields:disabled .editor-map { pointer-events: none; }
 .editor-map { width: 100%; height: 560px; border: 1px solid var(--line); border-radius: 10px; isolation: isolate; }
 .editor-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .editor-toolbar button { min-height: 40px; padding: 8px 12px; background: white; color: var(--green); border: 1px solid var(--line); border-radius: 6px; font-size: 12px; }

@@ -69,5 +69,5 @@ export function courseListHref(query: CourseListQuery, page = query.page) {
 }
 
 export function courseDetailSearch(query: CourseListQuery) {
-  return courseListHref(query).replace(/^\/?/, "");
+  return courseListHref(query).slice(1);
 }

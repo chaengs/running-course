@@ -7,6 +7,8 @@ import { CourseRouteMap } from "@/components/course-route-map";
 import { courseDisplayName, courseTypeLabels, formatDistance } from "@/lib/course-format";
 import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
 import { getCourse } from "@/lib/courses";
+import { getCurrentUser } from "@/lib/session";
+import { CourseOwnerActions, ShareCourseButton } from "@/components/course-owner-actions";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -18,7 +20,7 @@ export const metadata: Metadata = { title: "코스 상세 | Running Course" };
 async function CourseDetailContent({ params, searchParams }: Props) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807")) notFound();
-  const course = await getCourse(id);
+  const [course, user] = await Promise.all([getCourse(id), getCurrentUser()]);
   if (!course) notFound();
   const listQuery = parseCourseListQuery(query) ?? { page: 0, size: 6 };
   const name = courseDisplayName(course.name);
@@ -33,11 +35,13 @@ async function CourseDetailContent({ params, searchParams }: Props) {
         <h1>{name}</h1>
         <p className="detail-intro">출발점으로 돌아오는 길, 나만의 페이스로 달려보세요.</p>
       </header>
+      {course.ownerId === user?.id && <CourseOwnerActions id={course.id} published={course.published} />}
+      {course.published && <ShareCourseButton />}
       {isSample && <p className="sample-notice"><span aria-hidden="true">ⓘ</span> 실제 도로를 따르지 않는 개발용 가상 경로입니다. 실제 러닝에 사용하지 마세요.</p>}
       <div className="detail-grid">
         <section className="route-section" aria-labelledby="route-title">
           <div className="route-heading"><h2 id="route-title">전체 경로</h2><span>출발점과 도착점이 같아요</span></div>
-          <CourseRouteMap course={course} />
+          <CourseRouteMap route={course.routeGeojson} name={course.name} />
           <p className="map-caption">지도를 드래그하거나 확대해 경로를 살펴보세요.</p>
         </section>
         <aside className="course-info" aria-labelledby="info-title">

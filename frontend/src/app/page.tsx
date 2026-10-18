@@ -4,10 +4,13 @@ import { Suspense } from "react";
 import { CourseCard } from "@/components/course-card";
 import { CourseListSkeleton } from "@/components/course-list-skeleton";
 import { CourseSearchForm } from "@/components/course-search-form";
+import { CourseResultsError } from "@/components/course-results-error";
 import {
   courseDetailSearch,
   courseListHref,
   parseCourseListQuery,
+  PAGE_SIZES,
+  type CourseListQuery,
   type CourseSearchFilters,
 } from "@/lib/course-search";
 import { getCourses } from "@/lib/courses";
@@ -23,14 +26,26 @@ function FilterInputs({ filters }: { filters: CourseSearchFilters }) {
   </>;
 }
 
-async function CourseList({ searchParams }: { searchParams: SearchParams }) {
+async function CourseSearch({ searchParams }: { searchParams: SearchParams }) {
   const rawQuery = await searchParams;
   const query = parseCourseListQuery(rawQuery);
   if (!query) redirect("/");
 
+  const { latitude, longitude, radiusMeters, targetDistanceMeters, size } = query;
+  const filters = { latitude, longitude, radiusMeters, targetDistanceMeters };
+  return <>
+    <CourseSearchForm key={`${latitude}-${longitude}-${radiusMeters}-${targetDistanceMeters}`} filters={filters} size={size} />
+    <Suspense key={courseListHref(query)} fallback={<CourseListSkeleton />}>
+      <CourseResults query={query} />
+    </Suspense>
+  </>;
+}
+
+async function CourseResults({ query }: { query: CourseListQuery }) {
   const { page, size, latitude, longitude, radiusMeters, targetDistanceMeters } = query;
   const filters = { latitude, longitude, radiusMeters, targetDistanceMeters };
-  const courses = await getCourses(page, size, filters);
+  const courses = await getCourses(page, size, filters).catch(() => null);
+  if (!courses) return <CourseResultsError />;
   const hasSamples = courses.content.some((course) => course.name.startsWith("[개발용]"));
   const hasLocation = latitude !== undefined;
   const hasFilters = hasLocation || targetDistanceMeters !== undefined;
@@ -42,7 +57,6 @@ async function CourseList({ searchParams }: { searchParams: SearchParams }) {
 
   return (
     <>
-      <CourseSearchForm key={`${latitude}-${longitude}-${radiusMeters}-${targetDistanceMeters}`} filters={filters} size={size} />
       <section className="list-section" aria-labelledby="courses-title">
         <div className="list-toolbar">
           <div><p className="eyebrow">FIND YOUR NEXT RUN</p><h2 id="courses-title">러닝 코스 <span>{courses.totalElements}</span></h2></div>
@@ -50,7 +64,7 @@ async function CourseList({ searchParams }: { searchParams: SearchParams }) {
             <FilterInputs filters={filters} />
             <label htmlFor="page-size">페이지당</label>
             <select id="page-size" name="size" defaultValue={size}>
-              {[3, 6, 12].map((value) => <option key={value} value={value}>{value}개</option>)}
+              {PAGE_SIZES.map((value) => <option key={value} value={value}>{value}개</option>)}
             </select>
             <button type="submit">적용</button>
           </form>
@@ -89,7 +103,7 @@ export default function Home({ searchParams }: { searchParams: SearchParams }) {
         <div className="hero-note"><span className="note-line" />길을 고르는 시간은 줄이고, 달리는 시간을 늘려요.</div>
       </header>
       <Suspense fallback={<CourseListSkeleton />}>
-        <CourseList searchParams={searchParams} />
+        <CourseSearch searchParams={searchParams} />
       </Suspense>
     </main>
   );

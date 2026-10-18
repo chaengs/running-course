@@ -8,6 +8,6 @@ const CourseMap = dynamic(() => import("./course-map"), {
   loading: () => <div className="route-map map-placeholder" role="status">지도를 준비하고 있어요…</div>,
 });
 
-export function CourseRouteMap({ course }: { course: CourseDetail }) {
-  return <CourseMap route={course.routeGeojson} name={course.name} />;
+export function CourseRouteMap({ route, name }: { route: CourseDetail["routeGeojson"]; name: string }) {
+  return <CourseMap route={route} name={name} />;
 }
