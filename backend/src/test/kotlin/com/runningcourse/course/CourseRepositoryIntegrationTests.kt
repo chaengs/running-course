@@ -47,7 +47,7 @@ class CourseRepositoryIntegrationTests {
         val mapper = JsonMapper.builder().build()
         val created = CourseCreateService(CourseCreateRepository(jdbc, mapper)).create(request, 123)
         assertNull(repository.findPublishedById(created.id))
-        val detail = OwnedCourseService(jdbc, mapper).detail(created.id, 123)
+        val detail = OwnedCourseService(OwnedCourseRepository(jdbc, mapper)).detail(created.id, 123)
         assertEquals(false, detail.published)
         assertEquals("새 코스", detail.name)
         assertEquals("소개", detail.description)

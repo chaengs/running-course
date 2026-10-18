@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
+import org.springframework.jdbc.datasource.DataSourceTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.server.ResponseStatusException
 import tools.jackson.databind.json.JsonMapper
 
@@ -32,8 +34,8 @@ class AuthOwnershipIntegrationTests {
         jdbc.execute("CREATE TEMP TABLE courses(LIKE public.courses INCLUDING ALL)")
         jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
         val mapper = JsonMapper.builder().build()
-        auth = AuthService(jdbc)
-        owned = OwnedCourseService(jdbc, mapper)
+        auth = AuthService(AuthRepository(jdbc))
+        owned = OwnedCourseService(OwnedCourseRepository(jdbc, mapper))
         create = CourseCreateService(CourseCreateRepository(jdbc, mapper))
         publicCourses = CourseRepository(jdbc, mapper)
     }
@@ -66,6 +68,17 @@ class AuthOwnershipIntegrationTests {
             status(400) { auth.register(credentials) }
         }
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM app_users", Int::class.java))
+    }
+
+    @Test fun `duplicate email returns no row without aborting PostgreSQL transaction`() {
+        val repository = AuthRepository(jdbc)
+        TransactionTemplate(DataSourceTransactionManager(source)).executeWithoutResult {
+            val first = repository.insertUser("unique@example.com", "첫 러너", "test-hash")
+            assertNotNull(first)
+            assertNull(repository.insertUser("unique@example.com", "중복 러너", "different-hash"))
+            assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM app_users", Int::class.java))
+            assertEquals("첫 러너", repository.findCredentials("unique@example.com")?.user?.displayName)
+        }
     }
 
     @Test fun `only owner reads private route updates publishes hides and deletes it`() {
