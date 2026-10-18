@@ -157,3 +157,21 @@ h3 { margin: 24px 0 12px; font-size: 18px; line-height: 1.6; letter-spacing: -.0
 .map-status-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: #e8eddf; color: var(--muted); font-size: 14px; z-index: 1; }
 .map-status-overlay p, .map-placeholder p { font-size: 13px; line-height: 1.8; }
 .map-tools button:disabled { opacity: .5; cursor: not-allowed; }
+.editor-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.editor-map { width: 100%; height: 560px; border: 1px solid var(--line); border-radius: 10px; isolation: isolate; }
+.editor-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.editor-toolbar button { min-height: 40px; padding: 8px 12px; background: white; color: var(--green); border: 1px solid var(--line); border-radius: 6px; font-size: 12px; }
+.editor-toolbar button:disabled { opacity: .45; }
+.editor-fields label { display: grid; gap: 9px; margin-top: 24px; font-size: 13px; }
+.editor-fields input, .editor-fields select, .editor-fields textarea { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 6px; padding: 10px; font: inherit; color: var(--ink); background: white; }
+.editor-fields textarea { resize: vertical; }
+.editor-fields .button-primary { width: 100%; }
+.editor-summary { font-size: 13px; line-height: 1.8; }
+.editor-message { color: #86552c; font-size: 12px; line-height: 1.8; }
+.editor-json { padding: 15px; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; }
+.editor-json summary { cursor: pointer; }
+.editor-json pre { max-height: 240px; overflow: auto; }
+.route-editor-point span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #23533d; border: 2px solid white; color: white; font: 700 11px Arial; box-shadow: 0 1px 5px #0005; }
+.route-editor-point.selected span { background: #bd581f; }
+@media (max-width: 940px) { .editor-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .editor-map { height: 420px; } }
