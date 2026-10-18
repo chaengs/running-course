@@ -52,4 +52,16 @@ class CourseServiceTests {
         `when`(repository.findPublishedById(99)).thenReturn(null)
         assertThrows(CourseNotFoundException::class.java) { service.detail(99) }
     }
+
+    @Test
+    fun `count and paginated list use the same search conditions`() {
+        val search = CourseSearch(37.528, 126.934, 2000, 5000)
+        `when`(repository.countPublished(search)).thenReturn(3)
+        `when`(repository.findPublished(2, 2, search)).thenReturn(emptyList())
+        val result = service.list(1, 2, search)
+        assertEquals(3L, result.totalElements)
+        assertEquals(2L, result.totalPages)
+        verify(repository).countPublished(search)
+        verify(repository).findPublished(2, 2, search)
+    }
 }

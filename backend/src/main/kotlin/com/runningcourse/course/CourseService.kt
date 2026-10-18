@@ -11,10 +11,10 @@ class CourseService(private val courseRepository: CourseRepository) {
     // 목록과 전체 개수를 같은 DB 스냅샷에서 조회
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
 //트랜잭션은 여러 DB 작업을 하나의 단위로 묶는 장치. 이번에는 조회만 하지만, 전체 개수와 실제 목록을 일관된 기준으로 읽기 위해 사용
-    fun list(page: Int, size: Int): CourseListResponse {
-        val total = courseRepository.countPublished()
+    fun list(page: Int, size: Int, search: CourseSearch = CourseSearch()): CourseListResponse {
+        val total = courseRepository.countPublished(search)
         return CourseListResponse(
-            content = courseRepository.findPublished(size, page.toLong() * size),
+            content = courseRepository.findPublished(size, page.toLong() * size, search),
             page = page,
             size = size,
             totalElements = total,

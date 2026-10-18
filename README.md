@@ -42,7 +42,7 @@ npm run dev
 
 http://localhost:3000 에서 공개 코스 목록을 확인하세요.
 
-- `GET http://localhost:8080/api/courses`: 공개 코스 목록 ([API 문서](docs/api/courses.md))
+- `GET http://localhost:8080/api/courses`: 주변·목표 거리 검색을 지원하는 공개 코스 목록 ([API 문서](docs/api/courses.md))
 - `GET http://localhost:8080/api/courses/{id}`: 공개 코스 상세와 전체 경로 ([API 문서](docs/api/course-detail.md))
 - `GET http://localhost:8080/api/health`: DB에서 PostGIS 버전을 실제 조회
 - `GET http://localhost:8080/actuator/health`: 운영용 상태 확인 (상세 비공개)
@@ -101,8 +101,8 @@ DB 이미지는 linux/amd64로 지정했습니다. Apple Silicon에서는 Docker
 
 ## 다음 구현
 
-1. 코스 목록/상세 API와 샘플 데이터
-2. 위치·반경·목표 거리 검색 (PostGIS)
+1. 프론트엔드 위치 선택·반경·목표 거리 검색 UI
+2. 검색 조건 URL 유지와 출발점까지 거리 표시
 3. 지도 연동 및 관리자 코스 등록
 4. 인증·권한 및 북마크
 

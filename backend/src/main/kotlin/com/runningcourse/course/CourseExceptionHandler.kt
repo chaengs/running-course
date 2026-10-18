@@ -13,4 +13,10 @@ class CourseExceptionHandler {
         HttpStatus.NOT_FOUND,
         "코스를 찾을 수 없습니다.",
     )
+
+    @ExceptionHandler(InvalidCourseSearchException::class)
+    fun invalidSearch(error: InvalidCourseSearchException): ProblemDetail = ProblemDetail.forStatusAndDetail(
+        HttpStatus.BAD_REQUEST,
+        error.message ?: "검색 조건을 확인해 주세요.",
+    )
 }

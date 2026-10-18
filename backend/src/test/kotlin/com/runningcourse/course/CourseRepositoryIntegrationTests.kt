@@ -39,14 +39,17 @@ class CourseRepositoryIntegrationTests {
         if (::dataSource.isInitialized) dataSource.destroy()
     }
 
-    private fun insert(name: String, published: Boolean) {
+    private fun insert(
+        name: String, published: Boolean, distance: Int = 4800,
+        longitude: Double = 126.934, latitude: Double = 37.528,
+    ) {
         jdbc.update(
             """
             INSERT INTO courses (name, description, start_location, route_geojson, distance_meters, course_type, published)
-            VALUES (?, '코스 상세 설명', ST_SetSRID(ST_MakePoint(126.934, 37.528), 4326)::geography,
+            VALUES (?, '코스 상세 설명', ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography,
                     '{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}'::jsonb,
-                    4800, 'LOOP', ?)
-            """.trimIndent(), name, published,
+                    ?, 'LOOP', ?)
+            """.trimIndent(), name, longitude, latitude, distance, published,
         )
     }
 
@@ -89,5 +92,59 @@ class CourseRepositoryIntegrationTests {
         ))
         assertNull(repository.findPublishedById(privateId))
         assertNull(repository.findPublishedById(Long.MAX_VALUE))
+    }
+
+    @Test
+    fun `nearby search excludes distant and private courses and orders by exact distance then id`() {
+        jdbc.update("DELETE FROM pg_temp.courses")
+        insert("먼 공개 코스", true, longitude = 126.944)
+        insert("같은 출발점 첫 코스", true)
+        insert("같은 출발점 두 번째 코스", true)
+        insert("반경 밖 코스", true, longitude = 126.99)
+        insert("가까운 비공개 코스", false)
+        val search = CourseSearch(37.528, 126.934)
+        val result = repository.findPublished(20, 0, search)
+        assertEquals(listOf("같은 출발점 첫 코스", "같은 출발점 두 번째 코스", "먼 공개 코스"), result.map { it.name })
+        assertEquals(0.0, result[0].distanceToStartMeters)
+        org.junit.jupiter.api.Assertions.assertTrue(requireNotNull(result[2].distanceToStartMeters) in 800.0..1000.0)
+        assertEquals(3L, repository.countPublished(search))
+        assertEquals("먼 공개 코스", repository.findPublished(1, 2, search).single().name)
+        assertEquals(emptyList<CourseSummary>(), repository.findPublished(1, 3, search))
+    }
+
+    @Test
+    fun `distance tolerance includes boundaries and excludes outside values without requiring a location`() {
+        jdbc.update("DELETE FROM pg_temp.courses")
+        for (distance in listOf(4499, 4500, 5000, 5500, 5501)) insert("길이 $distance", true, distance)
+        insert("비공개 길이 5000", false, 5000)
+        val search = CourseSearch(targetDistanceMeters = 5000)
+        val result = repository.findPublished(20, 0, search)
+        assertEquals(listOf(4500, 5000, 5500), result.map { it.distanceMeters })
+        assertEquals(3L, repository.countPublished(search))
+        org.junit.jupiter.api.Assertions.assertTrue(result.all { it.distanceToStartMeters == null })
+    }
+
+    @Test
+    fun `combined filters share the count and honor explicitly selected radius`() {
+        jdbc.update("DELETE FROM pg_temp.courses")
+        insert("근처 5km", true, 4800)
+        insert("근처 10km", true, 10000)
+        insert("멀리 5km", true, 5200, longitude = 126.944)
+        val nearby = CourseSearch(37.528, 126.934, 100, 5000)
+        assertEquals(listOf("근처 5km"), repository.findPublished(20, 0, nearby).map { it.name })
+        assertEquals(1L, repository.countPublished(nearby))
+        val wider = nearby.copy(radiusMeters = 2000)
+        assertEquals(listOf("근처 5km", "멀리 5km"), repository.findPublished(20, 0, wider).map { it.name })
+        assertEquals(2L, repository.countPublished(wider))
+        val noMatch = wider.copy(targetDistanceMeters = 3000)
+        assertEquals(0L, repository.countPublished(noMatch))
+        assertEquals(emptyList<CourseSummary>(), repository.findPublished(20, 0, noMatch))
+    }
+
+    @Test
+    fun `unfiltered listing keeps id ordering and no distance to start`() {
+        val result = repository.findPublished(20, 0)
+        org.junit.jupiter.api.Assertions.assertTrue(result.all { it.distanceToStartMeters == null })
+        assertEquals(result.map { it.id }.sorted(), result.map { it.id })
     }
 }

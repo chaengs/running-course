@@ -10,6 +10,7 @@ data class CourseSummary(
     val distanceMeters: Int,
     val courseType: CourseType,
     val startLocation: StartLocation,
+    val distanceToStartMeters: Double? = null,
 )
 
 data class CourseListResponse(
