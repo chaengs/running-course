@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { CourseDetailSkeleton } from "@/components/course-detail-skeleton";
 import { CourseRouteMap } from "@/components/course-route-map";
 import { courseDisplayName, courseTypeLabels, formatDistance } from "@/lib/course-format";
+import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
 import { getCourse } from "@/lib/courses";
 
 type Props = {
@@ -19,16 +20,13 @@ async function CourseDetailContent({ params, searchParams }: Props) {
   if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807")) notFound();
   const course = await getCourse(id);
   if (!course) notFound();
-  const rawPage = query.page;
-  const rawSize = query.size;
-  const page = typeof rawPage === "string" && /^\d+$/.test(rawPage) && Number(rawPage) <= 2147483647 ? Number(rawPage) : 0;
-  const size = typeof rawSize === "string" && [3, 6, 12].includes(Number(rawSize)) ? Number(rawSize) : 6;
+  const listQuery = parseCourseListQuery(query) ?? { page: 0, size: 6 };
   const name = courseDisplayName(course.name);
   const isSample = course.name.startsWith("[개발용]");
 
   return (
     <main id="main-content" className="detail-page">
-      <Link className="back-link" href={`/?page=${page}&size=${size}`}>← 코스 목록으로</Link>
+      <Link className="back-link" href={courseListHref(listQuery)}>← 코스 목록으로</Link>
       <header className="detail-heading">
         <p className="eyebrow">YOUR NEXT RUN</p>
         <div className="card-top"><span className="type-badge">{courseTypeLabels[course.courseType]}</span>{isSample && <span className="sample-badge">개발용 샘플</span>}</div>

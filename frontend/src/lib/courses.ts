@@ -1,3 +1,5 @@
+import type { CourseSearchFilters } from "@/lib/course-search";
+
 export type CourseType = "LOOP" | "OUT_AND_BACK";
 
 export type CourseSummary = {
@@ -6,6 +8,7 @@ export type CourseSummary = {
   distanceMeters: number;
   courseType: CourseType;
   startLocation: { latitude: number; longitude: number };
+  distanceToStartMeters: number | null;
 };
 
 export type CourseListResponse = {
@@ -17,11 +20,19 @@ export type CourseListResponse = {
 };
 
 // Server Components에서만 호출합니다. 브라우저는 Kotlin 서버에 직접 요청하지 않습니다.
-export async function getCourses(page: number, size: number): Promise<CourseListResponse> {
+export async function getCourses(page: number, size: number, filters: CourseSearchFilters = {}): Promise<CourseListResponse> {
   const baseUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
   const url = new URL("/api/courses", baseUrl);
   url.searchParams.set("page", String(page));
   url.searchParams.set("size", String(size));
+  if (filters.latitude !== undefined && filters.longitude !== undefined) {
+    url.searchParams.set("latitude", String(filters.latitude));
+    url.searchParams.set("longitude", String(filters.longitude));
+    if (filters.radiusMeters !== undefined) url.searchParams.set("radiusMeters", String(filters.radiusMeters));
+  }
+  if (filters.targetDistanceMeters !== undefined) {
+    url.searchParams.set("targetDistanceMeters", String(filters.targetDistanceMeters));
+  }
 
   const response = await fetch(url, {
     cache: "no-store",
@@ -31,7 +42,7 @@ export async function getCourses(page: number, size: number): Promise<CourseList
   return response.json();
 }
 
-export type CourseDetail = CourseSummary & {
+export type CourseDetail = Omit<CourseSummary, "distanceToStartMeters"> & {
   description: string;
   routeGeojson: { type: "LineString"; coordinates: [number, number][] };
 };
