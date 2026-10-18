@@ -72,7 +72,7 @@ class CourseRepository(
 
     fun findPublishedById(id: Long): CourseDetail? = jdbcTemplate.query(
         """
-        SELECT id, name, description, distance_meters, course_type, route_geojson,
+        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published,
                ST_Y(start_location::geometry) AS latitude,
                ST_X(start_location::geometry) AS longitude
         FROM courses
@@ -87,6 +87,8 @@ class CourseRepository(
                 courseType = CourseType.valueOf(rs.getString("course_type")),
                 startLocation = StartLocation(rs.getDouble("latitude"), rs.getDouble("longitude")),
                 routeGeojson = jsonMapper.readTree(rs.getString("route_geojson")),
+                ownerId = rs.getObject("owner_id", Long::class.javaObjectType),
+                published = rs.getBoolean("published"),
             )
         },
         id,

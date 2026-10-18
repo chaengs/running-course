@@ -28,6 +28,7 @@ class CourseRepositoryIntegrationTests {
         )
         jdbc = JdbcTemplate(dataSource)
         jdbc.execute("CREATE TEMP TABLE courses (LIKE public.courses INCLUDING ALL)")
+        jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
         repository = CourseRepository(jdbc, JsonMapper.builder().build())
         insert("공개 첫 코스", true)
         insert("비공개 코스", false)
@@ -37,6 +38,23 @@ class CourseRepositoryIntegrationTests {
     @AfterEach
     fun tearDown() {
         if (::dataSource.isInitialized) dataSource.destroy()
+    }
+
+    @Test
+    fun `created route computes distance and remains private until owner publishes`() {
+        val request = CreateCourseRequest(" 새 코스 ", " 소개 ", CourseType.LOOP,
+            RouteGeometry("LineString", listOf(listOf(126.934, 37.528), listOf(126.935, 37.528), listOf(126.935, 37.529), listOf(126.934, 37.528))))
+        val mapper = JsonMapper.builder().build()
+        val created = CourseCreateService(CourseCreateRepository(jdbc, mapper)).create(request, 123)
+        assertNull(repository.findPublishedById(created.id))
+        val detail = OwnedCourseService(jdbc, mapper).detail(created.id, 123)
+        assertEquals(false, detail.published)
+        assertEquals("새 코스", detail.name)
+        assertEquals("소개", detail.description)
+        assertEquals(StartLocation(37.528, 126.934), detail.startLocation)
+        org.junit.jupiter.api.Assertions.assertTrue(created.distanceMeters in 300..400)
+        assertEquals(created.distanceMeters, detail.distanceMeters)
+        assertEquals(4, detail.routeGeojson.get("coordinates").size())
     }
 
     private fun insert(

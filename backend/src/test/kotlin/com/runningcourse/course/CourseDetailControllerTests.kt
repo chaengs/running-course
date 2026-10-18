@@ -39,7 +39,7 @@ class CourseDetailControllerTests {
             .andExpect(jsonPath("$.routeGeojson.type").value("LineString"))
             .andExpect(jsonPath("$.routeGeojson.coordinates[0][0]").value(126.934))
             .andExpect(jsonPath("$.routeGeojson.coordinates[0][1]").value(37.528))
-            .andExpect(jsonPath("$.published").doesNotExist())
+            .andExpect(jsonPath("$.published").value(true))
     }
 
     @Test
