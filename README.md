@@ -1,6 +1,6 @@
 # Running Course
 
-주변에서 원하는 거리의 러닝 코스를 찾아 출발점으로 돌아오는 웹 서비스입니다.
+지도에 러닝 코스를 직접 그리고 저장·공유하며, 주변의 공개 코스를 발견하는 웹 서비스입니다.
 요구사항은 [PRD](docs/prd.md)를 참고하세요.
 
 ## 구성
@@ -41,6 +41,12 @@ npm run dev
 ```
 
 http://localhost:3000 에서 공개 코스 목록을 확인하세요.
+
+`/login`에서 가입·로그인 후 `/courses/new`에서 작성하고 `/my/courses`에서 내 코스를 확인합니다.
+새 코스는 비공개이며 상세 화면에서 공개·비공개 전환, 수정, 삭제, 공유 URL 복사를 제공합니다.
+백엔드를 재시작하면 V2 사용자·세션·소유권 마이그레이션이 자동 적용됩니다.
+기존 코스와 데이터는 유지합니다. 임시 관리자 키는 더 이상 사용하지 않습니다.
+세션/운영 제한은 [인증 안내](docs/api/auth.md)를 참고하세요.
 
 - `GET http://localhost:8080/api/courses`: 주변·목표 거리 검색을 지원하는 공개 코스 목록 ([API 문서](docs/api/courses.md))
 - `GET http://localhost:8080/api/courses/{id}`: 공개 코스 상세와 전체 경로 ([API 문서](docs/api/course-detail.md))
@@ -92,7 +98,7 @@ Flyway가 시작 시 `backend/src/main/resources/db/migration/`의 SQL을 적용
 적용한 파일은 수정하지 않고 `V2__...sql`처럼 새 파일을 추가하세요.
 JPA는 `ddl-auto=validate`로 스키마를 검증하고 자동 변경하지 않습니다.
 초기 스키마는 코스 정보, WGS84 출발점(공간 인덱스), GeoJSON 경로를 저장합니다.
-사용자/북마크 테이블은 인증 설계 시 추가합니다.
+사용자·세션·코스 소유권은 V2 마이그레이션에 포함됩니다. 북마크는 후속 구현입니다.
 개발용 가상 코스 5개는 별도 SQL로 제공합니다. 실행 방법과 주의사항은 [샘플 코스 안내](docs/sample-courses.md)를 참고하세요.
 
 DB 종료: `docker compose stop` (데이터 유지).
