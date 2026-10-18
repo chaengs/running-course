@@ -20,6 +20,9 @@
 지도 클릭으로 추가하고 번호점을 드래그해 수정합니다. 점 선택 후 삭제, 되돌리기,
 전체 지우기, 출발점 연결을 지원합니다. 닫힌 경로에 점을 추가하려면 먼저 되돌리세요.
 왕복형은 돌아오는 경로까지 직접 입력해야 합니다.
+`현재 위치로 이동` 버튼을 누를 때만 위치 권한을 요청합니다. 확인한 위치로 지도를 이동하고
+파란 점으로 표시하며, 작성 중인 경로는 유지합니다. 현재 위치를 코스에 자동 추가하지 않습니다.
+HTTPS 또는 localhost가 필요하며 권한 거부·시간 초과·위치 확인 실패는 화면에 안내합니다.
 
 이름과 경로를 작성한 뒤 `비공개로 저장`을 누르면 로그인 사용자 소유의 코스로 저장합니다.
 경로는 `[경도, 위도]` 순서의 LineString이며 예상 거리는 선분 길이의 합입니다.
@@ -27,7 +30,7 @@
 최종 거리는 PostGIS가 계산합니다. 성공 후 상세 링크로 이동할 수 있습니다.
 API 규칙은 [코스 저장 API](../docs/api/course-create.md)를 참고하세요.
 기존 관리자 키 방식은 제거했습니다. 저장 전 페이지를 떠나면 초안이 사라집니다.
-기존 상세 화면의 Google Maps는 그대로 사용합니다.
+작성·수정·상세 지도를 모두 Leaflet + OpenStreetMap으로 제공합니다.
 
 OSM 출처 표시는 지도에 유지합니다. 기본 공개 타일 서버는 일반적인 대화형 열람에만
 사용하며 대량 수집·오프라인 다운로드를 하지 않습니다. 운영 규모가 커지면
@@ -53,38 +56,20 @@ Kotlin 서버와 DB를 실행하면 공개 코스 목록을 확인할 수 있습
 
 ## 코스 상세
 - 경로: `/courses/{id}`. Server Component가 상세 API를 조회합니다.
-- 지도: Google Maps JavaScript API와 공식 `@googlemaps/js-api-loader`를 사용합니다.
-- 전체 경로·Advanced Marker 출발/도착 표시·확대/축소·전체 경로 맞추기를 제공합니다.
-- GeoJSON의 [경도, 위도]를 Google Maps의 `{lat, lng}`로 변환합니다.
-- 지도는 Client Component에서 동적으로 로드하고 SDK 로딩 요청을 공유합니다.
+- 지도: Leaflet과 OpenStreetMap 타일을 사용합니다. 지도 API 키가 필요하지 않습니다.
+- 전체 경로·출발/도착 마커·확대/축소·전체 경로 맞추기를 제공합니다.
+- GeoJSON의 [경도, 위도]를 Leaflet의 [위도, 경도]로 변환합니다.
+- 지도는 Client Component에서 동적으로 로드하고 종료 시 리스너·지도를 정리합니다.
 - 페이지·위치·반경·목표 거리 조건을 전달해 목록 복귀 시 유지합니다.
 - 없는 코스·비공개 코스·잘못된 ID는 찾을 수 없음 안내, 통신 실패는 재시도 화면입니다.
-- 키 미설정, SDK 로딩 실패/15초 시간 초과, 인증 실패에 대한 안내를 제공합니다.
+- 타일 로드 실패·15초 시간 초과 시 경로는 유지하고 배경 지도 재시도를 제공합니다.
 - 등록 코스는 출발점과 도착점이 일치한다는 V1 규칙을 사용합니다.
 
-## Google Maps 설정
-1. Google Cloud 프로젝트에서 결제 계정을 연결하고 **Maps JavaScript API**를 활성화합니다.
-2. 웹사이트용 API 키를 생성하고 애플리케이션 제한을 **웹사이트(HTTP referrers)**로 설정합니다.
-   로컬 개발은 `http://localhost:3000/*`, 필요한 경우 `http://127.0.0.1:3000/*`를 등록합니다.
-   다른 포트로 실행하면 그 주소도 추가하세요. 배포 도메인은 정확한 도메인으로 별도 등록합니다.
-3. API 제한은 **Maps JavaScript API**로 지정합니다.
-4. `.env.local`에 아래 값을 추가합니다. 기존 `BACKEND_URL` 설정은 유지하세요.
+## 지도 설정
+추가 설정 없이 기본 OSM 공개 타일을 사용합니다.
+선택적으로 `NEXT_PUBLIC_OSM_TILE_URL`에 `{z}/{x}/{y}` 템플릿 URL을 지정할 수 있습니다.
+타일 제공자를 변경한다면 `src/lib/leaflet-map.ts`의 출처 표시와 최대 줌도 해당 정책에 맞게 변경하세요.
+환경변수 변경 후에는 개발 서버를 재시작하고 프로덕션은 다시 빌드하세요.
 
-```dotenv
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=본인의_웹사이트용_API_키
-NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=
-```
-
-Advanced Marker를 위해 지도 ID가 필요하며 개발 시 기본 `DEMO_MAP_ID`를 사용합니다.
-배포 시 Google Cloud에서 만든 JavaScript용 지도 ID를 두 번째 변수에 입력하세요.
-
-`NEXT_PUBLIC_` 값은 브라우저 번들에 포함됩니다. 서버용 비밀키를 넣지 마세요.
-키의 사용 범위는 Google Cloud의 웹사이트/API 제한으로 관리합니다.
-`.env.local`은 Git에서 제외되며 예시 파일에 실제 키를 기록하지 않습니다.
-환경변수를 변경한 뒤 개발 서버를 재시작하세요. 프로덕션에서는 다시 빌드해야 반영됩니다.
-실제 지도 사용은 Google Maps Platform의 사용량과 요금 정책을 따릅니다.
-이 프로젝트는 저장된 경로를 표시하며 Routes API를 호출하지 않습니다.
-
-- [공식 SDK 로딩 안내](https://developers.google.com/maps/documentation/javascript/load-maps-js-api)
-- [API 키·설정 안내](https://developers.google.com/maps/documentation/javascript/get-api-key)
-- [Advanced Marker 시작하기](https://developers.google.com/maps/documentation/javascript/advanced-markers/start)
+- [OSM 공개 타일 정책](https://operations.osmfoundation.org/policies/tiles/)
+- [OSM 출처·라이선스](https://www.openstreetmap.org/copyright)
