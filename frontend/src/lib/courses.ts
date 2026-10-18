@@ -30,3 +30,19 @@ export async function getCourses(page: number, size: number): Promise<CourseList
   if (!response.ok) throw new Error(`Course list request failed (${response.status})`);
   return response.json();
 }
+
+export type CourseDetail = CourseSummary & {
+  description: string;
+  routeGeojson: { type: "LineString"; coordinates: [number, number][] };
+};
+
+export async function getCourse(id: string): Promise<CourseDetail | null> {
+  const baseUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
+  const response = await fetch(new URL(`/api/courses/${id}`, baseUrl), {
+    cache: "no-store",
+    signal: AbortSignal.timeout(5000),
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Course detail request failed (${response.status})`);
+  return response.json();
+}

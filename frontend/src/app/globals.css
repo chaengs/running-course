@@ -80,3 +80,54 @@ h3 { margin: 24px 0 12px; font-size: 18px; line-height: 1.6; letter-spacing: -.0
   .site-footer { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+
+/* Course detail */
+.course-card { position: relative; transition: border-color .15s, box-shadow .15s; }
+.course-card:hover, .course-card:focus-within { border-color: #8fa57f; box-shadow: 0 6px 20px #20392c0a; }
+.course-detail-link::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+.card-arrow { margin-left: auto; font-size: 18px; color: var(--green); }
+.detail-page { padding-block: 36px 64px; }
+.back-link { display: inline-flex; align-items: center; min-height: 44px; color: #52674c; font-size: 13px; }
+.back-link:hover { text-decoration: underline; }
+.detail-heading { padding-block: 34px 28px; }
+.detail-heading .eyebrow { margin-bottom: 16px; }
+.detail-heading h1 { margin-top: 18px; font-size: clamp(30px, 4vw, 46px); overflow-wrap: anywhere; }
+.detail-intro { margin: 18px 0 0; font-size: 14px; line-height: 1.8; color: var(--muted); }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.route-section { min-width: 0; }
+.route-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-block: 8px 18px; }
+.route-heading h2 { font-size: 20px; }
+.route-heading > span { font-size: 12px; color: var(--muted); }
+.route-map { height: 450px; width: 100%; border-radius: 12px; background: #e8eddf; isolation: isolate; }
+.route-map-wrapper { overflow: hidden; border-radius: 12px; border: 1px solid var(--line); background: white; }
+.route-map-wrapper .route-map { border-radius: 0; }
+.map-placeholder { display: grid; place-items: center; text-align: center; padding: 24px; font-size: 14px; color: var(--muted); }
+.map-tools { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
+.map-legend { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+.map-legend i { width: 20px; height: 3px; background: var(--green); }
+.map-tools button { background: #eef2e7; border: 1px solid #d0d9c8; padding: 9px 12px; border-radius: 6px; color: var(--green); font-size: 12px; min-height: 36px; }
+.map-caption { font-size: 12px; line-height: 1.7; color: var(--muted); margin-block: 12px 0; }
+.map-error { margin: 0; padding: 0 16px 14px; color: #7b6030; font-size: 12px; line-height: 1.7; }
+.course-info { margin-top: 2px; padding: 26px; border: 1px solid var(--line); border-radius: 12px; background: white; }
+.course-info .eyebrow { font-size: 10px; margin-bottom: 7px; }
+.course-info h2 { font-size: 20px; }
+.detail-stats { margin-block: 26px 0; }
+.detail-stats > div { padding-block: 16px; border-bottom: 1px solid #edf0e8; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.detail-stats dt { color: var(--muted); font-size: 12px; }
+.detail-stats dd { margin: 0; font-size: 13px; }
+.detail-stats .detail-distance { font-size: 36px; color: var(--green); letter-spacing: -.05em; }
+.detail-distance span { margin-left: 5px; font-size: 14px; color: var(--muted); letter-spacing: normal; }
+.course-description h3 { font-size: 14px; margin: 24px 0 10px; }
+.course-description p { margin: 0; font-size: 13px; line-height: 1.9; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.error-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.detail-skeleton > span, .detail-skeleton > div { display: block; background: #e5ebdc; border-radius: 10px; animation: pulse 1.6s ease-in-out infinite; }
+.detail-skeleton > span { width: 50%; height: 32px; margin-block: 32px; }
+.detail-skeleton > span:nth-child(2) { width: 30%; height: 20px; }
+.detail-skeleton > div { height: 460px; }
+@media (max-width: 940px) { .detail-grid { grid-template-columns: 1fr; } .course-info { margin-top: 0; } }
+@media (max-width: 600px) { .detail-page { padding-block: 24px 40px; } .route-map { height: 350px; } .course-info { padding: 22px; } .detail-heading { padding-top: 24px; } }
+
+.map-stage { position: relative; }
+.map-status-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: #e8eddf; color: var(--muted); font-size: 14px; z-index: 1; }
+.map-status-overlay p, .map-placeholder p { font-size: 13px; line-height: 1.8; }
+.map-tools button:disabled { opacity: .5; cursor: not-allowed; }

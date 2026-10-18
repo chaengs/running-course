@@ -41,7 +41,7 @@ async function CourseList({ searchParams }: { searchParams: SearchParams }) {
       {hasSamples && <p className="sample-notice"><span aria-hidden="true">ⓘ</span> 개발용 샘플은 실제 도로를 따르지 않는 가상 경로입니다. 실제 러닝에 사용하지 마세요.</p>}
       {courses.content.length > 0 ? (
         <>
-          <ul className="course-grid">{courses.content.map((course) => <CourseCard key={course.id} course={course} />)}</ul>
+          <ul className="course-grid">{courses.content.map((course) => <CourseCard key={course.id} course={course} page={page} size={size} />)}</ul>
           <nav className="pagination" aria-label="코스 목록 페이지">
             {page > 0 ? <Link prefetch={false} href={pageHref(page - 1, size)} aria-label="이전 페이지">← 이전</Link> : <span aria-disabled="true">← 이전</span>}
             <p><strong>{page + 1}</strong> / {courses.totalPages} <span className="sr-only">페이지</span></p>
