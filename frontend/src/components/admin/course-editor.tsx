@@ -4,15 +4,17 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import { initialRouteEditorState, routeEditorReducer, routeLength, type RoutePoint } from "@/lib/route-editor";
+import { CourseVisibilityToggle } from "@/components/course-visibility-toggle";
 
 const EditorMap = dynamic(() => import("./editor-map"), { ssr: false, loading: () => <div className="editor-map map-placeholder">편집 지도를 불러오고 있어요…</div> });
 
-type EditableCourse = { id: number; name: string; description: string; courseType: string; points: RoutePoint[] };
+type EditableCourse = { id: number; name: string; description: string; courseType: string; points: RoutePoint[]; published: boolean };
 export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse }) {
   const [{ points, history, selected }, dispatch] = useReducer(routeEditorReducer, { ...initialRouteEditorState, points: initialCourse?.points ?? initialRouteEditorState.points });
   const [name, setName] = useState(initialCourse?.name ?? "");
   const [description, setDescription] = useState(initialCourse?.description ?? "");
   const [courseType, setCourseType] = useState(initialCourse?.courseType ?? "LOOP");
+  const [published, setPublished] = useState(initialCourse?.published ?? false);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
@@ -41,12 +43,12 @@ export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse
     try {
       const response = await fetch(initialCourse ? `/api/courses/${initialCourse.id}` : "/api/courses", {
         method: initialCourse ? "PUT" : "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), description: description.trim(), courseType, routeGeojson: geojson }),
+        body: JSON.stringify({ name: name.trim(), description: description.trim(), courseType, routeGeojson: geojson, published }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       setSaved(result);
-      setMessage(initialCourse ? "코스 수정을 저장했어요." : "코스를 비공개로 저장했어요.");
+      setMessage(`코스를 ${published ? "공개" : "비공개"}로 저장했어요.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "저장하지 못했어요. 연결을 확인해 주세요.");
     } finally {
@@ -77,8 +79,10 @@ export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse
         <label>코스 유형<select value={courseType} onChange={(event) => setCourseType(event.target.value)}><option value="LOOP">순환형</option><option value="OUT_AND_BACK">왕복형</option></select></label>
         <label>코스 소개<textarea value={description} maxLength={5000} rows={6} onChange={(event) => setDescription(event.target.value)} placeholder="길 상태, 주의 구간, 출발 위치를 적어주세요." /></label>
         <p className="map-caption">왕복형은 반환점까지 그린 후 같은 길을 따라 출발점으로 돌아오는 경로도 입력하세요.</p>
-        <button className="button-primary" type="button" onClick={saveCourse}>{saving ? "저장 중…" : saved ? "저장 완료" : initialCourse ? "수정 저장" : "비공개로 저장"}</button>
-        <p className="map-caption">새 코스는 나만 볼 수 있어요. 저장 후 상세 화면에서 공개할 수 있습니다. 최종 거리는 서버에서 계산합니다.</p>
+        <CourseVisibilityToggle published={published} onChange={setPublished} disabled={saving || saved !== null} />
+        {published && <p className="map-caption">공개하기 전에 집 등 개인 위치가 경로에 포함됐는지 확인하세요.</p>}
+        <button className="button-primary" type="button" onClick={saveCourse}>{saving ? "저장 중…" : saved ? "저장 완료" : initialCourse ? "수정 저장" : "코스 저장"}</button>
+        <p className="map-caption">선택한 공개 범위를 코스와 함께 저장합니다. 최종 거리는 서버에서 계산합니다.</p>
         <p role="status" className="editor-message">{message}</p>
       </section>
     </div>

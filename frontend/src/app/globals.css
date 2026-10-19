@@ -206,3 +206,12 @@ h3 { margin: 24px 0 12px; font-size: 1.375rem; line-height: 1.6; letter-spacing:
 .course-bookmark p { margin-block: .5rem; font-size: 1rem; }
 .bookmark-pagination { display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-block: 2rem; }
 .bookmark-pagination a { min-height: 44px; display: inline-flex; align-items: center; }
+.visibility-control { width: 100%; margin-block: 1rem; }
+.visibility-toggle, .editor-fields .visibility-toggle { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 44px; position: relative; cursor: pointer; font-weight: 700; }
+.visibility-toggle input[type="checkbox"] { position: absolute; width: 1px; height: 1px; min-height: 0; margin: 0; padding: 0; border: 0; opacity: 0; }
+.visibility-track { display: inline-flex; align-items: center; width: 52px; height: 30px; padding: 3px; border-radius: 20px; background: #657165; flex-shrink: 0; }
+.visibility-track > span { width: 24px; height: 24px; border-radius: 50%; background: #fff; transform: translateX(0); }
+.visibility-toggle input:checked + .visibility-track { background: var(--green); }
+.visibility-toggle input:checked + .visibility-track > span { transform: translateX(22px); }
+.visibility-toggle input:focus-visible + .visibility-track { outline: 3px solid #bd581f; outline-offset: 4px; }
+.visibility-toggle input:disabled + .visibility-track { opacity: .5; cursor: not-allowed; }

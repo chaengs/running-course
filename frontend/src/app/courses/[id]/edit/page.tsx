@@ -10,7 +10,7 @@ async function Edit({ params }: { params: Promise<{ id: string }> }) {
   if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807")) notFound();
   const course = await getCourse(id);
   if (!course || course.ownerId !== user.id) notFound();
-  return <CourseEditor initialCourse={{ id: course.id, name: course.name, description: course.description, courseType: course.courseType, points: course.routeGeojson.coordinates.map(([lng, lat]) => ({ lat, lng })) }} />;
+  return <CourseEditor initialCourse={{ id: course.id, name: course.name, description: course.description, courseType: course.courseType, published: course.published, points: course.routeGeojson.coordinates.map(([lng, lat]) => ({ lat, lng })) }} />;
 }
 export default function EditCoursePage(props: { params: Promise<{ id: string }> }) {
   return <main id="main-content" className="detail-page"><header className="detail-heading"><h1>내 코스 수정</h1></header><Suspense fallback={<p>코스를 불러오는 중…</p>}><Edit {...props} /></Suspense></main>;
