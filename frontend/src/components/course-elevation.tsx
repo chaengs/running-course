@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useId, useRef, useState } from "react";
+import { elevationAxis } from "@/lib/elevation-chart";
 
 type Route = { type: string; coordinates: number[][] };
 type Profile = {
@@ -16,27 +17,31 @@ function ElevationChart({ profile }: { profile: Profile }) {
   const gradient = useId();
   const [selected, setSelected] = useState(0);
   const samples = profile.samples;
-  const span = Math.max(10, profile.maxElevationMeters - profile.minElevationMeters);
-  const floor = (profile.maxElevationMeters + profile.minElevationMeters - span) / 2;
+  const axis = elevationAxis(profile.minElevationMeters, profile.maxElevationMeters);
+  const height = (value: number) => 15 + (axis.max - value) / (axis.max - axis.min) * 180;
   const x = (i: number) => samples[i].distanceMeters / profile.distanceMeters * 700;
-  const y = (i: number) => 180 - (samples[i].elevationMeters - floor) / span * 150;
+  const y = (i: number) => height(samples[i].elevationMeters);
   const line = samples.map((_, i) => `${x(i).toFixed(2)},${y(i).toFixed(2)}`).join(" ");
   const point = samples[selected];
   return <>
-    <div className="elevation-chart-labels"><span>고도 (m)</span><span>최저 {Math.round(profile.minElevationMeters)}m · 최고 {Math.round(profile.maxElevationMeters)}m</span></div>
-    <svg className="elevation-chart" viewBox="0 0 700 210" preserveAspectRatio="none" role="img" aria-label={`경로 고도 그래프. 최저 ${Math.round(profile.minElevationMeters)}m, 최고 ${Math.round(profile.maxElevationMeters)}m. 아래 슬라이더로 구간별 고도를 확인할 수 있습니다.`}
+    <div className="elevation-chart-labels"><span>고도 (m)</span><span>최저 {Math.round(profile.minElevationMeters)}m · 최고 {Math.round(profile.maxElevationMeters)}m · 높이 차이 {Math.round(profile.maxElevationMeters - profile.minElevationMeters)}m</span></div>
+    <div className="elevation-plot">
+    <div className="elevation-height-axis" aria-hidden="true">{axis.ticks.map((tick) => <span key={tick} style={{ top: `${height(tick) / 210 * 100}%` }}>{tick}</span>)}</div>
+    <svg className="elevation-chart" viewBox="0 0 700 210" preserveAspectRatio="none" role="img" aria-label={`경로 고도 그래프. 세로축 ${axis.min}~${axis.max}m, 눈금 간격 ${axis.step}m. 최저 ${Math.round(profile.minElevationMeters)}m, 최고 ${Math.round(profile.maxElevationMeters)}m. 아래 슬라이더로 구간별 고도를 확인할 수 있습니다.`}
       onPointerMove={(event) => {
         const box = event.currentTarget.getBoundingClientRect();
         setSelected(Math.max(0, Math.min(samples.length - 1, Math.round((event.clientX - box.left) / box.width * (samples.length - 1)))));
       }}>
       <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#1450ff" stopOpacity=".24" /><stop offset="100%" stopColor="#1450ff" stopOpacity=".01" /></linearGradient></defs>
-      {[30, 105, 180].map((at) => <line key={at} x1="0" x2="700" y1={at} y2={at} stroke="#e5e9f3" strokeDasharray="4 5" />)}
-      <polygon points={`0,210 ${line} 700,210`} fill={`url(#${gradient})`} />
+      {axis.ticks.map((tick) => <line key={tick} x1="0" x2="700" y1={height(tick)} y2={height(tick)} stroke="#e5e9f3" strokeDasharray="4 5" />)}
+      <polygon points={`0,195 ${line} 700,195`} fill={`url(#${gradient})`} />
       <polyline points={line} fill="none" stroke="#1450ff" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-      <line x1={x(selected)} x2={x(selected)} y1="0" y2="210" stroke="#9ba9c2" strokeDasharray="4 4" />
+      <line x1={x(selected)} x2={x(selected)} y1="15" y2="195" stroke="#9ba9c2" strokeDasharray="4 4" />
       <circle cx={x(selected)} cy={y(selected)} r="5" fill="#00b96b" stroke="white" strokeWidth="2" />
     </svg>
     <div className="elevation-distance-axis">{[0, .25, .5, .75, 1].map((fraction) => <span key={fraction}>{(profile.distanceMeters * fraction / 1000).toFixed(1)}</span>)}</div>
+    </div>
+    <p className="elevation-scale-note">세로 눈금 {axis.step}m · 작은 높이 차이가 과장되지 않도록 최소 100m 범위로 표시해요.</p>
     <label className="elevation-scrubber">경로 위치 (km)
       <input type="range" min={0} max={samples.length - 1} value={selected} onChange={(event) => setSelected(Number(event.target.value))}
         aria-valuetext={`${(point.distanceMeters / 1000).toFixed(2)}km 지점, 고도 ${Math.round(point.elevationMeters)}m`} />
