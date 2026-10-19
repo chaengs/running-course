@@ -69,6 +69,16 @@ export async function getCourse(id: string): Promise<CourseDetail | null> {
 }
 
 export type MyCourse = { id: number; name: string; distanceMeters: number; published: boolean };
+export type BookmarkedCourse = Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType">;
+export type BookmarkPage = { content: BookmarkedCourse[]; page: number; hasNext: boolean };
+export async function getBookmarkedCourses(page: number): Promise<BookmarkPage> {
+  const url = new URL("/api/my/bookmarks", process.env.BACKEND_URL ?? "http://localhost:8080");
+  url.searchParams.set("page", String(page));
+  const response = await fetch(url, { headers: await sessionHeaders(), cache: "no-store", signal: AbortSignal.timeout(5000) });
+  if (!response.ok) throw new Error("북마크 코스를 불러오지 못했어요.");
+  return response.json();
+}
+
 export async function getMyCourses(): Promise<MyCourse[]> {
   const response = await fetch(new URL("/api/my/courses", process.env.BACKEND_URL ?? "http://localhost:8080"), {
     headers: await sessionHeaders(), cache: "no-store", signal: AbortSignal.timeout(5000),

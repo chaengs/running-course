@@ -198,3 +198,11 @@ h3 { margin: 24px 0 12px; font-size: 1.375rem; line-height: 1.6; letter-spacing:
 .page-size-form button, .page-size-form select, .map-tools button, .account-nav button, .owner-actions button, .share-button { min-height: 44px; }
 @media (max-width: 940px) { .editor-grid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .editor-map { height: 420px; } }
+/* Bookmark controls keep the map independent from mutation state. */
+.course-bookmark { margin-block: 1rem; }
+.course-bookmark button { min-height: 44px; padding: .65rem 1rem; border: 1px solid currentColor; border-radius: .75rem; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.course-bookmark button[aria-pressed="true"] { background: #f0fdf4; color: #166534; }
+.course-bookmark button:disabled { opacity: .6; cursor: wait; }
+.course-bookmark p { margin-block: .5rem; font-size: 1rem; }
+.bookmark-pagination { display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-block: 2rem; }
+.bookmark-pagination a { min-height: 44px; display: inline-flex; align-items: center; }

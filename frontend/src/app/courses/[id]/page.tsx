@@ -9,6 +9,7 @@ import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
 import { getCourse } from "@/lib/courses";
 import { getCurrentUser } from "@/lib/session";
 import { CourseOwnerActions, ShareCourseButton } from "@/components/course-owner-actions";
+import { CourseBookmark } from "@/components/course-bookmark";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -37,6 +38,7 @@ async function CourseDetailContent({ params, searchParams }: Props) {
       </header>
       {course.ownerId === user?.id && <CourseOwnerActions id={course.id} published={course.published} />}
       {course.published && <ShareCourseButton />}
+      {course.published && <Suspense fallback={<p role="status">북마크 확인 중…</p>}><CourseBookmark courseId={course.id} loggedIn={Boolean(user)} /></Suspense>}
       {isSample && <p className="sample-notice"><span aria-hidden="true">ⓘ</span> 실제 도로를 따르지 않는 개발용 가상 경로입니다. 실제 러닝에 사용하지 마세요.</p>}
       <div className="detail-grid">
         <section className="route-section" aria-labelledby="route-title">
