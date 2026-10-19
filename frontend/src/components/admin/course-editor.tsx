@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import { initialRouteEditorState, routeEditorReducer, routeLength, type RoutePoint } from "@/lib/route-editor";
 import { CourseVisibilityToggle } from "@/components/course-visibility-toggle";
+import { CourseElevation } from "@/components/course-elevation";
 
 const EditorMap = dynamic(() => import("./editor-map"), { ssr: false, loading: () => <div className="editor-map map-placeholder">편집 지도를 불러오고 있어요…</div> });
 
@@ -71,6 +72,7 @@ export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse
         <EditorMap points={points} selected={selected} onChange={updatePoints} onSelect={selectPoint} closed={closed} />
         <p className="map-caption">점 클릭: 선택 · 점 드래그: 위치 수정 · 지도 확대/축소 후 세밀하게 편집하세요.</p>
         <p className="editor-summary" aria-live="polite">경로점 {points.length}개 · 예상 거리 <strong>{(length / 1000).toFixed(2)}km</strong> · {closed ? "출발점 연결 완료" : "경로 작성 중"}</p>
+        <CourseElevation route={geojson} length={length} />
         <details className="editor-json"><summary>GeoJSON 미리보기</summary><pre>{geojsonPreview}</pre></details>
       </section>
       <section className="course-info editor-fields" aria-labelledby="editor-info-title">
