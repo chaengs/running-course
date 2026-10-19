@@ -106,4 +106,29 @@ class AuthOwnershipIntegrationTests {
         assertTrue(owned.list(a).isEmpty())
         status(404) { owned.detail(created.id, a) }
     }
+
+    @Test fun `creation selects visibility and edits persist visibility with course content`() {
+        val owner = register("visibility@example.com").user.id
+        val other = register("other-visibility@example.com").user.id
+        val defaultPrivate = create.create(request, owner)
+        assertFalse(owned.detail(defaultPrivate.id, owner).published)
+        val published = create.create(request.copy(published = true), owner)
+        assertNotNull(publicCourses.findPublishedById(published.id))
+        owned.update(published.id, owner, request.copy(name = "공개 유지"))
+        assertTrue(owned.detail(published.id, owner).published)
+        owned.update(published.id, owner, request.copy(name = "비공개로 수정", published = false))
+        assertEquals("비공개로 수정", owned.detail(published.id, owner).name)
+        assertNull(publicCourses.findPublishedById(published.id))
+        status(404) { owned.update(published.id, other, request.copy(published = true)) }
+        assertFalse(owned.detail(published.id, owner).published)
+        owned.update(published.id, owner, request.copy(published = true))
+        assertNotNull(publicCourses.findPublishedById(published.id))
+        // Valid coordinates but >100km: neither content nor visibility should change.
+        val tooLong = RouteGeometry("LineString", listOf(listOf(126.0,37.0), listOf(128.0,37.0), listOf(128.0,39.0), listOf(126.0,37.0)))
+        status(400) { owned.update(published.id, owner, request.copy(name = "저장되면 안 됨", published = false, routeGeojson = tooLong)) }
+        assertTrue(owned.detail(published.id, owner).published)
+        assertNotEquals("저장되면 안 됨", owned.detail(published.id, owner).name)
+        val explicitPrivate = create.create(request.copy(published = false), owner)
+        assertNull(publicCourses.findPublishedById(explicitPrivate.id))
+    }
 }

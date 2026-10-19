@@ -28,11 +28,11 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
         WITH route AS (SELECT ST_SetSRID(ST_GeomFromGeoJSON(?),4326) AS geom),
         measured AS (SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route)
         UPDATE courses SET name = ?, description = ?, course_type = ?, route_geojson = ST_AsGeoJSON(geom)::jsonb,
-        start_location = ST_StartPoint(geom)::geography, distance_meters = distance, updated_at = CURRENT_TIMESTAMP
+        start_location = ST_StartPoint(geom)::geography, distance_meters = distance, published = COALESCE(?, courses.published), updated_at = CURRENT_TIMESTAMP
         FROM measured WHERE id = ? AND owner_id = ? AND distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(), { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
-        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name, id, owner,
+        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name, request.published, id, owner,
     ).singleOrNull()
 
     fun updateVisibility(id: Long, owner: Long, published: Boolean): Boolean =
