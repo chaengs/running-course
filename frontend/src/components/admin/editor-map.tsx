@@ -18,8 +18,10 @@ function EditorMap(props: Props) {
   const [locationMessage, setLocationMessage] = useState("");
   const locationPending = useRef(false);
   const locationMarker = useRef<L.CircleMarker | null>(null);
+  const initialLocationRequest = useRef<Promise<GeolocationPosition> | null>(null);
+  const interacted = useRef(false);
 
-  function moveToCurrentLocation() {
+  function moveToCurrentLocation(automatic = false) {
     const targetMap = map.current;
     if (!targetMap || locationPending.current) return;
     if (!navigator.geolocation) {
@@ -33,28 +35,37 @@ function EditorMap(props: Props) {
     locationPending.current = true;
     setLocating(true);
     setLocationMessage("현재 위치를 확인하고 있어요…");
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
+    const requestPosition = () => new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    });
+    // Share the initial browser request across React Strict Mode effect replays.
+    const positionRequest = automatic ? (initialLocationRequest.current ??= requestPosition()) : requestPosition();
+    void positionRequest.then(({ coords }) => {
       const instance = map.current;
       if (!instance || instance !== targetMap) return;
       const position: L.LatLngTuple = [coords.latitude, coords.longitude];
-      instance.setView(position, 16);
+      const move = !automatic || !interacted.current;
+      if (move) instance.setView(position, 16);
       locationMarker.current?.remove();
       locationMarker.current = L.circleMarker(position, {
         radius: 8, color: "white", weight: 3, fillColor: "#2563eb", fillOpacity: 1,
         interactive: false,
       }).addTo(instance);
-      setLocationMessage("현재 위치로 이동했어요. 파란 점은 현재 위치이며 코스에 추가되지 않아요.");
-      locationPending.current = false;
-      setLocating(false);
-    }, (error) => {
+      setLocationMessage(move ? "현재 위치로 이동했어요. 파란 점은 현재 위치이며 코스에 추가되지 않아요."
+        : "현재 위치를 확인했어요. 지도 편집을 시작해 자동 이동을 생략했습니다. 버튼으로 현재 위치로 이동할 수 있어요.");
+    }).catch((error: GeolocationPositionError) => {
       if (map.current !== targetMap) return;
       setLocationMessage(error.code === 1 ? "위치 권한이 거부됐어요. 브라우저 설정에서 위치 권한을 허용해 주세요."
         : error.code === 3 ? "위치 확인 시간이 초과됐어요. 다시 시도해 주세요."
         : "현재 위치를 확인할 수 없어요. 잠시 후 다시 시도해 주세요.");
+    }).finally(() => {
+      if (map.current !== targetMap) return;
       locationPending.current = false;
       setLocating(false);
-    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    });
   }
+
+  const requestInitialLocation = useEffectEvent(() => moveToCurrentLocation(true));
 
   // 지도 리스너를 다시 등록하지 않고 최신 React 상태를 읽습니다.
   const addPoint = useEffectEvent((point: RoutePoint) => {
@@ -74,10 +85,14 @@ function EditorMap(props: Props) {
     const tiles = createMapTiles().addTo(instance);
     tiles.on("tileerror", () => setTileError(true));
     instance.on("click", (event: L.LeafletMouseEvent) => {
+      interacted.current = true;
       addPoint({ lat: event.latlng.lat, lng: event.latlng.lng });
     });
+    instance.on("dragstart zoomstart", () => { interacted.current = true; });
     const observer = new ResizeObserver(() => instance.invalidateSize());
     observer.observe(container.current);
+    // Saved routes take priority in the editor. New routes start at the runner's location.
+    if (initialPoints.current.length === 0) requestInitialLocation();
     return () => {
       locationPending.current = false;
       setLocating(false);
@@ -117,7 +132,7 @@ function EditorMap(props: Props) {
 
   return <>
     <div className="editor-location-tools">
-      <button type="button" onClick={moveToCurrentLocation} disabled={locating} aria-describedby="editor-location-status">
+      <button type="button" onClick={() => moveToCurrentLocation()} disabled={locating} aria-describedby="editor-location-status">
         <span aria-hidden="true">⌖ </span>{locating ? "위치 확인 중…" : "현재 위치로 이동"}
       </button>
       <p id="editor-location-status" role="status">{locationMessage || "위치 권한을 허용하면 지도가 현재 위치로 이동해요."}</p>
