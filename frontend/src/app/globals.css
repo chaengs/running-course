@@ -515,3 +515,4 @@ a.elevation-source { text-decoration: underline; }
 .elevation-height-axis > span { position: absolute; right: 0; transform: translateY(-50%); }
 .elevation-plot .elevation-distance-axis { grid-column: 2; font-variant-numeric: tabular-nums; }
 .elevation-scale-note { font-size: 1rem; color: var(--muted); margin: 12px 0; }
+.elevation-auto-status { color: var(--green); background: #eff3ff; border-radius: 20px; padding: 6px 12px; font-size: 1rem; }
