@@ -80,6 +80,10 @@ export function CourseEditor({
 
   async function saveCourse() {
     if (savingRef.current || saved) return;
+    if (name.trim().length > 30) {
+      setMessage("코스 이름은 30자 이하로 입력해 주세요.");
+      return;
+    }
     const distinctPoints = new Set(
       points.map((point) => `${point.lat},${point.lng}`),
     );
@@ -181,58 +185,87 @@ export function CourseEditor({
               점 클릭: 선택 · 점 드래그: 위치 수정 · 지도 확대/축소 후 세밀하게
               편집하세요.
             </p>
-            <p className="editor-summary" aria-live="polite">
-              경로점 {points.length}개 · 예상 거리{" "}
-              <strong>{(length / 1000).toFixed(2)}km</strong> ·{" "}
-              {closed ? "출발점 연결 완료" : "경로 작성 중"}
-            </p>
             <CourseElevation route={geojson} length={length} />
           </section>
           <section
             className="course-info editor-fields"
             aria-labelledby="editor-info-title"
           >
-            <p className="eyebrow">YOUR ROUTE · YOUR RULES</p>
-            <h2 id="editor-info-title">코스 정보 입력</h2>
-            <div className="editor-distance" aria-live="polite">
-              <span>현재 코스 거리</span>
-              <strong>
-                {(length / 1000).toFixed(2)} <small>km</small>
-              </strong>
-            </div>
+            <header className="editor-info-heading">
+              <h2 id="editor-info-title">
+                <svg
+                  aria-hidden="true"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                >
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                  <path d="M14 17.5h7M17.5 14v7" />
+                </svg>
+                코스 정보 입력
+              </h2>
+            </header>
             <label>
-              코스 이름
+              <span className="editor-field-heading">
+                <span>
+                  코스 이름 <span className="editor-required">(필수)</span>
+                </span>
+                <span className="editor-field-hint">최대 30자</span>
+              </span>
               <input
                 value={name}
-                maxLength={100}
+                required
+                maxLength={30}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="예: 백운호수 한 바퀴"
               />
             </label>
+            <fieldset
+              className="editor-course-type"
+              aria-describedby="editor-type-help"
+            >
+              <legend>코스 유형</legend>
+              <div className="editor-type-options">
+                <label>
+                  <input
+                    type="radio"
+                    name="courseType"
+                    value="LOOP"
+                    checked={courseType === "LOOP"}
+                    onChange={(event) => setCourseType(event.target.value)}
+                  />
+                  <span>순환형(루프)</span>
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="courseType"
+                    value="OUT_AND_BACK"
+                    checked={courseType === "OUT_AND_BACK"}
+                    onChange={(event) => setCourseType(event.target.value)}
+                  />
+                  <span>왕복형</span>
+                </label>
+              </div>
+            </fieldset>
             <label>
-              코스 유형
-              <select
-                value={courseType}
-                onChange={(event) => setCourseType(event.target.value)}
-              >
-                <option value="LOOP">순환형</option>
-                <option value="OUT_AND_BACK">왕복형</option>
-              </select>
-            </label>
-            <label>
-              코스 소개
+              <span className="editor-field-heading editor-description-heading">
+                <span>코스 소개 및 주의구간 안내</span>
+                <span className="editor-field-hint">선택 사항</span>
+              </span>
               <textarea
                 value={description}
                 maxLength={5000}
-                rows={6}
+                rows={5}
                 onChange={(event) => setDescription(event.target.value)}
-                placeholder="길 상태, 주의 구간, 출발 위치를 적어주세요."
+                placeholder="출발 위치, 식수대와 화장실, 야간 조명 상태, 자전거와 만나는 구간 등을 알려주세요."
               />
             </label>
-            <p className="map-caption">
-              왕복형은 반환점까지 그린 후 같은 길을 따라 출발점으로 돌아오는
-              경로도 입력하세요.
-            </p>
             <CourseVisibilityToggle
               published={published}
               onChange={setPublished}
@@ -254,12 +287,9 @@ export function CourseEditor({
                   ? "저장 완료"
                   : initialCourse
                     ? "수정 저장"
-                    : "코스 저장"}
+                    : "코스 저장 및 등록"}
             </button>
-            <p className="map-caption">
-              선택한 공개 범위를 코스와 함께 저장합니다. 최종 거리는 서버에서
-              계산합니다.
-            </p>
+            <p className="map-caption">저장 후에도 내용을 수정할 수 있어요.</p>
             <p role="status" className="editor-message">
               {message}
             </p>
