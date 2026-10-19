@@ -22,7 +22,7 @@ export default function CourseMap({ route, name }: Props) {
   useEffect(() => {
     if (!container.current || !valid) return;
     const path: L.LatLngTuple[] = route.coordinates.map(([lng, lat]) => [lat, lng]);
-    const map = L.map(container.current, { scrollWheelZoom: false }).setView(path[0], 13);
+    const map = L.map(container.current, { scrollWheelZoom: true }).setView(path[0], 13);
     mapRef.current = map;
     const bounds = L.latLngBounds(path);
     boundsRef.current = bounds;

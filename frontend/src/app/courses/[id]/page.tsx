@@ -44,7 +44,7 @@ async function CourseDetailContent({ params, searchParams }: Props) {
         <section className="route-section" aria-labelledby="route-title">
           <div className="route-heading"><h2 id="route-title">전체 경로</h2><span>출발점과 도착점이 같아요</span></div>
           <CourseRouteMap route={course.routeGeojson} name={course.name} />
-          <p className="map-caption">지도를 드래그하거나 확대해 경로를 살펴보세요.</p>
+          <p className="map-caption">지도를 드래그하거나 마우스 휠·확대/축소 버튼으로 경로를 살펴보세요.</p>
         </section>
         <aside className="course-info" aria-labelledby="info-title">
           <p className="eyebrow">COURSE OVERVIEW</p><h2 id="info-title">코스 정보</h2>
