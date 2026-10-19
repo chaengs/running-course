@@ -94,7 +94,28 @@ function ElevationChart({ profile }: { profile: Profile }) {
           viewBox="0 0 700 210"
           preserveAspectRatio="none"
           role="img"
-          <svg className="elevation-chart" viewBox="0 0 700 210" preserveAspectRatio="none" role="img" aria-label={`경로 고도 그래프. 세로축 ${axis.min}~${axis.max}m, 눈금 간격 ${axis.step}m. 최저 ${Math.round(profile.minElevationMeters)}m, 최고 ${Math.round(profile.maxElevationMeters)}m. 아래 슬라이더로 구간별 고도를 확인할 수 있습니다.`}
+          tabIndex={0}
+          aria-keyshortcuts="ArrowLeft ArrowRight Home End"
+          aria-label={`경로 고도 그래프. 세로축 ${axis.min}~${axis.max}m, 눈금 간격 ${axis.step}m. 최저 ${Math.round(profile.minElevationMeters)}m, 최고 ${Math.round(profile.maxElevationMeters)}m. 그래프를 선택한 뒤 좌우 방향키로 구간별 고도를 확인할 수 있습니다.`}
+          onKeyDown={(event) => {
+            const key = event.key;
+            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(key))
+              return;
+            event.preventDefault();
+            setSelected((current) =>
+              key === "Home"
+                ? 0
+                : key === "End"
+                  ? samples.length - 1
+                  : Math.max(
+                      0,
+                      Math.min(
+                        samples.length - 1,
+                        current + (key === "ArrowRight" ? 1 : -1),
+                      ),
+                    ),
+            );
+          }}
           onPointerMove={(event) => {
             const box = event.currentTarget.getBoundingClientRect();
             setSelected(
@@ -164,17 +185,6 @@ function ElevationChart({ profile }: { profile: Profile }) {
           ))}
         </div>
       </div>
-      <label className="elevation-scrubber">
-        경로 위치 (km)
-        <input
-          type="range"
-          min={0}
-          max={samples.length - 1}
-          value={selected}
-          onChange={(event) => setSelected(Number(event.target.value))}
-          aria-valuetext={`${(point.distanceMeters / 1000).toFixed(2)}km 지점, 고도 ${Math.round(point.elevationMeters)}m`}
-        />
-      </label>
       <output className="elevation-point">
         출발 후 {(point.distanceMeters / 1000).toFixed(2)}km · 고도{" "}
         <strong>{Math.round(point.elevationMeters)}m</strong>
