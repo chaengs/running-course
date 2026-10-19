@@ -23,7 +23,6 @@ export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse
   const closed = points.length > 2 && points[0].lat === points.at(-1)?.lat && points[0].lng === points.at(-1)?.lng;
   const length = useMemo(() => routeLength(points), [points]);
   const geojson = useMemo(() => ({ type: "LineString", coordinates: points.map(({ lat, lng }) => [lng, lat]) }), [points]);
-  const geojsonPreview = useMemo(() => JSON.stringify(geojson, null, 2), [geojson]);
 
   const updatePoints = useCallback((next: RoutePoint[]) => {
     dispatch({ type: "replace", points: next });
@@ -73,10 +72,9 @@ export function CourseEditor({ initialCourse }: { initialCourse?: EditableCourse
         <p className="map-caption">점 클릭: 선택 · 점 드래그: 위치 수정 · 지도 확대/축소 후 세밀하게 편집하세요.</p>
         <p className="editor-summary" aria-live="polite">경로점 {points.length}개 · 예상 거리 <strong>{(length / 1000).toFixed(2)}km</strong> · {closed ? "출발점 연결 완료" : "경로 작성 중"}</p>
         <CourseElevation route={geojson} length={length} />
-        <details className="editor-json"><summary>GeoJSON 미리보기</summary><pre>{geojsonPreview}</pre></details>
       </section>
       <section className="course-info editor-fields" aria-labelledby="editor-info-title">
-        <h2 id="editor-info-title">코스 정보</h2>
+        <p className="eyebrow">YOUR ROUTE · YOUR RULES</p><h2 id="editor-info-title">코스 정보 입력</h2><div className="editor-distance" aria-live="polite"><span>현재 코스 거리</span><strong>{(length / 1000).toFixed(2)} <small>km</small></strong></div>
         <label>코스 이름<input value={name} maxLength={100} onChange={(event) => setName(event.target.value)} placeholder="예: 백운호수 한 바퀴" /></label>
         <label>코스 유형<select value={courseType} onChange={(event) => setCourseType(event.target.value)}><option value="LOOP">순환형</option><option value="OUT_AND_BACK">왕복형</option></select></label>
         <label>코스 소개<textarea value={description} maxLength={5000} rows={6} onChange={(event) => setDescription(event.target.value)} placeholder="길 상태, 주의 구간, 출발 위치를 적어주세요." /></label>

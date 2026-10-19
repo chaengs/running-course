@@ -38,7 +38,7 @@ export default function CourseMap({ route, name }: Props) {
     tiles.on("tileerror", () => { failed = true; setStatus("error"); });
     tiles.on("load", () => { clearTimeout(timer); setStatus(failed ? "error" : "ready"); });
     tiles.addTo(map);
-    L.polyline(path, { color: "#23533d", weight: 5, opacity: 0.95 }).addTo(map);
+    L.polyline(path, { color: "#1450ff", weight: 5, opacity: 0.95 }).addTo(map);
     const first = path[0];
     const last = path[path.length - 1];
     const closed = first[0] === last[0] && first[1] === last[1];

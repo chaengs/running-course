@@ -95,10 +95,10 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
 
 export default function Home({ searchParams }: { searchParams: SearchParams }) {
   return (
-    <main id="main-content">
+    <main id="main-content" className="home-page">
       <header className="hero">
-        <p className="eyebrow">A NEW ROUTE. YOUR OWN PACE.</p>
-        <h1>다음 달리기는,<br /><em>새로운 코스에서.</em></h1>
+        <p className="eyebrow"><span className="live-dot" /> A NEW ROUTE · YOUR OWN PACE</p>
+        <h1>다음 달리기는,<br /><em>새로운 코스에서</em></h1>
         <p className="hero-description">가볍게 달리는 3km부터 도전하는 10km까지.<br />출발점으로 돌아오는 러닝 코스를 만나보세요.</p>
         <div className="hero-note"><span className="note-line" />길을 고르는 시간은 줄이고, 달리는 시간을 늘려요.</div>
       </header>

@@ -9,3 +9,21 @@ async function mutation(request: NextRequest, { params }: { params: Promise<{ pa
 export const PUT = mutation;
 export const PATCH = mutation;
 export const DELETE = mutation;
+
+// Only public route geometry is exposed to card previews. Keep private course data server-side.
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path } = await params;
+  if (path.length !== 2 || path[1] !== "preview" || !/^[1-9]\d{0,18}$/.test(path[0]) || BigInt(path[0]) > BigInt("9223372036854775807")) {
+    return NextResponse.json({}, { status: 404 });
+  }
+  try {
+    const response = await fetch(new URL(`/api/courses/${path[0]}`, process.env.BACKEND_URL ?? "http://localhost:8080"), {
+      cache: "no-store", signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return NextResponse.json({}, { status: response.status === 404 ? 404 : 502 });
+    const course = await response.json();
+    return NextResponse.json(course.routeGeojson, { headers: { "Cache-Control": "no-store" } });
+  } catch {
+    return NextResponse.json({}, { status: 502 });
+  }
+}
