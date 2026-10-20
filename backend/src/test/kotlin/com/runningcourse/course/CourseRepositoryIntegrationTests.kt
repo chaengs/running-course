@@ -4,11 +4,14 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import tools.jackson.databind.json.JsonMapper
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
+import java.time.OffsetDateTime
 
 // 실제 PostgreSQL/PostGIS에 연결하되 세션 전용 임시 테이블을 사용합니다.
 // public.courses 및 개발자가 등록한 데이터는 변경하지 않습니다.
@@ -29,6 +32,7 @@ class CourseRepositoryIntegrationTests {
         jdbc = JdbcTemplate(dataSource)
         jdbc.execute("CREATE TEMP TABLE courses (LIKE public.courses INCLUDING ALL)")
         jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
+        jdbc.execute("CREATE TEMP TABLE course_bookmarks(user_id BIGINT NOT NULL, course_id BIGINT NOT NULL)")
         repository = CourseRepository(jdbc, JsonMapper.builder().build())
         insert("공개 첫 코스", true)
         insert("비공개 코스", false)
@@ -45,16 +49,21 @@ class CourseRepositoryIntegrationTests {
         val request = CreateCourseRequest(" 새 코스 ", " 소개 ", CourseType.LOOP,
             RouteGeometry("LineString", listOf(listOf(126.934, 37.528), listOf(126.935, 37.528), listOf(126.935, 37.529), listOf(126.934, 37.528))))
         val mapper = JsonMapper.builder().build()
-        val created = CourseCreateService(CourseCreateRepository(jdbc, mapper)).create(request, 123)
+        val region = CourseRegion("서울특별시", "마포구", "공덕동", "OpenStreetMap Nominatim", OffsetDateTime.parse("2026-01-01T00:00:00Z"))
+        val created = CourseCreateService(CourseCreateRepository(jdbc, mapper), CourseRegionResolver { _, _ -> region }).create(request, 123)
         assertNull(repository.findPublishedById(created.id))
-        val detail = OwnedCourseService(OwnedCourseRepository(jdbc, mapper)).detail(created.id, 123)
+        val ownerService = OwnedCourseService(OwnedCourseRepository(jdbc, mapper), CourseRegionResolver { _, _ -> null })
+        val detail = ownerService.detail(created.id, 123)
         assertEquals(false, detail.published)
         assertEquals("새 코스", detail.name)
         assertEquals("소개", detail.description)
         assertEquals(StartLocation(37.528, 126.934), detail.startLocation)
+        assertEquals(region, detail.region)
         org.junit.jupiter.api.Assertions.assertTrue(created.distanceMeters in 300..400)
         assertEquals(created.distanceMeters, detail.distanceMeters)
         assertEquals(4, detail.routeGeojson.get("coordinates").size())
+        ownerService.visibility(created.id, 123, true)
+        assertEquals(region, repository.findPublishedById(created.id)?.region)
     }
 
     private fun insert(
@@ -164,5 +173,36 @@ class CourseRepositoryIntegrationTests {
         val result = repository.findPublished(20, 0)
         org.junit.jupiter.api.Assertions.assertTrue(result.all { it.distanceToStartMeters == null })
         assertEquals(result.map { it.id }.sorted(), result.map { it.id })
+    }
+
+    @Test
+    fun `owned course list includes bookmark and view counts with complete owner totals`() {
+        val ids = jdbc.queryForList("SELECT id FROM pg_temp.courses ORDER BY id", Long::class.java)
+        jdbc.update("UPDATE pg_temp.courses SET owner_id = 7, view_count = CASE id WHEN ? THEN 5 ELSE 2 END WHERE id IN (?, ?)", ids[0], ids[0], ids[2])
+        jdbc.update("UPDATE pg_temp.courses SET owner_id = 7, view_count = 3 WHERE id = ?", ids[1])
+        jdbc.update("INSERT INTO pg_temp.course_bookmarks(user_id, course_id) VALUES (1, ?), (2, ?), (1, ?)", ids[0], ids[0], ids[2])
+
+        val ownedRepository = OwnedCourseRepository(jdbc, JsonMapper.builder().build())
+        val courses = ownedRepository.findAll(7, 0, 6, "recent")
+        assertEquals(listOf(ids[2], ids[1], ids[0]), courses.map { it.id })
+        assertEquals(listOf(1L, 0L, 2L), courses.map { it.bookmarkCount })
+        assertEquals(listOf(2L, 0L, 5L), courses.map { it.viewCount })
+        assertEquals(listOf(CourseType.LOOP, CourseType.LOOP, CourseType.LOOP), courses.map { it.courseType })
+        assertTrue(courses.all { it.createdAt.year > 2000 })
+        assertEquals(MyCourseStats(3, 14400, 7, 3, 2, 1), ownedRepository.stats(7))
+        assertEquals(MyCourseStats(0, 0, 0, 0, 0, 0), ownedRepository.stats(99))
+        assertEquals(listOf(ids[0], ids[2], ids[1]), ownedRepository.findAll(7, 0, 6, "views").map { it.id })
+        assertEquals(listOf(ids[0], ids[2], ids[1]), ownedRepository.findAll(7, 0, 6, "bookmarks").map { it.id })
+        assertEquals(listOf(ids[2], ids[0]), ownedRepository.findAll(7, 0, 6, "recent").filter { it.published }.map { it.id })
+    }
+
+    @Test
+    fun `view counts increment only for public courses`() {
+        val publicId = repository.findPublished(1, 0).single().id
+        val privateId = jdbc.queryForObject("SELECT id FROM pg_temp.courses WHERE name = ?", Long::class.java, "비공개 코스")!!
+        assertTrue(repository.recordPublishedView(publicId))
+        assertFalse(repository.recordPublishedView(privateId))
+        assertEquals(1L, jdbc.queryForObject("SELECT view_count FROM pg_temp.courses WHERE id = ?", Long::class.java, publicId))
+        assertEquals(0L, jdbc.queryForObject("SELECT view_count FROM pg_temp.courses WHERE id = ?", Long::class.java, privateId))
     }
 }

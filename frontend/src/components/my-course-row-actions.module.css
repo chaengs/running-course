@@ -1,0 +1,135 @@
+.actionCell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 188px;
+}
+
+.actionButtons {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #657084;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.actionButton:hover:not(:disabled) {
+  color: var(--primary);
+  background: #eef3ff;
+}
+
+.actionButton:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.actionButton:disabled {
+  color: #798397;
+  background: #f3f5f8;
+  cursor: not-allowed;
+}
+
+.deleteButton:hover:not(:disabled) {
+  color: #a32736;
+  background: #fff0f1;
+}
+
+.downloadButton {
+  color: #798397;
+}
+
+.actionStatus {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 4px);
+  right: 8px;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: white;
+  box-shadow: 0 4px 16px #10214418;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #101b3070;
+}
+
+.confirmDialog {
+  width: min(100%, 440px);
+  padding: 28px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 20px 60px #101b3030;
+}
+
+.confirmDialog h3 {
+  margin: 0;
+  font-size: 1.375rem;
+}
+
+.confirmDialog p {
+  margin: 16px 0 24px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.confirmDialog > div {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.confirmDialog button {
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cancelButton {
+  color: var(--ink);
+  background: #eff2f7;
+}
+
+.confirmDeleteButton {
+  color: white;
+  background: #b42335;
+}
+
+.confirmDialog button:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}

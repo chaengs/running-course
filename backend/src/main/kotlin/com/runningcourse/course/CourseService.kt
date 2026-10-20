@@ -25,4 +25,9 @@ class CourseService(private val courseRepository: CourseRepository) {
     @Transactional(readOnly = true)
     fun detail(id: Long): CourseDetail = courseRepository.findPublishedById(id)
         ?: throw CourseNotFoundException()
+
+    @Transactional
+    fun recordView(id: Long) {
+        if (!courseRepository.recordPublishedView(id)) throw CourseNotFoundException()
+    }
 }

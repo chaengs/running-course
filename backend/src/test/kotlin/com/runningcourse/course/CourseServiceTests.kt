@@ -54,6 +54,19 @@ class CourseServiceTests {
     }
 
     @Test
+    fun `record view delegates to public-only repository update`() {
+        `when`(repository.recordPublishedView(1)).thenReturn(true)
+        service.recordView(1)
+        verify(repository).recordPublishedView(1)
+    }
+
+    @Test
+    fun `record view hides private and nonexistent courses`() {
+        `when`(repository.recordPublishedView(99)).thenReturn(false)
+        assertThrows(CourseNotFoundException::class.java) { service.recordView(99) }
+    }
+
+    @Test
     fun `count and paginated list use the same search conditions`() {
         val search = CourseSearch(37.528, 126.934, 2000, 5000)
         `when`(repository.countPublished(search)).thenReturn(3)

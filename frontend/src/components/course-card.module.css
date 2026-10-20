@@ -101,6 +101,23 @@
   font-weight: 750;
 }
 
+.courseRegion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 14px;
+  color: #52647f;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.courseRegion span {
+  color: var(--primary);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 .cardMetrics {
   display: grid;
   grid-template-columns: repeat(3,minmax(0,1fr));

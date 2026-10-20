@@ -14,6 +14,9 @@ export function CourseCard({ course, detailSearch = "" }: {
     const isSample = course.name.startsWith("[개발용]");
     const name = courseDisplayName(course.name);
     const distance = formatDistance(course.distanceMeters);
+    const regionLabel = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
+        .filter((part): part is string => Boolean(part))
+        .join(" · ");
     return (<li className={cardStyles.courseCard}>
       <article aria-labelledby={`course-${course.id}`}>
         <div className={uiStyles.cardTop}>
@@ -21,6 +24,7 @@ export function CourseCard({ course, detailSearch = "" }: {
           {isSample && <span className={uiStyles.sampleBadge}>개발용 샘플</span>}
         </div>
         <h3 id={`course-${course.id}`}><Link className={cardStyles.courseDetailLink} prefetch={false} href={`/courses/${course.id}${detailSearch}`}>{name}<span className={uiStyles.srOnly}> 상세 보기</span></Link></h3>
+        {regionLabel && <p className={cardStyles.courseRegion}><span aria-hidden="true">⌖</span>{regionLabel}</p>}
         <RoutePreview courseId={course.id} name={courseDisplayName(course.name)}/><div className={cardStyles.cardMetrics}><div><span>총 거리</span><strong>{distance} <small>km</small></strong></div><div><span>코스 유형</span><strong>{courseTypeLabels[course.courseType]}</strong></div><div><span>출발 · 도착</span><strong>동일 지점</strong></div></div>
         {course.distanceToStartMeters !== null && <p className={cardStyles.distanceToStart}><span aria-hidden="true">⌖</span> 출발점까지 {formatDistanceToStart(course.distanceToStartMeters)}</p>}
         <div className={cardStyles.cardFooter}>

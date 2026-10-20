@@ -96,7 +96,9 @@
   border-radius: 50%;
   background: var(--primary);
   color: white;
-  font: 700 1rem Arial;
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
   box-shadow: 0 2px 7px #0005;
 }
 

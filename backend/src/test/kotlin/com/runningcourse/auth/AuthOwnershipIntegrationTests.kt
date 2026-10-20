@@ -35,8 +35,9 @@ class AuthOwnershipIntegrationTests {
         jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
         val mapper = JsonMapper.builder().build()
         auth = AuthService(AuthRepository(jdbc))
-        owned = OwnedCourseService(OwnedCourseRepository(jdbc, mapper))
-        create = CourseCreateService(CourseCreateRepository(jdbc, mapper))
+        val noGeocoding = CourseRegionResolver { _, _ -> null }
+        owned = OwnedCourseService(OwnedCourseRepository(jdbc, mapper), noGeocoding)
+        create = CourseCreateService(CourseCreateRepository(jdbc, mapper), noGeocoding)
         publicCourses = CourseRepository(jdbc, mapper)
     }
     @AfterEach fun cleanup() { if (::source.isInitialized) source.destroy() }
@@ -90,20 +91,34 @@ class AuthOwnershipIntegrationTests {
         assertFalse(owned.detail(created.id, a).published)
         assertNull(publicCourses.findPublishedById(created.id))
         assertEquals(0, publicCourses.countPublished())
-        assertTrue(owned.list(b).isEmpty())
+        assertTrue(owned.list(b, 0, "all", "recent").content.isEmpty())
         status(404) { owned.detail(created.id, b) }
         status(404) { owned.update(created.id, b, request.copy(name = "침입")) }
         status(404) { owned.visibility(created.id, b, true) }
         status(404) { owned.delete(created.id, b) }
+        owned.recordView(created.id, a)
+        assertEquals(0L, owned.list(a, 0, "all", "recent").content.single().viewCount)
+        assertEquals(0L, owned.list(a, 0, "all", "recent").stats.totalViews)
+        assertEquals(0L, jdbc.queryForObject("SELECT view_count FROM pg_temp.courses WHERE id = ?", Long::class.java, created.id))
+        owned.recordView(created.id, b)
+        assertEquals(0L, owned.list(a, 0, "all", "recent").content.single().viewCount)
+        assertThrows(CourseNotFoundException::class.java) { CourseService(publicCourses).recordView(created.id) }
         owned.update(created.id, a, request.copy(name = "수정된 코스"))
         assertEquals("수정된 코스", owned.detail(created.id, a).name)
         owned.visibility(created.id, a, true)
         assertNotNull(publicCourses.findPublishedById(created.id))
+        CourseService(publicCourses).recordView(created.id)
+        assertEquals(1L, owned.list(a, 0, "all", "recent").content.single().viewCount)
+        assertEquals(1L, owned.list(a, 0, "all", "recent").stats.totalViews)
         assertEquals(1, publicCourses.countPublished())
         owned.visibility(created.id, a, false)
         assertNull(publicCourses.findPublishedById(created.id))
+        assertThrows(CourseNotFoundException::class.java) { CourseService(publicCourses).recordView(created.id) }
+        owned.recordView(created.id, a)
+        assertEquals(0L, owned.list(a, 0, "all", "recent").content.single().viewCount)
+        assertEquals(0L, owned.list(a, 0, "all", "recent").stats.totalViews)
         owned.delete(created.id, a)
-        assertTrue(owned.list(a).isEmpty())
+        assertTrue(owned.list(a, 0, "all", "recent").content.isEmpty())
         status(404) { owned.detail(created.id, a) }
     }
 

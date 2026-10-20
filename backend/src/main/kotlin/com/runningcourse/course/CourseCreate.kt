@@ -33,29 +33,36 @@ data class CreatedCourse(val id: Long, val distanceMeters: Int)
 
 @Repository
 class CourseCreateRepository(private val jdbc: JdbcTemplate, private val mapper: JsonMapper) {
-    fun insert(request: CreateCourseRequest, ownerId: Long): CreatedCourse? = jdbc.query(
+    fun insert(request: CreateCourseRequest, ownerId: Long, region: CourseRegion? = null): CreatedCourse? = jdbc.query(
         """
         WITH route AS (
           SELECT ST_SetSRID(ST_GeomFromGeoJSON(?), 4326) AS geom
         ), measured AS (
           SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route
         )
-        INSERT INTO courses (name, description, course_type, route_geojson, start_location, distance_meters, published, owner_id)
-        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?
+        INSERT INTO courses (name, description, course_type, route_geojson, start_location, distance_meters, published, owner_id,
+                             region_sido, region_sigungu, region_eup_myeon_dong, region_source, region_resolved_at)
+        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?, ?, ?, ?, ?, ?
         FROM measured WHERE distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(),
         { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
-        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name, request.published ?: false, ownerId,
+        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name,
+        request.published ?: false, ownerId, region?.sido, region?.sigungu, region?.eupMyeonDong, region?.source, region?.resolvedAt,
     ).singleOrNull()
 }
 
 @Service
-class CourseCreateService(private val repository: CourseCreateRepository) {
+class CourseCreateService(
+    private val repository: CourseCreateRepository,
+    private val regionResolver: CourseRegionResolver,
+) {
     @Transactional
     fun create(request: CreateCourseRequest, ownerId: Long): CreatedCourse {
         request.validate()
-        return repository.insert(request, ownerId) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "코스 거리는 1m~100km여야 합니다.")
+        val start = request.routeGeojson.coordinates.first()
+        val region = regionResolver.resolve(latitude = start[1], longitude = start[0])
+        return repository.insert(request, ownerId, region) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "코스 거리는 1m~100km여야 합니다.")
     }
 }
 

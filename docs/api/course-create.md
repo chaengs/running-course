@@ -19,8 +19,11 @@ Location은 `/api/courses/123`입니다. 프론트엔드는 같은 출처의 Nex
 통신이 끊긴 경우 저장이 완료됐을 수도 있으므로 목록을 확인한 후 재시도하세요.
 DB 변경은 트랜잭션으로 수행합니다. 현재 경로 자체의 보행 가능 여부는 검증하지 않습니다.
 
-`GET /api/my/courses`는 내 코스 최신 100개를 반환합니다.
+`GET /api/my/courses?page=0&visibility=all&sort=recent`는 `{ content, stats, page, totalPages }`를 반환합니다. 코스 목록은 한 페이지에 최대 6개이며 `visibility`는 `all`/`published`/`private`, `sort`는 `recent`/`views`/`bookmarks`입니다. `content` 각 코스는 `courseType`, `createdAt`, `bookmarkCount`, `viewCount`를 포함하고, `stats`는 전체 코스 수·공개/비공개 수·전체 거리·공개 코스 누적 조회수·전체 북마크 수를 집계합니다.
 `GET /api/my/courses/{id}`는 작성자만 상세를 조회합니다.
+상세 화면을 연 횟수는 공개 코스의 `POST /api/courses/{id}/view` 또는 작성자의 `POST /api/my/courses/{id}/view`에서 기록합니다. 공개 상태인 코스의 조회만 합계에 포함하며, 비공개 코스를 작성자가 열어도 조회수를 올리지 않습니다. 공개 코스를 비공개로 전환하면 기존 조회수는 코스 데이터에 보존되지만 공개 반응 지표와 목록 표시에서는 제외되고, 다시 공개하면 누적 조회수가 표시됩니다. 미리보기 지도와 목록 조회는 조회수에 포함하지 않습니다.
+코스 생성 또는 경로 수정 시 대한민국 출발 좌표를 Nominatim 역지오코딩으로 조회해 시·도, 시·군·구, 읍·면·동과 출처·조회 시각을 저장합니다. 지역 정보가 반환되지 않거나 외부 요청에 실패해도 코스 저장은 계속되며 지역 필드는 비어 있을 수 있습니다. 기존 코스는 수정할 때 지역 정보가 채워집니다. Nominatim은 좌표를 포함하는 가장 가까운 검색 가능 OSM 객체를 기준으로 주소를 추정하므로 실제 행정 경계와 다를 수 있습니다. [Nominatim 역지오코딩 방식](https://nominatim.org/release-docs/latest/api/Reverse/)
+공개 Nominatim 연결 주소와 식별 User-Agent는 `NOMINATIM_REVERSE_URL`, `NOMINATIM_USER_AGENT` 환경 변수로 바꿀 수 있습니다. 클라이언트는 좌표 결과를 메모리 캐시하고 단일 백엔드 인스턴스에서 초당 1회 이하로 요청을 제한합니다. 여러 인스턴스로 확장할 때는 공용 캐시와 제한기를 두어야 합니다. OSM 기여자 출처 표기를 유지하고 공개 서버의 [사용 정책](https://operations.osmfoundation.org/policies/nominatim/)을 따라야 합니다.
 `PUT /api/my/courses/{id}`는 같은 요청 형식으로 수정하고 최종 거리를 재계산합니다. `published`를 보내면 코스 내용과 공개 범위를 같은 SQL·트랜잭션으로 저장합니다. 생략하거나 null이면 기존 공개 여부를 유지합니다. 생성 시 생략/null은 비공개입니다.
 `PATCH /api/my/courses/{id}/visibility`는 `{ "published": true }` 또는 false로 전환합니다.
 `DELETE /api/my/courses/{id}`는 작성자의 코스를 영구 삭제합니다.

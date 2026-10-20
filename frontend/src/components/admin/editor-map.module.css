@@ -49,7 +49,9 @@
   background: #1450ff;
   border: 2px solid white;
   color: white;
-  font: 700 1rem Arial;
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
   box-shadow: 0 1px 5px #0005;
 }
 

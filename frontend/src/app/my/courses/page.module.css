@@ -1,96 +1,686 @@
-.myCoursePanel {
-  padding: 22px 0 0;
+.pageHeading {
+  align-items: center;
+  padding-bottom: 24px;
+}
+
+.pageHeading h1 {
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+}
+
+.pageHeading > div {
+  max-width: 800px;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin: 4px 0 34px;
+}
+
+.metricCard {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e7ebf3;
+  border-radius: 14px;
   background: white;
-  border-radius: 10px;
+  box-shadow: 0 2px 8px #10214406;
+}
+
+.metricTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.metricTop p {
+  margin: 0;
+  color: #71809a;
+  letter-spacing: .04em;
+}
+
+.metricIcon {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--primary);
+  background: #edf2ff;
+}
+
+.metricCard:nth-child(2) .metricIcon {
+  color: #128252;
+  background: #e9f8f0;
+}
+
+.metricCard:nth-child(3) .metricIcon {
+  color: #b44765;
+  background: #fff0f3;
+}
+
+.metricCard:nth-child(4) .metricIcon {
+  color: #7755c7;
+  background: #f1edff;
+}
+
+.metricValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 18px 0 4px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.metricValue strong {
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 750;
+  letter-spacing: -.05em;
+  overflow-wrap: anywhere;
+}
+
+.metricValue span {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.metricDescription {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.courseCollection {
+  padding: 24px 0 20px;
+  border: 1px solid #e7ebf3;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 2px 8px #10214406;
   overflow: hidden;
 }
 
-.myCoursePanel > div:first-child {
+.collectionToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
   padding-inline: 24px;
 }
 
-.myCoursePanel h2 {
+.collectionToolbar > div > p {
+  margin-bottom: 4px;
+}
+
+.collectionToolbar h2 {
   font-size: 1.5rem;
 }
 
+.sortForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.sortForm label {
+  color: var(--muted);
+}
+
+.sortForm select,
+.sortForm button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: white;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.sortForm button {
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  padding: 0 24px 16px;
+  border-bottom: 1px solid #edf0f6;
+}
+
+.filterTabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterTabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  color: #59677e;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.filterTabs a:hover {
+  background: #f3f5fa;
+}
+
+.filterTabs .activeFilter {
+  color: var(--primary);
+  background: #edf2ff;
+}
+
+.filterTabs a span {
+  color: inherit;
+}
+
+.resultCount {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
 .courseTableScroll {
-  overflow-x: auto;
+  width: 100%;
+  overflow: visible;
 }
 
 .courseTable {
   width: 100%;
+  min-width: 1160px;
   border-collapse: collapse;
   text-align: left;
-  white-space: nowrap;
 }
 
 .courseTable th {
-  background: #eef3ff;
-  color: #74809b;
+  padding: 15px 18px;
+  color: #66748d;
+  background: #f7f8fc;
   font-size: 1rem;
-  font-weight: 600;
-  padding: 15px 24px;
+  font-weight: 650;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.courseTable th:first-child,
+.courseTable td:first-child {
+  padding-left: 24px;
+}
+
+.courseTable th:last-child,
+.courseTable td:last-child {
+  padding-right: 20px;
 }
 
 .courseTable td {
-  padding: 22px 24px;
-  border-bottom: 1px solid #f0f2f8;
+  padding: 16px 18px;
+  border-bottom: 1px solid #eff1f6;
+  color: #657084;
   font-size: 1rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.courseTable td:first-child {
-  width: 58%;
-  font-weight: 700;
+.courseTable tbody tr:last-child td {
+  border-bottom: 0;
 }
 
-.courseTable td:first-child a {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  display: flex;
-  gap: 14px;
-  align-items: center;
+.courseTable tbody tr:hover td {
+  background: #fbfcff;
 }
 
-.courseTable tr:hover td {
-  background: #f8faff;
+.courseNameCell {
+  min-width: 330px;
 }
 
-.tableRouteIcon {
-  font-size: 1.7rem;
+.courseNameCell > * {
+  vertical-align: middle;
+}
+
+.routeThumbnail {
+  display: inline-grid;
+  width: 56px;
+  height: 56px;
+  margin-right: 14px;
+  place-items: center;
+  border-radius: 12px;
   color: var(--primary);
+  background: #edf2ff;
+  vertical-align: middle;
+}
+
+.routeThumbnail svg {
+  width: 42px;
+  height: 42px;
+}
+
+.routeThumbnail path {
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.routeThumbnail circle:first-of-type {
+  fill: var(--accent);
+  stroke: white;
+  stroke-width: 1.5;
+}
+
+.routeThumbnail circle:last-of-type {
+  fill: var(--primary);
+  stroke: white;
+  stroke-width: 1.5;
+}
+
+.courseNameText {
+  display: inline-flex;
+  max-width: 340px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+.courseNameText a {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.courseNameText a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.courseRegion {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.courseRegion svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  color: var(--primary);
+}
+
+.courseRegion > span {
+  overflow-wrap: anywhere;
+}
+
+.courseNameText > span {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .statusBadge {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 22px;
   font-size: 1rem;
-  padding: 5px 12px;
-  border-radius: 20px;
+  font-weight: 650;
 }
 
-.statusBadge.published {
-  background: #00e575;
-  color: #00582c;
+.dateCell {
+  color: #657084;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.statusBadge.private {
-  background: #edf1f9;
-  color: #6c7891;
+.courseTypeBadge {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 22px;
+  color: #385585;
+  background: #edf2fa;
+  font-size: 1rem;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
-.tableEdit {
-  color: var(--primary);
+.published {
+  color: #087044;
+  background: #e6f7ee;
+}
+
+.private {
+  color: #5e687b;
+  background: #eff1f5;
+}
+
+.distanceCell strong {
+  color: var(--ink);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.distanceCell > span {
+  margin-left: 4px;
+  font-size: 1rem;
+}
+
+.metricCell {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 600px) {
-  .courseTable th {
-    padding: 14px;
+.metricCell > span {
+  color: #8290a8;
+  font-size: 1.125rem;
+}
+
+.listFootnote {
+  margin: 0;
+  padding: 16px 24px 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 24px 4px;
+  border-top: 1px solid #edf0f6;
+}
+
+.pagination a,
+.pagination > span {
+  display: inline-flex;
+  min-width: 104px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid #dfe4ed;
+  border-radius: 9px;
+  color: var(--ink);
+  background: white;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.pagination a:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: #f5f7ff;
+}
+
+.pagination a:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.pagination > span[aria-disabled="true"] {
+  color: #798397;
+  background: #f3f5f8;
+}
+
+.pagination p {
+  min-width: 64px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.pagination strong {
+  color: var(--ink);
+}
+
+.noResults {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 40px 24px;
+}
+
+.noResults p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.noResults a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.loadingState {
+  padding-block: 48px;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 940px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .metricCard {
+    padding: 18px;
+  }
+  .courseCollection {
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 680px) {
+  .pageHeading {
+    align-items: flex-start;
+  }
+  .metricsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .metricCard {
+    padding: 18px;
+  }
+  .metricValue {
+    margin-top: 12px;
+  }
+  .metricValue strong {
+    font-size: 2rem;
+  }
+  .collectionToolbar {
+    align-items: flex-start;
+    padding-inline: 18px;
+  }
+  .sortForm {
+    flex-wrap: wrap;
+  }
+  .sortForm label {
+    width: 100%;
+  }
+  .sortForm select {
+    flex: 1 1 auto;
+  }
+  .tableToolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-inline: 18px;
+  }
+  .filterTabs {
+    width: 100%;
+  }
+  .filterTabs a {
+    padding-inline: 10px;
+  }
+  .courseTableScroll {
+    padding-inline: 12px;
+  }
+  .courseTable,
+  .courseTable tbody {
+    display: block;
+    min-width: 0;
+  }
+  .courseTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+  .courseTable tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eff1f6;
+  }
+  .courseTable tbody tr:last-child {
+    border-bottom: 0;
   }
   .courseTable td {
-    padding: 14px;
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    padding: 10px 6px;
+    border: 0;
+    white-space: normal;
   }
-  .courseTable {
-    min-width: 560px;
+  .courseTable td::before {
+    content: "";
+    flex: 0 1 auto;
+    color: #66748d;
+    font-weight: 650;
+    white-space: nowrap;
   }
+  .courseTable td:first-child {
+    grid-column: 1 / -1;
+    padding-left: 6px;
+  }
+  .courseTable td:nth-child(2)::before { content: "생성일: "; }
+  .courseTable td:nth-child(3)::before { content: "코스 유형: "; }
+  .courseTable td:nth-child(4)::before { content: "총 거리: "; }
+  .courseTable td:nth-child(5)::before { content: "러너 북마크: "; }
+  .courseTable td:nth-child(6)::before { content: "총 조회수: "; }
+  .courseTable td:nth-child(7)::before { content: "공개 상태: "; }
+  .courseTable td:nth-child(2),
+  .courseTable td:nth-child(3),
+  .courseTable td:nth-child(4),
+  .courseTable td:nth-child(5),
+  .courseTable td:nth-child(6),
+  .courseTable td:nth-child(7) {
+    gap: 6px;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+  .courseTable td:last-child {
+    grid-column: 1 / -1;
+    padding-left: 6px;
+  }
+  .courseNameCell {
+    min-width: 0;
+  }
+  .courseTable th:first-child,
+  .courseTable td:first-child {
+    padding-left: 6px;
+  }
+  .listFootnote {
+    padding-inline: 18px;
+  }
+  .pagination {
+    gap: 10px;
+    padding-inline: 12px;
+  }
+  .pagination a,
+  .pagination > span {
+    min-width: 92px;
+  }
+}
+
+@media (min-width: 681px) and (max-width: 1180px) {
+  .courseTableScroll { padding-inline: 12px; }
+  .courseTable,
+  .courseTable tbody { display: block; min-width: 0; }
+  .courseTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+  .courseTable tbody tr {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eff1f6;
+  }
+  .courseTable td {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border: 0;
+    white-space: normal;
+  }
+  .courseTable td::before {
+    color: #66748d;
+    font-size: 1rem;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  .courseTable td:first-child { grid-column: 1 / -1; }
+  .courseTable td:nth-child(2)::before { content: "생성일:"; }
+  .courseTable td:nth-child(3)::before { content: "코스 유형:"; }
+  .courseTable td:nth-child(4)::before { content: "총 거리:"; }
+  .courseTable td:nth-child(5)::before { content: "러너 북마크:"; }
+  .courseTable td:nth-child(6)::before { content: "총 조회수:"; }
+  .courseTable td:nth-child(7)::before { content: "공개 상태:"; }
+  .courseTable td:last-child { grid-column: 1 / -1; }
 }

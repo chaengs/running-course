@@ -12,4 +12,5 @@ data class CourseDetail(
     val routeGeojson: JsonNode,
     val ownerId: Long? = null,
     val published: Boolean = true,
+    val region: CourseRegion? = null,
 )

@@ -2,8 +2,11 @@ package com.runningcourse.course
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -31,4 +34,8 @@ class CourseController(private val courseService: CourseService) {
 
     @GetMapping("/{id}")
     fun detail(@PathVariable @Min(1) id: Long): CourseDetail = courseService.detail(id)
+
+    @PostMapping("/{id}/view")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun recordView(@PathVariable @Min(1) id: Long) = courseService.recordView(id)
 }

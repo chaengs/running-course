@@ -4,6 +4,7 @@ import detailStyles from "@/components/course-detail.module.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { Suspense } from "react";
 import { CourseDetailSkeleton } from "@/components/course-detail-skeleton";
 import { CourseRouteMap } from "@/components/course-route-map";
@@ -13,8 +14,8 @@ import {
   formatDistance,
 } from "@/lib/course-format";
 import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
-import { getCourse } from "@/lib/courses";
-import { getCurrentUser } from "@/lib/session";
+import { getCourse, recordCourseView } from "@/lib/courses";
+import { getCurrentUser, sessionHeaders } from "@/lib/session";
 import {
   CourseOwnerActions,
   ShareCourseButton,
@@ -33,11 +34,15 @@ async function CourseDetailContent({ params, searchParams }: Props) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807"))
     notFound();
-  const [course, user] = await Promise.all([getCourse(id), getCurrentUser()]);
+  const [course, user, authHeaders] = await Promise.all([getCourse(id), getCurrentUser(), sessionHeaders()]);
   if (!course) notFound();
+  after(() => recordCourseView(course.id, course.ownerId === user?.id, authHeaders));
   const listQuery = parseCourseListQuery(query) ?? { page: 0, size: 6 };
   const name = courseDisplayName(course.name);
   const isSample = course.name.startsWith("[개발용]");
+  const regionLabel = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
   return (
     <main id="main-content" className={layoutStyles.detailPage}>
       <Link className={uiStyles.backLink} href={courseListHref(listQuery)}>
@@ -110,6 +115,10 @@ async function CourseDetailContent({ params, searchParams }: Props) {
             <div>
               <dt>코스 유형</dt>
               <dd>{courseTypeLabels[course.courseType]}</dd>
+            </div>
+            <div>
+              <dt>출발 지역</dt>
+              <dd>{regionLabel || "지역 정보 없음"}</dd>
             </div>
           </dl>
           {course.ownerId === user?.id && (

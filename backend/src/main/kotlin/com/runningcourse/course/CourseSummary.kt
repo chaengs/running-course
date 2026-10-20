@@ -11,6 +11,7 @@ data class CourseSummary(
     val courseType: CourseType,
     val startLocation: StartLocation,
     val distanceToStartMeters: Double? = null,
+    val region: CourseRegion? = null,
 )
 
 data class CourseListResponse(

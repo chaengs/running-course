@@ -10,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import tools.jackson.databind.json.JsonMapper
 
@@ -50,6 +51,13 @@ class CourseDetailControllerTests {
             .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
             .andExpect(jsonPath("$.status").value(404))
             .andExpect(jsonPath("$.detail").value("코스를 찾을 수 없습니다."))
+    }
+
+    @Test
+    fun `record detail view returns no content`() {
+        mvc.perform(post("/api/courses/1/view"))
+            .andExpect(status().isNoContent)
+        org.mockito.Mockito.verify(service).recordView(1)
     }
 
     @ParameterizedTest
