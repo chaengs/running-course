@@ -1,13 +1,12 @@
 .searchPanel {
-  margin-bottom: 44px;
-  background: var(--paper);
-  min-width: 0;
-  overflow-wrap: anywhere;
   margin: 0 0 40px;
-  border: 16px solid #edf2ff;
-  border-top-width: 0;
-  border-radius: 0 0 12px 12px;
+  min-width: 0;
   padding: 24px;
+  overflow-wrap: anywhere;
+  border: 1px solid #dce3f0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px -16px rgb(18 46 91 / 25%);
 }
 
 .searchHeading {
@@ -25,7 +24,7 @@
 }
 
 .searchReset {
-  min-height: 36px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   color: #1450ff;
@@ -37,121 +36,169 @@
 .courseSearchForm {
   display: grid;
   align-items: end;
-  grid-template-columns: minmax(220px,1.3fr) 1fr 1fr auto;
-  gap: 18px;
+  grid-template-columns: minmax(240px, 1.3fr) minmax(150px, 0.65fr) minmax(300px, 1.8fr) auto;
+  gap: 14px;
 }
 
-.locationField {
+.locationField,
+.distanceField {
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
-.locationField legend {
-  display: block;
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 6px;
-}
-
-.searchField > span {
-  display: block;
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 6px;
-}
-
-.locationActions {
+.locationControl {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 4px 6px 4px 14px;
+  border: 1px solid #dce3f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.controlIcon {
+  display: inline-flex;
+  flex: 0 0 24px;
+  color: #1450ff;
+}
+
+.controlIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.locationValue {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .locationButton {
   display: inline-flex;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 0 14px;
-  border: 1px solid #d6e1ff;
-  color: var(--primary);
-  font-weight: 700;
-  font-size: 1rem;
+  padding: 0 12px;
+  border: 0;
   border-radius: 6px;
   background: #eff3ff;
-  border-color: #e2e9fb;
-  min-height: 48px;
-}
-
-.locationClear {
-  min-height: 44px;
-  border-radius: 7px;
-  padding: 0 6px;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1rem;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.searchSubmit {
-  padding: 0 20px;
-  border: 1px solid var(--primary);
-  background: var(--primary);
-  color: white;
-  border-radius: 6px;
-  align-self: center;
+  color: var(--primary);
   font-size: 1rem;
   font-weight: 700;
-  min-width: 110px;
-  min-height: 48px;
+  white-space: nowrap;
 }
 
 .locationButton:disabled {
-  opacity: .65;
-}
-
-.locationStatus {
-  margin: 7px 0 0;
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 1rem;
-  min-height: 20px;
-  margin-top: 7px;
+  opacity: 0.65;
 }
 
 .searchField {
   min-width: 0;
 }
 
+.fieldLabel {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .searchField select {
   width: 100%;
-  padding: 0 36px 0 12px;
+  min-height: 52px;
+  padding: 0 34px 0 12px;
   border: 1px solid #dce3f0;
-  background: white;
+  border-radius: 8px;
+  background: #fff;
   color: var(--ink);
   font-size: 1rem;
-  border-radius: 6px;
-  min-height: 48px;
 }
 
 .searchField select:disabled {
   background: #f1f2ee;
-  color: #8a9187;
+  color: #777f8e;
 }
 
-.searchField small {
-  display: block;
+.distanceField legend {
+  margin-bottom: 6px;
   color: var(--muted);
-  line-height: 1.7;
   font-size: 1rem;
-  min-height: 20px;
-  margin-top: 7px;
+  font-weight: 700;
+}
+
+.distanceChips {
+  display: grid;
+  min-height: 52px;
+  grid-template-columns: repeat(5, minmax(max-content, 1fr));
+  align-items: stretch;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 5px;
+  border: 1px solid #dce3f0;
+  border-radius: 8px;
+  background: #fff;
+  scrollbar-width: thin;
+}
+
+.distanceChip {
+  position: relative;
+  display: flex;
+  min-height: 40px;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.distanceChip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.distanceChip:has(input:checked) {
+  background: var(--primary);
+  color: #fff;
+}
+
+.distanceChip:has(input:focus-visible) {
+  outline: 2px solid #1450ff;
+  outline-offset: 2px;
+}
+
+.searchField select:focus:not(:focus-visible),
+.locationButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.searchSubmit {
+  min-width: 116px;
+  min-height: 52px;
+  align-self: end;
+  padding: 0 20px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .searchSubmit:hover {
@@ -160,42 +207,50 @@
 
 @media (max-width: 1160px) {
   .courseSearchForm {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.7fr) minmax(300px, 1.4fr);
   }
+
   .searchSubmit {
-    align-self: end;
-    margin-bottom: 27px;
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
-@media (max-width: 940px) {
+@media (max-width: 760px) {
+  .courseSearchForm {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .locationField,
+  .distanceField,
   .searchSubmit {
-    width: 100%;
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 600px) {
   .searchPanel {
     margin-bottom: 36px;
-    border-width: 0 10px 10px;
     padding: 18px 14px;
   }
+
   .searchHeading {
     align-items: center;
   }
-  .locationButton {
-    flex: none;
-    width: 100%;
-  }
+
   .courseSearchForm {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .searchHeading h2 {
-    font-size: 1.5rem;
-  }
+
+  .locationField,
+  .distanceField,
   .searchSubmit {
-    margin: 0;
+    grid-column: auto;
+  }
+
+  .searchSubmit {
     width: 100%;
   }
 }

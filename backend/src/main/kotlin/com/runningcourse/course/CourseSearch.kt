@@ -7,6 +7,7 @@ data class CourseSearch(
     val longitude: Double? = null,
     val radiusMeters: Int? = null,
     val targetDistanceMeters: Int? = null,
+    val minimumDistanceMeters: Int? = null,
 ) {
     init {
         if ((latitude == null) != (longitude == null)) {
@@ -26,6 +27,12 @@ data class CourseSearch(
         }
         if (targetDistanceMeters != null && targetDistanceMeters !in 1..100_000) {
             throw InvalidCourseSearchException("목표 거리는 1~100000m 사이여야 합니다.")
+        }
+        if (minimumDistanceMeters != null && minimumDistanceMeters !in 1..100_000) {
+            throw InvalidCourseSearchException("최소 거리는 1~100000m 사이여야 합니다.")
+        }
+        if (targetDistanceMeters != null && minimumDistanceMeters != null) {
+            throw InvalidCourseSearchException("목표 거리와 최소 거리는 함께 지정할 수 없습니다.")
         }
     }
 

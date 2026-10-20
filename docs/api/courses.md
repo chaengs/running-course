@@ -14,6 +14,7 @@
 | longitude | 없음 | -180~180의 유한한 숫자. latitude와 함께 입력 |
 | radiusMeters | 위치가 있으면 2000 | 1~50000인 정수(m). 위치 없이 단독 지정 불가 |
 | targetDistanceMeters | 없음 | 1~100000인 정수(m). 목표 길이의 ±10%로 검색 |
+| minimumDistanceMeters | 없음 | 1~100000인 정수(m). 해당 길이 이상 코스만 검색. `targetDistanceMeters`와 동시 지정 불가 |
 
 ```sh
 curl 'http://localhost:8080/api/courses?page=0&size=2'
@@ -26,7 +27,7 @@ curl 'http://localhost:8080/api/courses?page=0&size=2'
   "content": [
     {
       "id": 1,
-      "name": "[개발용] 여의도 3km 순환",
+      "name": "3km 러닝 코스",
       "distanceMeters": 2997,
       "courseType": "LOOP",
       "startLocation": { "latitude": 37.528, "longitude": 126.934 },
@@ -34,7 +35,7 @@ curl 'http://localhost:8080/api/courses?page=0&size=2'
     },
     {
       "id": 2,
-      "name": "[개발용] 여의도 5km 순환",
+      "name": "5km 러닝 코스",
       "distanceMeters": 4796,
       "courseType": "LOOP",
       "startLocation": { "latitude": 37.529, "longitude": 126.935 },
@@ -69,6 +70,9 @@ curl 'http://localhost:8080/api/courses?latitude=37.528&longitude=126.934'
 # 위치 없이 목표 길이만 필터링
 curl 'http://localhost:8080/api/courses?targetDistanceMeters=10000'
 
+# 10km를 초과하는 코스만 필터링
+curl 'http://localhost:8080/api/courses?minimumDistanceMeters=10001'
+
 # 같은 검색 조건으로 두 번째 페이지 조회
 curl 'http://localhost:8080/api/courses?latitude=37.528&longitude=126.934&targetDistanceMeters=5000&page=1&size=1'
 ```
@@ -78,6 +82,7 @@ curl 'http://localhost:8080/api/courses?latitude=37.528&longitude=126.934&target
 - 위치 검색 정렬은 출발점까지 거리 오름차순, 같은 거리이면 ID 오름차순입니다.
 - 목표 5,000m는 4,500~5,500m를 양끝 포함하여 조회합니다.
   DB 길이는 정수 m이므로 목표 5,001m는 4,501~5,501m를 조회합니다.
+- `minimumDistanceMeters=10001`은 10km 초과 코스를 조회합니다.
 - 반경과 목표 거리를 함께 지정하면 두 조건 모두 충족해야 합니다.
 - 목록과 전체 개수에 같은 필터를 적용하며 같은 트랜잭션의 스냅샷을 사용합니다.
 - 검색 조건 생략 시 기존 전체 공개 목록과 페이지 동작을 유지합니다.
@@ -112,15 +117,5 @@ RUN_DB_TESTS=true ./gradlew test --rerun-tasks
 
 DB 주소/계정은 백엔드와 동일한 `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`를 사용합니다.
 DB 테스트는 세션 전용 임시 테이블을 만들고 연결 종료 시 제거하므로 기존 코스 데이터를 변경하지 않습니다.
-샘플 코스 5개가 등록된 개발 DB의 기본 목록은 공개 코스 4개를 반환합니다.
-
-## 개발 샘플 기대 결과
-| 검색 | 결과 |
-|---|---|
-| 조건 없음 | 공개 코스 4개, 출발점까지 거리는 null |
-| 여의도 (37.528, 126.934), 반경 2km | 여의도 코스 3개 |
-| 위 조건 + 목표 5km | 약 4.8km·5.2km 코스 2개 |
-| 여의도 반경 100m + 목표 5km | 0개 |
-| 위치 없이 목표 10km | 상암 코스 1개 |
 
 프론트엔드는 현재 위치·검색 반경·목표 거리 조건을 URL에 저장해 이 API로 전달합니다.

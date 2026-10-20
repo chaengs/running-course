@@ -21,6 +21,15 @@ class CourseSearchTests {
     }
 
     @Test
+    fun `minimum distance filter supports greater than ten kilometer searches`() {
+        val search = CourseSearch(minimumDistanceMeters = 10001)
+        assertEquals(10001, search.minimumDistanceMeters)
+        assertThrows(InvalidCourseSearchException::class.java) {
+            CourseSearch(targetDistanceMeters = 10000, minimumDistanceMeters = 10001)
+        }
+    }
+
+    @Test
     fun `non finite coordinates are rejected`() {
         for (invalid in listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)) {
             assertThrows(InvalidCourseSearchException::class.java) { CourseSearch(invalid, 0.0) }

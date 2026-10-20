@@ -3,6 +3,7 @@ export type CourseSearchFilters = {
   longitude?: number;
   radiusMeters?: number;
   targetDistanceMeters?: number;
+  minimumDistanceMeters?: number;
 };
 
 export type CourseListQuery = CourseSearchFilters & {
@@ -14,7 +15,7 @@ type RawSearchParams = { [key: string]: string | string[] | undefined };
 
 export const PAGE_SIZES = [3, 6, 12] as const;
 export const RADIUS_OPTIONS = [1000, 2000, 5000, 10000] as const;
-export const TARGET_DISTANCE_OPTIONS = [3000, 5000, 10000, 15000] as const;
+export const TARGET_DISTANCE_OPTIONS = [3000, 5000, 10000] as const;
 
 function singleValue(value: string | string[] | undefined) {
   return typeof value === "string" ? value : undefined;
@@ -42,16 +43,18 @@ export function parseCourseListQuery(query: RawSearchParams): CourseListQuery | 
   const longitude = optionalCoordinate(singleValue(query.longitude), -180, 180);
   const radiusMeters = optionalInteger(singleValue(query.radiusMeters), 1, 50000);
   const targetDistanceMeters = optionalInteger(singleValue(query.targetDistanceMeters), 1, 100000);
+  const minimumDistanceMeters = optionalInteger(singleValue(query.minimumDistanceMeters), 1, 100000);
 
   if (
     page === null || page === undefined || size === null || size === undefined ||
     !PAGE_SIZES.includes(size as (typeof PAGE_SIZES)[number]) ||
-    latitude === null || longitude === null || radiusMeters === null || targetDistanceMeters === null ||
+    latitude === null || longitude === null || radiusMeters === null || targetDistanceMeters === null || minimumDistanceMeters === null ||
+    (targetDistanceMeters !== undefined && minimumDistanceMeters !== undefined) ||
     (latitude === undefined) !== (longitude === undefined) ||
     (radiusMeters !== undefined && latitude === undefined)
   ) return null;
 
-  return { page, size, latitude, longitude, radiusMeters, targetDistanceMeters };
+  return { page, size, latitude, longitude, radiusMeters, targetDistanceMeters, minimumDistanceMeters };
 }
 
 export function courseListHref(query: CourseListQuery, page = query.page) {
@@ -64,6 +67,7 @@ export function courseListHref(query: CourseListQuery, page = query.page) {
     if (query.radiusMeters !== undefined) params.set("radiusMeters", String(query.radiusMeters));
   }
   if (query.targetDistanceMeters !== undefined) params.set("targetDistanceMeters", String(query.targetDistanceMeters));
+  if (query.minimumDistanceMeters !== undefined) params.set("minimumDistanceMeters", String(query.minimumDistanceMeters));
   const search = params.toString();
   return search ? `/?${search}` : "/";
 }

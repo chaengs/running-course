@@ -152,6 +152,15 @@ class CourseRepositoryIntegrationTests {
     }
 
     @Test
+    fun `minimum distance filter returns courses over ten kilometers`() {
+        jdbc.update("DELETE FROM pg_temp.courses")
+        for (distance in listOf(9999, 10000, 10001, 12000)) insert("길이 $distance", true, distance)
+        val search = CourseSearch(minimumDistanceMeters = 10001)
+        assertEquals(listOf(10001, 12000), repository.findPublished(20, 0, search).map { it.distanceMeters })
+        assertEquals(2L, repository.countPublished(search))
+    }
+
+    @Test
     fun `combined filters share the count and honor explicitly selected radius`() {
         jdbc.update("DELETE FROM pg_temp.courses")
         insert("근처 5km", true, 4800)

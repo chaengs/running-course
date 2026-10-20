@@ -69,6 +69,10 @@ class CourseRepository(
             conditions += "distance_meters BETWEEN ? AND ?"
             args.addAll(listOf(requireNotNull(search.minDistanceMeters), requireNotNull(search.maxDistanceMeters)))
         }
+        if (search.minimumDistanceMeters != null) {
+            conditions += "distance_meters >= ?"
+            args += search.minimumDistanceMeters
+        }
         return FilterSql(conditions.joinToString(" AND "), args)
     }
 

@@ -43,6 +43,9 @@ export async function getCourses(page: number, size: number, filters: CourseSear
   if (filters.targetDistanceMeters !== undefined) {
     url.searchParams.set("targetDistanceMeters", String(filters.targetDistanceMeters));
   }
+  if (filters.minimumDistanceMeters !== undefined) {
+    url.searchParams.set("minimumDistanceMeters", String(filters.minimumDistanceMeters));
+  }
 
   const response = await fetch(url, {
     cache: "no-store",

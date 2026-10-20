@@ -36,6 +36,14 @@ class CourseSearchControllerTests {
         verify(service).list(0, 20, search)
     }
 
+    @Test
+    fun `minimum distance works without location`() {
+        val search = CourseSearch(minimumDistanceMeters = 10001)
+        `when`(service.list(0, 20, search)).thenReturn(CourseListResponse(emptyList(), 0, 20, 0, 0))
+        mvc.perform(get("/api/courses?minimumDistanceMeters=10001")).andExpect(status().isOk)
+        verify(service).list(0, 20, search)
+    }
+
     @ParameterizedTest
     @ValueSource(strings = [
         "latitude=37.5", "longitude=126.9", "radiusMeters=2000",
@@ -46,6 +54,7 @@ class CourseSearchControllerTests {
         "latitude=0&longitude=0&radiusMeters=50001", "latitude=0&longitude=0&radiusMeters=1.5",
         "targetDistanceMeters=0", "targetDistanceMeters=-1", "targetDistanceMeters=100001",
         "targetDistanceMeters=abc", "targetDistanceMeters=2147483648", "latitude=abc&longitude=0",
+        "minimumDistanceMeters=0", "minimumDistanceMeters=100001", "minimumDistanceMeters=abc",
     ])
     fun `invalid search is rejected before service`(query: String) {
         mvc.perform(get("/api/courses?$query")).andExpect(status().isBadRequest)

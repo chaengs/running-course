@@ -28,8 +28,9 @@ class CourseController(private val courseService: CourseService) {
         @RequestParam(required = false) longitude: Double?,
         @RequestParam(required = false) radiusMeters: Int?,
         @RequestParam(required = false) targetDistanceMeters: Int?,
+        @RequestParam(required = false) minimumDistanceMeters: Int?,
     ): CourseListResponse = courseService.list(
-        page, size, CourseSearch(latitude, longitude, radiusMeters, targetDistanceMeters),
+        page, size, CourseSearch(latitude, longitude, radiusMeters, targetDistanceMeters, minimumDistanceMeters),
     )
 
     @GetMapping("/{id}")
