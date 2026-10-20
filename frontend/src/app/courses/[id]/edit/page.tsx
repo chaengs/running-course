@@ -18,7 +18,7 @@ async function Edit({ params }: {
     const course = await getCourse(id);
     if (!course || course.ownerId !== user.id)
         notFound();
-    return <CourseEditor initialCourse={{ id: course.id, name: course.name, description: course.description, courseType: course.courseType, published: course.published, points: course.routeGeojson.coordinates.map(([lng, lat]) => ({ lat, lng })) }}/>;
+    return <CourseEditor initialCourse={{ id: course.id, name: course.name, description: course.description, courseType: course.courseType, published: course.published, elevationProfile: course.elevationProfile, points: course.routeGeojson.coordinates.map(([lng, lat]) => ({ lat, lng })) }}/>;
 }
 export default function EditCoursePage(props: {
     params: Promise<{

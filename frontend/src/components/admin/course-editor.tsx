@@ -13,7 +13,10 @@ import {
   type RoutePoint,
 } from "@/lib/route-editor";
 import { CourseVisibilityToggle } from "@/components/course-visibility-toggle";
-import { CourseElevation } from "@/components/course-elevation";
+import {
+  CourseElevation,
+  type CourseElevationProfile,
+} from "@/components/course-elevation";
 import { EditorToolIcon } from "./editor-tool-icon";
 const EditorMap = dynamic(() => import("./editor-map"), {
   ssr: false,
@@ -30,19 +33,17 @@ type EditableCourse = {
   courseType: string;
   points: RoutePoint[];
   published: boolean;
+  elevationProfile: CourseElevationProfile | null;
 };
 export function CourseEditor({
   initialCourse,
 }: {
   initialCourse?: EditableCourse;
 }) {
-  const [{ points, history, selected }, dispatch] = useReducer(
-    routeEditorReducer,
-    {
-      ...initialRouteEditorState,
-      points: initialCourse?.points ?? initialRouteEditorState.points,
-    },
-  );
+  const [{ points, selected }, dispatch] = useReducer(routeEditorReducer, {
+    ...initialRouteEditorState,
+    points: initialCourse?.points ?? initialRouteEditorState.points,
+  });
   const [name, setName] = useState(initialCourse?.name ?? "");
   const [description, setDescription] = useState(
     initialCourse?.description ?? "",
@@ -54,6 +55,10 @@ export function CourseEditor({
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
+  const [elevationProfile, setElevationProfile] =
+    useState<CourseElevationProfile | null>(
+      initialCourse?.elevationProfile ?? null,
+    );
   const [saved, setSaved] = useState<{
     id: number;
     distanceMeters: number;
@@ -63,6 +68,13 @@ export function CourseEditor({
     points[0].lat === points.at(-1)?.lat &&
     points[0].lng === points.at(-1)?.lng;
   const length = useMemo(() => routeLength(points), [points]);
+  const canSave =
+    name.trim().length > 0 &&
+    name.trim().length <= 30 &&
+    new Set(points.map(({ lat, lng }) => `${lat},${lng}`)).size >= 3 &&
+    closed &&
+    length >= 1 &&
+    length <= 100000;
   const geojson = useMemo(
     () => ({
       type: "LineString",
@@ -87,7 +99,13 @@ export function CourseEditor({
     const distinctPoints = new Set(
       points.map((point) => `${point.lat},${point.lng}`),
     );
-    if (!name.trim() || distinctPoints.size < 3 || !closed || length < 1) {
+    if (
+      !name.trim() ||
+      distinctPoints.size < 3 ||
+      !closed ||
+      length < 1 ||
+      length > 100000
+    ) {
       setMessage(
         "코스 이름을 입력하고, 서로 다른 경로점 3개 이상을 찍은 뒤 출발점으로 연결해 주세요.",
       );
@@ -108,6 +126,7 @@ export function CourseEditor({
             courseType,
             routeGeojson: geojson,
             published,
+            elevationProfile,
           }),
         },
       );
@@ -126,63 +145,50 @@ export function CourseEditor({
       setSaving(false);
     }
   }
-  const routeTools = useMemo(
-    () => (
-      <>
-        <button
-          type="button"
-          className={mapStyles.editorToolUndo}
-          title="마지막 경로 편집 실행 취소"
-          disabled={!history.length}
-          onClick={() => {
-            dispatch({ type: "undo" });
-            setMessage("");
-          }}
-        >
-          <EditorToolIcon tool="undo" />
-          <span>실행 취소</span>
-        </button>
-        <button
-          type="button"
-          className={mapStyles.editorToolDelete}
-          title="선택한 경로점 삭제"
-          onClick={() =>
-            updatePoints(points.filter((_, index) => index !== selected))
-          }
-        >
-          <EditorToolIcon tool="delete" />
-          <span>선택 점 삭제</span>
-        </button>
-        <button
-          type="button"
-          className={mapStyles.editorToolLoop}
-          title="현재 끝점을 출발점으로 연결"
-          disabled={points.length < 3 || closed}
-          onClick={() => updatePoints([...points, { ...points[0] }])}
-        >
-          <EditorToolIcon tool="loop" />
-          <span>출발점으로 루프 연결</span>
-        </button>
-        <span className={mapStyles.editorToolDivider} aria-hidden="true" />
-        <button
-          type="button"
-          className={mapStyles.editorToolReset}
-          title="전체 경로 초기화"
-          disabled={!points.length}
-          onClick={() => updatePoints([])}
-        >
-          <EditorToolIcon tool="reset" />
-          <span>전체 지우기</span>
-        </button>
-      </>
-    ),
-    [history.length, selected, points, closed, updatePoints],
-  );
+  const routeTools = useMemo(() => {
+    function CourseRouteTools({
+      locating,
+      locationMessage,
+      moveToCurrentLocation,
+    }: {
+      locating: boolean;
+      locationMessage: string;
+      moveToCurrentLocation: () => void;
+    }) {
+      return (
+        <>
+          <button
+            type="button"
+            className={mapStyles.editorToolLocation}
+            title="현재 위치로 지도 이동"
+            onClick={moveToCurrentLocation}
+            disabled={locating}
+            aria-describedby={
+              locationMessage ? "editor-location-status" : undefined
+            }
+          >
+            <EditorToolIcon tool="location" />
+            <span>현재 위치로 이동</span>
+          </button>
+          <button
+            type="button"
+            className={mapStyles.editorToolReset}
+            title="전체 경로 초기화"
+            disabled={!points.length}
+            onClick={() => updatePoints([])}
+          >
+            <EditorToolIcon tool="reset" />
+            <span>전체 지우기</span>
+          </button>
+        </>
+      );
+    }
+    return CourseRouteTools;
+  }, [points.length, updatePoints]);
   return (
     <>
-      <p className={uiStyles.editorHint}>
-        지도에서 점을 찍으면 순서대로 직선으로 연결됩니다. 굽은 길에는 점을 더
-        촘촘하게 찍어주세요.
+      <p className={`${uiStyles.editorHint} ${editorStyles.editorIntro}`}>
+        지도에 점을 찍어 나만의 코스를 그려보세요.
       </p>
       <fieldset
         className={formStyles.editorSaveFields}
@@ -198,11 +204,88 @@ export function CourseEditor({
               closed={closed}
               tools={routeTools}
             />
-            <p className={formStyles.mapCaption}>
-              점 클릭: 선택 · 점 드래그: 위치 수정 · 지도 확대/축소 후 세밀하게
-              편집하세요.
-            </p>
-            <CourseElevation route={geojson} length={length} />
+            <aside
+              className={editorStyles.mapInstructions}
+              aria-label="지도 그리는 방법"
+            >
+              <header className={editorStyles.mapInstructionsHeader}>
+                <div>
+                  <h3>지도 그리는 방법</h3>
+                  <p>
+                    마우스 클릭과 드래그로 손쉽게 나만의 코스를 완성해보세요.
+                  </p>
+                </div>
+              </header>
+              <ul className={editorStyles.mapInstructionList}>
+                <li>
+                  <span
+                    className={editorStyles.mapInstructionIcon}
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  </span>
+                  <span className={editorStyles.mapInstructionText}>
+                    <strong>경로점 추가</strong>
+                    <span>
+                      <b>지도 클릭</b>
+                      <span>원하는 지점</span>
+                    </span>
+                  </span>
+                </li>
+                <li>
+                  <span
+                    className={editorStyles.mapInstructionIcon}
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="m5 9-3 3 3 3M9 5l3-3 3 3m0 14-3 3-3-3m10-10 3 3-3 3M2 12h20M12 2v20" />
+                    </svg>
+                  </span>
+                  <span className={editorStyles.mapInstructionText}>
+                    <strong>위치 수정</strong>
+                    <span>
+                      <b>점 드래그</b>
+                      <span>위치 이동</span>
+                    </span>
+                  </span>
+                </li>
+                <li>
+                  <span
+                    className={`${editorStyles.mapInstructionIcon} ${editorStyles.mapInstructionDeleteIcon}`}
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 4v6m4-6v6" />
+                    </svg>
+                  </span>
+                  <span className={editorStyles.mapInstructionText}>
+                    <strong>경로점 삭제</strong>
+                    <span>
+                      <b>점 더블클릭</b>
+                    </span>
+                  </span>
+                </li>
+              </ul>
+              <p className={editorStyles.mapInstructionsTip}>
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 11v5m0-8h.01" />
+                </svg>
+                <span>
+                  곡선 구간은 점을 촘촘히 찍을수록 정확한 거리와 고도 데이터가
+                  계산됩니다.
+                </span>
+              </p>
+            </aside>
+            <CourseElevation
+              route={geojson}
+              length={length}
+              initialProfile={initialCourse?.elevationProfile}
+              onProfileChange={setElevationProfile}
+            />
           </section>
           <section
             className={uiStyles.courseInfo + " " + formStyles.editorFields}
@@ -307,6 +390,7 @@ export function CourseEditor({
               className={formStyles.buttonPrimary}
               type="button"
               onClick={saveCourse}
+              disabled={saving || saved !== null || !canSave}
             >
               {saving
                 ? "저장 중…"

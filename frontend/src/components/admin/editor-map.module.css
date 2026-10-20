@@ -22,7 +22,6 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid transparent;
   border-radius: 9px;
   background: white;
   color: var(--ink);
@@ -37,7 +36,6 @@
   cursor: not-allowed;
   color: #657084;
   background: #f2f4f8;
-  border-color: #e6eaf1;
 }
 
 .routeEditorPoint span {
@@ -47,12 +45,11 @@
   height: 28px;
   border-radius: 50%;
   background: #1450ff;
-  border: 2px solid white;
   color: white;
   font-family: "Pretendard", sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  box-shadow: 0 1px 5px #0005;
+  box-shadow: 0 0 0 2px white, 0 1px 5px #0005;
 }
 
 .routeEditorPoint.selected span {
@@ -62,7 +59,6 @@
 .editorMapTools {
   margin-bottom: 16px;
   padding: 8px;
-  border: 1px solid var(--line);
   border-radius: 14px;
   background: white;
   box-shadow: 0 2px 8px #10214406;
@@ -70,18 +66,6 @@
 
 .editorToolbar svg {
   flex-shrink: 0;
-}
-
-.editorToolUndo svg {
-  color: #4733d9;
-}
-
-.editorToolbar .editorToolDelete {
-  color: #a32736;
-}
-
-.editorToolbar .editorToolLoop {
-  color: #362499;
 }
 
 .editorToolbar .editorToolReset {
@@ -94,22 +78,10 @@
 
 .editorToolbar button:not(:disabled):hover {
   background: #eff2f8;
-  border-color: #d5dce9;
-}
-
-.editorToolbar .editorToolDelete:not(:disabled):hover {
-  background: #ffe2e5;
-  border-color: #efb6bf;
-}
-
-.editorToolbar .editorToolLoop:not(:disabled):hover {
-  background: #dcd4ff;
-  border-color: #b7a9fa;
 }
 
 .editorToolbar .editorToolLocation:not(:disabled):hover {
   background: #daf0e3;
-  border-color: #9ac9af;
 }
 
 .editorToolbar button:disabled svg {
@@ -119,13 +91,6 @@
 .editorToolbar button:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
-}
-
-.editorToolDivider {
-  width: 1px;
-  height: 28px;
-  margin-inline: 2px;
-  background: var(--line);
 }
 
 .editorLocationStatus {
@@ -145,10 +110,5 @@
   .editorToolbar button {
     flex: 1 1 100%;
     justify-content: flex-start;
-  }
-  .editorToolDivider {
-    width: 100%;
-    height: 1px;
-    margin: 4px 0;
   }
 }

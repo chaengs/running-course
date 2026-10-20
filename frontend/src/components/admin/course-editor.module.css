@@ -2,16 +2,201 @@
   display: grid;
   align-items: start;
   gap: 26px;
-  grid-template-columns: minmax(0,1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 360px;
 }
 
 .editorGrid > section:first-child {
   min-width: 0;
 }
 
+.editorIntro {
+  border: 0;
+}
+
+.mapInstructions {
+  margin-top: 14px;
+  margin-inline: auto;
+  max-width: 960px;
+  padding: 24px 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 20px -2px rgb(15 23 42 / 5%);
+  color: #0f172a;
+}
+
+.mapInstructionsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mapInstructionsHeader h3 {
+  margin: 0;
+  color: #0e56fa;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.mapInstructionsHeader p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.mapInstructionsBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  background: #f8f9ff;
+  color: #0e56fa;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mapInstructionsBadge svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.mapInstructionList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapInstructionList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.mapInstructionIcon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 2%);
+  color: #0e56fa;
+}
+
+.mapInstructionIcon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.mapInstructionDeleteIcon {
+  color: #ef4444;
+}
+
+.mapInstructionText,
+.mapInstructionText > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.mapInstructionText {
+  gap: 6px;
+}
+
+.mapInstructionText > strong {
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mapInstructionText > span {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mapInstructionText > span > b {
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  color: #0e56fa;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.mapInstructionList li:last-child .mapInstructionText > span > b {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.mapInstructionText > span > span {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.mapInstructionsTip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.mapInstructionsTip svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 @media (max-width: 1160px) {
   .editorGrid {
-    grid-template-columns: minmax(0,1fr) 310px;
+    grid-template-columns: minmax(0, 1fr) 310px;
     gap: 20px;
   }
 }
@@ -22,9 +207,41 @@
   }
 }
 
+@media (max-width: 720px) {
+  .mapInstructions {
+    padding: 18px;
+  }
+  .mapInstructionsHeader {
+    align-items: flex-start;
+  }
+  .mapInstructionsBadge {
+    max-width: 150px;
+    flex-wrap: wrap;
+  }
+  .mapInstructionList {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mapInstructions {
+    padding: 16px;
+  }
+  .mapInstructionsHeader {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mapInstructionList {
+    grid-template-columns: 1fr;
+  }
+  .mapInstructionList li {
+    padding: 14px;
+  }
+}
+
 .editorInfoHeading {
   padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
 }
 
 .editorInfoHeading h2 {

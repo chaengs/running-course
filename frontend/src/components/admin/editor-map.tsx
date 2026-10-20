@@ -1,33 +1,37 @@
 "use client";
 import mapStyles from "@/components/admin/editor-map.module.css";
 import formStyles from "@/components/form.module.css";
-import uiStyles from "@/styles/ui.module.css";
 import {
   memo,
   useEffect,
   useEffectEvent,
   useRef,
   useState,
-  type ReactNode,
+  type ComponentType,
 } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { RoutePoint } from "@/lib/route-editor";
 import { createMapTiles } from "@/lib/leaflet-map";
-import { EditorToolIcon } from "./editor-tool-icon";
 type Props = {
   points: RoutePoint[];
   selected: number | null;
   closed: boolean;
   onChange: (points: RoutePoint[]) => void;
   onSelect: (index: number) => void;
-  tools: ReactNode;
+  tools: ComponentType<{
+    locating: boolean;
+    locationMessage: string;
+    moveToCurrentLocation: () => void;
+  }>;
 };
 function EditorMap(props: Props) {
+  const Tools = props.tools;
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const initialPoints = useRef(props.points);
   const markers = useRef<L.Marker[]>([]);
+  const pendingStartClick = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tileError, setTileError] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationMessage, setLocationMessage] = useState("");
@@ -107,6 +111,39 @@ function EditorMap(props: Props) {
     if (!props.closed) props.onChange([...props.points, point]);
   });
   const selectPoint = useEffectEvent((index: number) => props.onSelect(index));
+  const clickPoint = useEffectEvent(
+    (index: number, event: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(event);
+      if (pendingStartClick.current) {
+        clearTimeout(pendingStartClick.current);
+        pendingStartClick.current = null;
+      }
+      const distinctCount = new Set(
+        props.points.map(({ lat, lng }) => `${lat},${lng}`),
+      ).size;
+      if (index === 0 && !props.closed && distinctCount >= 3) {
+        // Delay loop closure briefly so a double-click can delete the start point.
+        pendingStartClick.current = setTimeout(() => {
+          pendingStartClick.current = null;
+          props.onChange([...props.points, { ...props.points[0] }]);
+        }, 260);
+        return;
+      }
+      selectPoint(index);
+    },
+  );
+  const doubleClickPoint = useEffectEvent(
+    (index: number, event: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(event);
+      if (pendingStartClick.current) {
+        clearTimeout(pendingStartClick.current);
+        pendingStartClick.current = null;
+      }
+      let next = props.points.filter((_, pointIndex) => pointIndex !== index);
+      if (props.closed && index === 0) next = next.slice(0, -1);
+      props.onChange(next);
+    },
+  );
   const movePoint = useEffectEvent((index: number, position: RoutePoint) => {
     props.onChange(
       props.points.map((point, i) =>
@@ -168,7 +205,12 @@ function EditorMap(props: Props) {
         }),
       }).addTo(layer);
       markers.current.push(marker);
-      marker.on("click", () => selectPoint(index));
+      marker.on("click", (event: L.LeafletMouseEvent) =>
+        clickPoint(index, event),
+      );
+      marker.on("dblclick", (event: L.LeafletMouseEvent) =>
+        doubleClickPoint(index, event),
+      );
       marker.on("dragend", () => {
         const position = marker.getLatLng();
         movePoint(index, { lat: position.lat, lng: position.lng });
@@ -177,6 +219,8 @@ function EditorMap(props: Props) {
     return () => {
       layer.remove();
       markers.current = [];
+      if (pendingStartClick.current) clearTimeout(pendingStartClick.current);
+      pendingStartClick.current = null;
     };
   }, [props.points, props.closed]);
   // 선택 변경에는 기존 마커의 스타일만 갱신합니다.
@@ -195,18 +239,11 @@ function EditorMap(props: Props) {
           role="group"
           aria-label="지도 그리기 도구"
         >
-          {props.tools}
-          <button
-            type="button"
-            className={mapStyles.editorToolLocation}
-            title="현재 위치로 지도 이동"
-            onClick={() => moveToCurrentLocation()}
-            disabled={locating}
-            aria-describedby={locationMessage ? "editor-location-status" : undefined}
-          >
-            <EditorToolIcon tool="location" />
-            <span>{locating ? "위치 확인 중…" : "현재 위치로 이동"}</span>
-          </button>
+          <Tools
+            locating={locating}
+            locationMessage={locationMessage}
+            moveToCurrentLocation={() => moveToCurrentLocation()}
+          />
         </div>
         {locationMessage && (
           <p
@@ -227,12 +264,6 @@ function EditorMap(props: Props) {
         <p role="status" className={formStyles.editorMessage}>
           지도 배경을 불러오지 못한 구간이 있어요. 네트워크를 확인하거나
           페이지를 다시 불러와 주세요.
-        </p>
-      )}
-      {props.closed && (
-        <p className={uiStyles.mapCaption}>
-          닫힌 경로입니다. 점을 더 추가하려면 실행 취소로 마지막 연결을
-          취소하세요.
         </p>
       )}
     </>

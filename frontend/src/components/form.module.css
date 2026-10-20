@@ -25,7 +25,7 @@
   min-height: 44px;
   font: inherit;
   color: var(--ink);
-  border: 1px solid #e4eaf6;
+  border: 0;
   background: #f2f5fc;
   padding: 14px 16px;
   border-radius: 12px;
@@ -36,12 +36,12 @@
 .editorFields select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: 6px;
   padding: 10px;
   font: inherit;
   color: var(--ink);
-  background: white;
+  background: #f2f5fc;
 }
 
 .editorFields textarea {
@@ -49,7 +49,7 @@
   font: inherit;
   color: var(--ink);
   resize: vertical;
-  border: 1px solid #e4eaf6;
+  border: 0;
   background: #f2f5fc;
   padding: 14px 16px;
   border-radius: 12px;
@@ -68,6 +68,13 @@
   box-shadow: 0 4px 10px #1450ff20;
 }
 
+.editorFields .buttonPrimary:disabled {
+  color: #687080;
+  background: #d9dde5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 .editorMessage {
   color: #86552c;
   line-height: 1.8;
@@ -76,7 +83,7 @@
 
 .editorFields {
   --panel-padding: 26px;
-  --panel-border: 1px solid #e9edf6;
+  --panel-border: 0;
   --panel-radius: 18px;
   --panel-shadow: 0 4px 18px #10214408;
 }
