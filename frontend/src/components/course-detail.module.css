@@ -1,7 +1,7 @@
 .detailGrid {
   display: grid;
   align-items: start;
-  grid-template-columns: minmax(0,1fr) 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 26px;
 }
 
@@ -24,11 +24,6 @@
 
 .routeHeading h2 {
   font-size: 1.5rem;
-}
-
-.routeHeading > span {
-  color: var(--muted);
-  font-size: 1rem;
 }
 
 .detailStats {
@@ -57,7 +52,7 @@
 }
 
 .detailStats .detailDistance {
-  letter-spacing: -.05em;
+  letter-spacing: -0.05em;
   color: var(--ink);
   font-size: 2.6rem;
   font-weight: 750;
@@ -126,7 +121,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
 }
 
 .guideGrid h3 {
@@ -142,7 +137,7 @@
 
 @media (max-width: 1160px) {
   .detailGrid {
-    grid-template-columns: minmax(0,1fr) 310px;
+    grid-template-columns: minmax(0, 1fr) 310px;
     gap: 20px;
   }
 }
