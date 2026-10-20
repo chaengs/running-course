@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getBookmarkedCourses } from "@/lib/courses";
-import { courseDisplayName, courseTypeLabels, formatDistance } from "@/lib/course-format";
+import { courseTypeLabels, formatDistance } from "@/lib/course-format";
 import { RoutePreview } from "@/components/route-preview";
 import { CourseBookmarkButton } from "@/components/course-bookmark-button";
 export const metadata: Metadata = { title: "북마크한 코스 | Running Course" };
@@ -29,8 +29,8 @@ async function Bookmarks({ searchParams }: Props) {
     return <>
     <div className={collectionStyles.collectionBanner}><div><span className={uiStyles.eyebrow}>SAVED COURSES · 현재 페이지</span><strong>{result.content.length}<small>개 코스</small></strong></div><div><span className={uiStyles.eyebrow}>TOTAL DISTANCE · 현재 페이지</span><strong>{formatDistance(result.content.reduce((sum, course) => sum + course.distanceMeters, 0))}<small>km</small></strong></div><div className={collectionStyles.collectionNote}><span className={uiStyles.liveDot}/> 다음 러닝을 위한 나만의 컬렉션</div></div>
     {result.content.length ? <ul className={layoutStyles.courseGrid}>{result.content.map((course) => <li className={cardStyles.courseCard + " " + cardStyles.bookmarkCard} key={course.id}>
-      <RoutePreview className={previewStyles.bookmarkPreview} courseId={course.id} name={courseDisplayName(course.name)}/><span className={uiStyles.typeBadge}>{courseTypeLabels[course.courseType]}</span>
-      <h2><Link className={cardStyles.courseDetailLink} href={`/courses/${course.id}`} prefetch={false}>{courseDisplayName(course.name)}</Link></h2>
+      <RoutePreview className={previewStyles.bookmarkPreview} courseId={course.id} name={course.name}/><span className={uiStyles.typeBadge}>{courseTypeLabels[course.courseType]}</span>
+      <h2><Link className={cardStyles.courseDetailLink} href={`/courses/${course.id}`} prefetch={false}>{course.name}</Link></h2>
       <p className={cardStyles.courseDistance}><strong>{formatDistance(course.distanceMeters)}</strong><span>km</span></p>
       <CourseBookmarkButton className={cardStyles.cardBookmark} courseId={course.id} initialBookmarked refreshOnChange/>
     </li>)}</ul> : <section className={uiStyles.emptyState} aria-labelledby="bookmark-empty-title">

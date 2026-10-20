@@ -22,13 +22,13 @@ curl 'http://localhost:8080/api/courses/1'
 | startLocation | latitude(위도), longitude(경도) 객체 |
 | routeGeojson | 전체 경로의 GeoJSON LineString geometry 객체 |
 
-예시 (형식 설명을 위한 가상 경로):
+예시 응답 (형식 설명용):
 
 ```json
 {
   "id": 1,
-  "name": "[개발용] 테스트 코스",
-  "description": "실제 도로를 따르지 않는 가상 코스입니다.",
+  "name": "예시 러닝 코스",
+  "description": "코스 설명 예시입니다.",
   "distanceMeters": 284,
   "courseType": "OUT_AND_BACK",
   "startLocation": { "latitude": 37.528, "longitude": 126.934 },
@@ -42,7 +42,6 @@ curl 'http://localhost:8080/api/courses/1'
 - GeoJSON은 문자열이 아닌 JSON 객체이며 좌표는 **[경도, 위도]** 순서입니다.
 - 경로의 처음과 마지막 좌표가 출발·도착점입니다. V1의 등록 코스는 두 지점이 일치합니다.
 - 빈 설명은 빈 문자열입니다. 공개 상태나 내부 관리 필드는 반환하지 않습니다.
-- 개발용 샘플은 실제 보행 가능한 도로를 검증하지 않은 가상 데이터입니다.
 
 ## 상태 코드
 - `200`: 공개 코스 상세.

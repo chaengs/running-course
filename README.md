@@ -99,7 +99,6 @@ Flyway가 시작 시 `backend/src/main/resources/db/migration/`의 SQL을 적용
 JPA는 `ddl-auto=validate`로 스키마를 검증하고 자동 변경하지 않습니다.
 초기 스키마는 코스 정보, WGS84 출발점(공간 인덱스), GeoJSON 경로를 저장합니다.
 사용자·세션·코스 소유권은 V2 마이그레이션에 포함됩니다. 북마크는 후속 구현입니다.
-개발용 가상 코스 5개는 별도 SQL로 제공합니다. 실행 방법과 주의사항은 [샘플 코스 안내](docs/sample-courses.md)를 참고하세요.
 
 DB 종료: `docker compose stop` (데이터 유지).
 DB 이미지는 linux/amd64로 지정했습니다. Apple Silicon에서는 Docker의 에뮬레이션을 사용합니다.

@@ -8,11 +8,7 @@ import { after } from "next/server";
 import { Suspense } from "react";
 import { CourseDetailSkeleton } from "@/components/course-detail-skeleton";
 import { CourseRouteMap } from "@/components/course-route-map";
-import {
-  courseDisplayName,
-  courseTypeLabels,
-  formatDistance,
-} from "@/lib/course-format";
+import { courseTypeLabels, formatDistance } from "@/lib/course-format";
 import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
 import { getCourse, recordCourseView } from "@/lib/courses";
 import { getCurrentUser, sessionHeaders } from "@/lib/session";
@@ -34,13 +30,22 @@ async function CourseDetailContent({ params, searchParams }: Props) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807"))
     notFound();
-  const [course, user, authHeaders] = await Promise.all([getCourse(id), getCurrentUser(), sessionHeaders()]);
+  const [course, user, authHeaders] = await Promise.all([
+    getCourse(id),
+    getCurrentUser(),
+    sessionHeaders(),
+  ]);
   if (!course) notFound();
-  after(() => recordCourseView(course.id, course.ownerId === user?.id, authHeaders));
+  after(() =>
+    recordCourseView(course.id, course.ownerId === user?.id, authHeaders),
+  );
   const listQuery = parseCourseListQuery(query) ?? { page: 0, size: 6 };
-  const name = courseDisplayName(course.name);
-  const isSample = course.name.startsWith("[개발용]");
-  const regionLabel = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
+  const name = course.name;
+  const regionLabel = [
+    course.region?.sido,
+    course.region?.sigungu,
+    course.region?.eupMyeonDong,
+  ]
     .filter((part): part is string => Boolean(part))
     .join(" · ");
   return (
@@ -54,21 +59,12 @@ async function CourseDetailContent({ params, searchParams }: Props) {
           <span className={uiStyles.typeBadge}>
             {courseTypeLabels[course.courseType]}
           </span>
-          {isSample && (
-            <span className={uiStyles.sampleBadge}>개발용 샘플</span>
-          )}
         </div>
         <h1>{name}</h1>
         <p className={layoutStyles.detailIntro}>
           출발점으로 돌아오는 길, 나만의 페이스로 달려보세요.
         </p>
       </header>
-      {isSample && (
-        <p className={uiStyles.sampleNotice}>
-          <span aria-hidden="true">ⓘ</span> 실제 도로를 따르지 않는 개발용 가상
-          경로입니다. 실제 러닝에 사용하지 마세요.
-        </p>
-      )}
       <div className={detailStyles.detailGrid}>
         <section
           className={detailStyles.routeSection}
