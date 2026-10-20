@@ -1,10 +1,12 @@
 .courseCard {
+  position: relative;
   min-width: 0;
   padding: 20px;
   border: 1px solid var(--color-border);
   border-radius: 16px;
   background: var(--color-surface);
   box-shadow: var(--shadow-subtle);
+  cursor: pointer;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -59,31 +61,32 @@
 }
 
 .bookmarkPosition {
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
   margin-left: auto;
 }
 
+.cardLink {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.cardLink:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
 .courseName {
   margin: 0;
+  color: var(--color-tertiary);
   font-size: 1.25rem;
   font-weight: 750;
   line-height: 1.45;
   overflow-wrap: anywhere;
-}
-
-.courseName a {
-  color: var(--color-tertiary);
-  text-decoration: none;
-}
-
-.courseName a:hover {
-  color: var(--color-primary);
-}
-
-.courseName a:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 3px;
-  border-radius: 3px;
 }
 
 .courseRegion {

@@ -29,6 +29,14 @@ export function ExploreCourseCard({
   return (
     <li className={cardStyles.courseCard}>
       <article aria-labelledby={`explore-course-${course.id}`}>
+        <Link
+          className={cardStyles.cardLink}
+          href={`/courses/${course.id}${detailSearch}`}
+          prefetch={false}
+          aria-label={`${course.name} 코스 상세 페이지 보기`}
+        >
+          <span className={uiStyles.srOnly}>코스 상세 보기</span>
+        </Link>
         <div className={cardStyles.badges}>
           <span className={cardStyles.courseType}>{courseTypeLabels[course.courseType]}</span>
           {course.elevationDifficulty && (
@@ -41,10 +49,7 @@ export function ExploreCourseCard({
           </div>
         </div>
         <h3 id={`explore-course-${course.id}`} className={cardStyles.courseName}>
-          <Link href={`/courses/${course.id}${detailSearch}`} prefetch={false}>
-            {course.name}
-            <span className={uiStyles.srOnly}> 상세 보기</span>
-          </Link>
+          {course.name}
         </h3>
         <p className={cardStyles.courseRegion}>
           <MapMarkerIcon />
