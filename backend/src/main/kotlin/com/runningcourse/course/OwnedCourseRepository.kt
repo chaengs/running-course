@@ -9,7 +9,7 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
     fun findAll(owner: Long, page: Int, size: Int, sort: String): List<MyCourse> = jdbc.query(
         """
         SELECT c.id, c.name, c.distance_meters, c.course_type, c.created_at, c.published,
-               c.region_sido, c.region_sigungu, c.region_eup_myeon_dong, c.region_source, c.region_resolved_at,
+               c.region_sido, c.region_sigungu, c.region_eup_myeon_dong,
                CASE WHEN c.published THEN c.view_count ELSE 0 END AS view_count,
                COUNT(b.user_id) AS bookmark_count
         FROM courses c LEFT JOIN course_bookmarks b ON b.course_id = c.id
@@ -62,8 +62,9 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
     )
 
     fun findById(id: Long, owner: Long): CourseDetail? = jdbc.query("""
-        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published,
-               region_sido, region_sigungu, region_eup_myeon_dong, region_source, region_resolved_at,
+        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published, elevation_profile,
+               region_sido, region_sigungu, region_eup_myeon_dong,
+               (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
                ST_Y(start_location::geometry) AS latitude, ST_X(start_location::geometry) AS longitude
         FROM courses WHERE id = ? AND owner_id = ?
         """.trimIndent(), { rs, _ -> CourseDetail(
@@ -77,6 +78,8 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
             ownerId = owner,
             published = rs.getBoolean("published"),
             region = rs.readCourseRegion(),
+            elevationProfile = rs.getString("elevation_profile")?.let { mapper.readValue(it, ElevationProfile::class.java) },
+            bookmarkCount = rs.getLong("bookmark_count"),
         ) }, id, owner).singleOrNull()
 
     // 서비스 트랜잭션에서 소유권 확인부터 수정 완료까지 행 잠금을 유지합니다.
@@ -91,14 +94,14 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
     fun update(id: Long, owner: Long, request: CreateCourseRequest, region: CourseRegion?): CreatedCourse? = jdbc.query("""
         WITH route AS (SELECT ST_SetSRID(ST_GeomFromGeoJSON(?),4326) AS geom),
         measured AS (SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route)
-        UPDATE courses SET name = ?, description = ?, course_type = ?, route_geojson = ST_AsGeoJSON(geom)::jsonb,
+        UPDATE courses SET name = ?, description = ?, course_type = ?, route_geojson = ST_AsGeoJSON(geom)::jsonb, elevation_profile = ?::jsonb,
         start_location = ST_StartPoint(geom)::geography, distance_meters = distance, published = COALESCE(?, courses.published),
-        region_sido = ?, region_sigungu = ?, region_eup_myeon_dong = ?, region_source = ?, region_resolved_at = ?, updated_at = CURRENT_TIMESTAMP
+        region_sido = ?, region_sigungu = ?, region_eup_myeon_dong = ?, updated_at = CURRENT_TIMESTAMP
         FROM measured WHERE id = ? AND owner_id = ? AND distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(), { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
-        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name,
-        request.published, region?.sido, region?.sigungu, region?.eupMyeonDong, region?.source, region?.resolvedAt, id, owner,
+        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name, request.elevationProfile?.let(mapper::writeValueAsString),
+        request.published, region?.sido, region?.sigungu, region?.eupMyeonDong, id, owner,
     ).singleOrNull()
 
     fun updateVisibility(id: Long, owner: Long, published: Boolean): Boolean =

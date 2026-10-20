@@ -3,7 +3,6 @@ package com.runningcourse.course
 import com.sun.net.httpserver.HttpServer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import tools.jackson.databind.json.JsonMapper
 import java.net.InetSocketAddress
@@ -34,8 +33,6 @@ class NominatimCourseRegionResolverTests {
             assertEquals("서울특별시", result?.sido)
             assertEquals("마포구", result?.sigungu)
             assertEquals("공덕동", result?.eupMyeonDong)
-            assertEquals("OpenStreetMap Nominatim", result?.source)
-            assertNotNull(result?.resolvedAt)
             assertEquals(result, resolver.resolve(37.544, 126.951))
             assertEquals(1, requests)
             assertEquals("RunningCourseTest/1.0", userAgent)

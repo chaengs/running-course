@@ -21,7 +21,7 @@ class CourseRepository(
         return jdbcTemplate.query(
             """
             SELECT id, name, distance_meters, course_type,
-                   region_sido, region_sigungu, region_eup_myeon_dong, region_source, region_resolved_at,
+                   region_sido, region_sigungu, region_eup_myeon_dong,
                    ST_Y(start_location::geometry) AS latitude,
                    ST_X(start_location::geometry) AS longitude,
                    $distanceExpression AS distance_to_start_meters
@@ -78,8 +78,9 @@ class CourseRepository(
 
     fun findPublishedById(id: Long): CourseDetail? = jdbcTemplate.query(
         """
-        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published,
-               region_sido, region_sigungu, region_eup_myeon_dong, region_source, region_resolved_at,
+        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published, elevation_profile,
+               region_sido, region_sigungu, region_eup_myeon_dong,
+               (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
                ST_Y(start_location::geometry) AS latitude,
                ST_X(start_location::geometry) AS longitude
         FROM courses
@@ -97,6 +98,8 @@ class CourseRepository(
                 ownerId = rs.getObject("owner_id", Long::class.javaObjectType),
                 published = rs.getBoolean("published"),
                 region = rs.readCourseRegion(),
+                elevationProfile = rs.getString("elevation_profile")?.let { jsonMapper.readValue(it, ElevationProfile::class.java) },
+                bookmarkCount = rs.getLong("bookmark_count"),
             )
         },
         id,

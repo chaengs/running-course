@@ -13,4 +13,6 @@ data class CourseDetail(
     val ownerId: Long? = null,
     val published: Boolean = true,
     val region: CourseRegion? = null,
+    val elevationProfile: ElevationProfile? = null,
+    val bookmarkCount: Long = 0,
 )

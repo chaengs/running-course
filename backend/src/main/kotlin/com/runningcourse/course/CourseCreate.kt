@@ -13,7 +13,7 @@ import tools.jackson.databind.json.JsonMapper
 import java.net.URI
 
 data class RouteGeometry(val type: String, val coordinates: List<List<Double>>)
-data class CreateCourseRequest(val name: String, val description: String = "", val courseType: CourseType, val routeGeojson: RouteGeometry, val published: Boolean? = null) {
+data class CreateCourseRequest(val name: String, val description: String = "", val courseType: CourseType, val routeGeojson: RouteGeometry, val published: Boolean? = null, val elevationProfile: ElevationProfile? = null) {
     fun validate() {
         fun check(valid: Boolean, message: String) {
             if (!valid) throw ResponseStatusException(HttpStatus.BAD_REQUEST, message)
@@ -40,15 +40,15 @@ class CourseCreateRepository(private val jdbc: JdbcTemplate, private val mapper:
         ), measured AS (
           SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route
         )
-        INSERT INTO courses (name, description, course_type, route_geojson, start_location, distance_meters, published, owner_id,
-                             region_sido, region_sigungu, region_eup_myeon_dong, region_source, region_resolved_at)
-        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?, ?, ?, ?, ?, ?
+        INSERT INTO courses (name, description, course_type, route_geojson, start_location, distance_meters, published, owner_id, elevation_profile,
+                             region_sido, region_sigungu, region_eup_myeon_dong)
+        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?, ?::jsonb, ?, ?, ?
         FROM measured WHERE distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(),
         { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
         mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name,
-        request.published ?: false, ownerId, region?.sido, region?.sigungu, region?.eupMyeonDong, region?.source, region?.resolvedAt,
+        request.published ?: false, ownerId, request.elevationProfile?.let(mapper::writeValueAsString), region?.sido, region?.sigungu, region?.eupMyeonDong,
     ).singleOrNull()
 }
 

@@ -11,7 +11,6 @@ import tools.jackson.databind.json.JsonMapper
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
-import java.time.OffsetDateTime
 
 // 실제 PostgreSQL/PostGIS에 연결하되 세션 전용 임시 테이블을 사용합니다.
 // public.courses 및 개발자가 등록한 데이터는 변경하지 않습니다.
@@ -32,6 +31,7 @@ class CourseRepositoryIntegrationTests {
         jdbc = JdbcTemplate(dataSource)
         jdbc.execute("CREATE TEMP TABLE courses (LIKE public.courses INCLUDING ALL)")
         jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
+        jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS elevation_profile JSONB")
         jdbc.execute("CREATE TEMP TABLE course_bookmarks(user_id BIGINT NOT NULL, course_id BIGINT NOT NULL)")
         repository = CourseRepository(jdbc, JsonMapper.builder().build())
         insert("공개 첫 코스", true)
@@ -46,10 +46,18 @@ class CourseRepositoryIntegrationTests {
 
     @Test
     fun `created route computes distance and remains private until owner publishes`() {
+        val profile = ElevationProfile(
+            samples = listOf(ElevationSample(0.0, 10.0, 10.0)),
+            minElevationMeters = 10.0, maxElevationMeters = 10.0, ascentMeters = 0.0, descentMeters = 0.0,
+            distanceMeters = 340.0, sampleIntervalMeters = 34.0,
+            calculatedAt = java.time.Instant.parse("2026-01-01T00:00:00Z"),
+            difficulty = ElevationDifficulty(ElevationDifficultyLevel.LOW, 0.0),
+        )
         val request = CreateCourseRequest(" 새 코스 ", " 소개 ", CourseType.LOOP,
-            RouteGeometry("LineString", listOf(listOf(126.934, 37.528), listOf(126.935, 37.528), listOf(126.935, 37.529), listOf(126.934, 37.528))))
+            RouteGeometry("LineString", listOf(listOf(126.934, 37.528), listOf(126.935, 37.528), listOf(126.935, 37.529), listOf(126.934, 37.528))),
+            elevationProfile = profile)
         val mapper = JsonMapper.builder().build()
-        val region = CourseRegion("서울특별시", "마포구", "공덕동", "OpenStreetMap Nominatim", OffsetDateTime.parse("2026-01-01T00:00:00Z"))
+        val region = CourseRegion("서울특별시", "마포구", "공덕동")
         val created = CourseCreateService(CourseCreateRepository(jdbc, mapper), CourseRegionResolver { _, _ -> region }).create(request, 123)
         assertNull(repository.findPublishedById(created.id))
         val ownerService = OwnedCourseService(OwnedCourseRepository(jdbc, mapper), CourseRegionResolver { _, _ -> null })
@@ -59,6 +67,7 @@ class CourseRepositoryIntegrationTests {
         assertEquals("소개", detail.description)
         assertEquals(StartLocation(37.528, 126.934), detail.startLocation)
         assertEquals(region, detail.region)
+        assertEquals(profile, detail.elevationProfile)
         org.junit.jupiter.api.Assertions.assertTrue(created.distanceMeters in 300..400)
         assertEquals(created.distanceMeters, detail.distanceMeters)
         assertEquals(4, detail.routeGeojson.get("coordinates").size())

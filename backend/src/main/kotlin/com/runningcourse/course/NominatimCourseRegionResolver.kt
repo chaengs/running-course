@@ -10,8 +10,6 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Duration
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToLong
 
@@ -83,8 +81,6 @@ class NominatimCourseRegionResolver(
             sido = sido,
             sigungu = sigungu,
             eupMyeonDong = eupMyeonDong,
-            source = "OpenStreetMap Nominatim",
-            resolvedAt = OffsetDateTime.now(ZoneOffset.UTC),
         )
     }
 

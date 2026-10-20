@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.OffsetDateTime
 
 @WebMvcTest(CourseRegionController::class)
 class CourseRegionControllerTests {
@@ -24,8 +23,6 @@ class CourseRegionControllerTests {
                 sido = "서울특별시",
                 sigungu = "마포구",
                 eupMyeonDong = "서교동",
-                source = "OpenStreetMap Nominatim",
-                resolvedAt = OffsetDateTime.parse("2026-10-20T00:00:00Z"),
             ),
         )
 

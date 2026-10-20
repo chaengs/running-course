@@ -33,6 +33,7 @@ class AuthOwnershipIntegrationTests {
         jdbc.execute("CREATE TEMP TABLE user_sessions(token_hash CHAR(64) PRIMARY KEY, user_id BIGINT NOT NULL, expires_at TIMESTAMPTZ NOT NULL)")
         jdbc.execute("CREATE TEMP TABLE courses(LIKE public.courses INCLUDING ALL)")
         jdbc.execute("ALTER TABLE pg_temp.courses ADD COLUMN IF NOT EXISTS owner_id BIGINT")
+        jdbc.execute("CREATE TEMP TABLE course_bookmarks(user_id BIGINT NOT NULL, course_id BIGINT NOT NULL)")
         val mapper = JsonMapper.builder().build()
         auth = AuthService(AuthRepository(jdbc))
         val noGeocoding = CourseRegionResolver { _, _ -> null }

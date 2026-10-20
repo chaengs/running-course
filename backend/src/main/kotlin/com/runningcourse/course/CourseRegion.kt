@@ -1,14 +1,11 @@
 package com.runningcourse.course
 
 import java.sql.ResultSet
-import java.time.OffsetDateTime
 
 data class CourseRegion(
     val sido: String?,
     val sigungu: String?,
     val eupMyeonDong: String?,
-    val source: String,
-    val resolvedAt: OffsetDateTime,
 )
 
 fun interface CourseRegionResolver {
@@ -24,7 +21,5 @@ fun ResultSet.readCourseRegion(): CourseRegion? {
         sido = sido,
         sigungu = sigungu,
         eupMyeonDong = eupMyeonDong,
-        source = getString("region_source") ?: "OpenStreetMap Nominatim",
-        resolvedAt = getObject("region_resolved_at", OffsetDateTime::class.java),
     )
 }
