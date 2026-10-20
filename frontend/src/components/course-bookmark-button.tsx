@@ -1,37 +1,43 @@
 "use client";
-
+import bookmarkStyles from "@/components/course-bookmark-button.module.css";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
-export function CourseBookmarkButton({ courseId, initialBookmarked, refreshOnChange = false }: { courseId: number; initialBookmarked: boolean; refreshOnChange?: boolean }) {
-  const router = useRouter();
-  const [bookmarked, setBookmarked] = useState(initialBookmarked);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const inFlight = useRef(false);
-
-  async function toggle() {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    setPending(true);
-    setError("");
-    try {
-      const response = await fetch(`/api/bookmarks/${courseId}`, { method: bookmarked ? "DELETE" : "PUT" });
-      if (!response.ok) {
-        const body = await response.json();
-        throw new Error(body.message || "북마크를 변경하지 못했어요.");
-      }
-      setBookmarked(!bookmarked);
-      if (refreshOnChange) router.refresh();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "연결을 확인하고 다시 시도해 주세요.");
-    } finally {
-      inFlight.current = false;
-      setPending(false);
+export function CourseBookmarkButton({ courseId, initialBookmarked, refreshOnChange = false, className = "" }: {
+    courseId: number;
+    initialBookmarked: boolean;
+    refreshOnChange?: boolean;
+    className?: string;
+}) {
+    const router = useRouter();
+    const [bookmarked, setBookmarked] = useState(initialBookmarked);
+    const [pending, setPending] = useState(false);
+    const [error, setError] = useState("");
+    const inFlight = useRef(false);
+    async function toggle() {
+        if (inFlight.current)
+            return;
+        inFlight.current = true;
+        setPending(true);
+        setError("");
+        try {
+            const response = await fetch(`/api/bookmarks/${courseId}`, { method: bookmarked ? "DELETE" : "PUT" });
+            if (!response.ok) {
+                const body = await response.json();
+                throw new Error(body.message || "북마크를 변경하지 못했어요.");
+            }
+            setBookmarked(!bookmarked);
+            if (refreshOnChange)
+                router.refresh();
+        }
+        catch (cause) {
+            setError(cause instanceof Error ? cause.message : "연결을 확인하고 다시 시도해 주세요.");
+        }
+        finally {
+            inFlight.current = false;
+            setPending(false);
+        }
     }
-  }
-
-  return <div className="course-bookmark">
+    return <div className={bookmarkStyles.courseBookmark + " " + className}>
     <button type="button" aria-pressed={bookmarked} disabled={pending} onClick={toggle}>
       {pending ? "변경 중…" : bookmarked ? "★ 북마크됨 · 해제" : "☆ 북마크"}
     </button>

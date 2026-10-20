@@ -1,0 +1,94 @@
+.routePreview {
+  background: #eff3ff;
+  color: #1450ff;
+  border-radius: 7px;
+  margin-block: 12px;
+  position: relative;
+  overflow: hidden;
+  height: 172px;
+}
+
+.bookmarkPreview {
+  order: -1;
+  margin: -22px -22px 18px;
+  border-radius: 9px 9px 0 0;
+  height: 172px;
+}
+
+.previewMapCanvas {
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.previewMapCanvas :global(.leaflet-tile-pane) {
+  filter: saturate(.45) contrast(.9) brightness(1.06);
+}
+
+.previewPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #eff3ff;
+  color: #687387;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.previewStartLegend {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fffffff0;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #24416c;
+}
+
+.previewStartLegend i {
+  width: 6px;
+  height: 6px;
+  background: #00c96b;
+  border-radius: 50%;
+}
+
+.previewAttribution {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: #fffffff0;
+  padding: 1px 4px;
+  color: #425575;
+  font-size: 1rem;
+  z-index: 2;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+.previewAttribution a {
+  text-decoration: underline;
+}
+
+.previewTileError {
+  position: absolute;
+  left: 5px;
+  bottom: 30px;
+  background: #fffffff0;
+  color: #687387;
+  font-size: 1rem;
+  padding: 2px 5px;
+}
+
+@media (max-width: 600px) {
+  .bookmarkPreview {
+    margin: -20px -20px 18px;
+  }
+}

@@ -1,0 +1,156 @@
+.editorMap:where(fieldset:disabled *) {
+  pointer-events: none;
+}
+
+.editorMap {
+  width: 100%;
+  isolation: isolate;
+  height: 580px;
+  border: 0;
+  border-radius: 10px;
+}
+
+.editorToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.editorToolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 650;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.editorToolbar button:disabled {
+  cursor: not-allowed;
+  color: #657084;
+  background: #f2f4f8;
+  border-color: #e6eaf1;
+}
+
+.routeEditorPoint span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1450ff;
+  border: 2px solid white;
+  color: white;
+  font: 700 1rem Arial;
+  box-shadow: 0 1px 5px #0005;
+}
+
+.routeEditorPoint.selected span {
+  background: #bd581f;
+}
+
+.editorMapTools {
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 2px 8px #10214406;
+}
+
+.editorToolbar svg {
+  flex-shrink: 0;
+}
+
+.editorToolUndo svg {
+  color: #4733d9;
+}
+
+.editorToolbar .editorToolDelete {
+  color: #a32736;
+  background: #fff2f3;
+}
+
+.editorToolbar .editorToolLoop {
+  color: #362499;
+  background: #e9e5ff;
+  border-color: #d9d1ff;
+}
+
+.editorToolbar .editorToolReset {
+  color: #526078;
+}
+
+.editorToolbar .editorToolLocation {
+  color: #116446;
+  background: #edf8f1;
+}
+
+.editorToolbar button:not(:disabled):hover {
+  background: #eff2f8;
+  border-color: #d5dce9;
+}
+
+.editorToolbar .editorToolDelete:not(:disabled):hover {
+  background: #ffe2e5;
+  border-color: #efb6bf;
+}
+
+.editorToolbar .editorToolLoop:not(:disabled):hover {
+  background: #dcd4ff;
+  border-color: #b7a9fa;
+}
+
+.editorToolbar .editorToolLocation:not(:disabled):hover {
+  background: #daf0e3;
+  border-color: #9ac9af;
+}
+
+.editorToolbar button:disabled svg {
+  color: #8a94a6;
+}
+
+.editorToolbar button:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.editorToolDivider {
+  width: 1px;
+  height: 28px;
+  margin-inline: 2px;
+  background: var(--line);
+}
+
+.editorLocationStatus {
+  margin: 8px 6px 2px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .editorMap {
+    height: 410px;
+  }
+  .editorToolbar {
+    align-items: stretch;
+  }
+  .editorToolbar button {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+  .editorToolDivider {
+    width: 100%;
+    height: 1px;
+    margin: 4px 0;
+  }
+}

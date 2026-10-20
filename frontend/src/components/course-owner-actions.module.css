@@ -1,0 +1,38 @@
+.ownerActions button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: var(--primary);
+  min-height: 44px;
+  font-size: 1rem;
+  margin-inline: 0;
+}
+
+.shareButton {
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--primary);
+  min-height: 44px;
+  width: 100%;
+  font-size: 1rem;
+  background: #edf2ff;
+  border: 0;
+}
+
+.ownerActions {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f4f7ff;
+  border: 0;
+  font-size: 1rem;
+}
+
+.ownerActions > button {
+  margin-inline: 6px;
+}
+
+.ownerActions > a {
+  margin-inline: 6px;
+}

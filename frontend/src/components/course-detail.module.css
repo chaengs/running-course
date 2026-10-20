@@ -1,0 +1,169 @@
+.detailGrid {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(0,1fr) 340px;
+  gap: 26px;
+}
+
+.routeSection {
+  min-width: 0;
+  background: transparent;
+}
+
+.routeHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 8px 18px;
+  background: white;
+  padding: 20px 22px 12px;
+  border-radius: 10px 10px 0 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.routeHeading h2 {
+  font-size: 1.5rem;
+}
+
+.routeHeading > span {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.detailStats {
+  margin-block: 26px 0;
+  margin-top: 22px;
+}
+
+.detailStats > div {
+  border-bottom: 1px solid #edf0f7;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 14px;
+}
+
+.detailStats dt {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.detailStats dd {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.detailStats .detailDistance {
+  letter-spacing: -.05em;
+  color: var(--ink);
+  font-size: 2.6rem;
+  font-weight: 750;
+}
+
+.detailDistance span {
+  margin-left: 5px;
+  color: var(--muted);
+  letter-spacing: normal;
+  font-size: 1rem;
+}
+
+.courseDescription h3 {
+  margin: 24px 0 10px;
+  font-size: 1.25rem;
+}
+
+.courseDescription p {
+  margin: 0;
+  color: var(--muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.routeHeading h2::before {
+  content: "•";
+  color: var(--primary);
+  margin-right: 9px;
+}
+
+.detailStats > div:first-child {
+  background: #eef3ff;
+  padding: 16px;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.routeGuide {
+  margin-top: 28px;
+  padding: 24px;
+  background: white;
+  border-radius: 10px;
+}
+
+.routeGuide h2 {
+  font-size: 1.5rem;
+}
+
+.guideGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.guideGrid > div {
+  padding: 18px;
+  border-radius: 7px;
+  background: #f0f4ff;
+}
+
+.guideGrid span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .05em;
+}
+
+.guideGrid h3 {
+  font-size: 1.125rem;
+  margin: 8px 0;
+}
+
+.guideGrid p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (max-width: 1160px) {
+  .detailGrid {
+    grid-template-columns: minmax(0,1fr) 310px;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 940px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .routeHeading {
+    padding: 16px 14px 10px;
+  }
+  .routeHeading > span {
+    font-size: 1rem;
+  }
+  .guideGrid {
+    grid-template-columns: 1fr;
+  }
+  .routeGuide {
+    padding: 20px;
+  }
+}

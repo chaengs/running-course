@@ -1,0 +1,33 @@
+.courseBookmark {
+  margin-block: 1rem;
+}
+
+.courseBookmark button {
+  min-height: 44px;
+  font: inherit;
+  cursor: pointer;
+  background: var(--primary);
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  font-size: 1rem;
+  padding: 11px 16px;
+  width: 100%;
+  font-weight: 700;
+}
+
+.courseBookmark button[aria-pressed="true"] {
+  background: #dcffeb;
+  color: #006f37;
+}
+
+.courseBookmark button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.courseBookmark p {
+  margin-block: .5rem;
+  font-size: 1rem;
+  color: var(--muted);
+}

@@ -1,0 +1,278 @@
+.courseElevation {
+  margin-top: 24px;
+  font-size: 1rem;
+}
+
+.elevationMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.elevationMetrics > div {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.elevationMetrics dt {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.elevationMetrics dt > span {
+  color: #1450ff;
+}
+
+.elevationMetrics dd {
+  margin: 10px 0 0;
+  font-size: 1.8rem;
+  line-height: 1.3;
+  font-weight: 750;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+
+.elevationMetrics dd > span {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.elevationPanel {
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.elevationHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.elevationHeading h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.elevationHeading button {
+  min-height: 44px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  background: #eff3ff;
+  color: #1450ff;
+  border: 1px solid #dce5ff;
+  border-radius: 8px;
+}
+
+.elevationHeading button:disabled {
+  opacity: .6;
+}
+
+.elevationSubtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 8px 0 24px;
+}
+
+.elevationDisclaimer {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.elevationSource {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.elevationChart {
+  display: block;
+  width: 100%;
+  height: 190px;
+  overflow: visible;
+}
+
+.elevationChartLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.elevationDistanceAxis {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.elevationPoint {
+  display: block;
+  background: #f5f7ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+}
+
+.elevationEmpty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  min-height: 190px;
+  padding: 24px;
+  border: 1px dashed #c9d6f5;
+  border-radius: 10px;
+  background: #f8faff;
+  color: var(--muted);
+}
+
+.elevationError {
+  color: #a52e21;
+  font-size: 1rem;
+}
+
+a.elevationSource {
+  text-decoration: underline;
+}
+
+.elevationMetricHelp {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.elevationDifficultyValue[data-level="LOW"] {
+  color: #137443;
+}
+
+.elevationDifficultyValue[data-level="MEDIUM"] {
+  color: #996000;
+}
+
+.elevationDifficultyValue[data-level="HIGH"] {
+  color: #b52e36;
+}
+
+.elevationDifficultyGuide {
+  margin-block: 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  font-size: 1rem;
+}
+
+.elevationDifficultyGuide summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: list-item;
+  align-content: center;
+}
+
+.elevationDifficultyGuide p {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.elevationDifficultyGuide dl {
+  margin-block: 12px;
+}
+
+.elevationDifficultyGuide dl > div {
+  display: flex;
+  gap: 16px;
+  margin-block: 8px;
+}
+
+.elevationDifficultyGuide dt {
+  font-weight: 700;
+}
+
+.elevationDifficultyGuide dd {
+  margin: 0;
+}
+
+.elevationDifficultyGuide a {
+  text-decoration: underline;
+  color: var(--primary);
+}
+
+.elevationPlot {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  column-gap: 8px;
+  margin-top: 12px;
+}
+
+.elevationHeightAxis {
+  position: relative;
+  height: 190px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.elevationHeightAxis > span {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.elevationPlot .elevationDistanceAxis {
+  grid-column: 2;
+  font-variant-numeric: tabular-nums;
+}
+
+.elevationScaleNote {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 12px 0;
+}
+
+.elevationAutoStatus {
+  color: var(--primary);
+  background: #eff3ff;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .elevationMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .elevationPanel {
+    padding: 16px;
+  }
+  .elevationMetrics {
+    gap: 8px;
+  }
+  .elevationMetrics > div {
+    padding: 12px;
+  }
+  .elevationMetrics dd {
+    font-size: 1.6rem;
+  }
+  .elevationHeading {
+    flex-wrap: wrap;
+  }
+}

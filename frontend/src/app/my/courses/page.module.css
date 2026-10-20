@@ -1,0 +1,96 @@
+.myCoursePanel {
+  padding: 22px 0 0;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.myCoursePanel > div:first-child {
+  padding-inline: 24px;
+}
+
+.myCoursePanel h2 {
+  font-size: 1.5rem;
+}
+
+.courseTableScroll {
+  overflow-x: auto;
+}
+
+.courseTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.courseTable th {
+  background: #eef3ff;
+  color: #74809b;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 15px 24px;
+}
+
+.courseTable td {
+  padding: 22px 24px;
+  border-bottom: 1px solid #f0f2f8;
+  font-size: 1rem;
+}
+
+.courseTable td:first-child {
+  width: 58%;
+  font-weight: 700;
+}
+
+.courseTable td:first-child a {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.courseTable tr:hover td {
+  background: #f8faff;
+}
+
+.tableRouteIcon {
+  font-size: 1.7rem;
+  color: var(--primary);
+}
+
+.statusBadge {
+  font-size: 1rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.statusBadge.published {
+  background: #00e575;
+  color: #00582c;
+}
+
+.statusBadge.private {
+  background: #edf1f9;
+  color: #6c7891;
+}
+
+.tableEdit {
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+@media (max-width: 600px) {
+  .courseTable th {
+    padding: 14px;
+  }
+  .courseTable td {
+    padding: 14px;
+  }
+  .courseTable {
+    min-width: 560px;
+  }
+}

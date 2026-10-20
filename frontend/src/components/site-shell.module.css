@@ -1,0 +1,279 @@
+.siteHeader::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc((min(1360px, 100vw - 80px) - 100vw) / 2);
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+
+.siteHeader {
+  margin-inline: auto;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  width: min(1360px, calc(100% - 80px));
+  min-height: 84px;
+  padding-block: 16px;
+  gap: 28px;
+  border: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.siteFooter {
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  width: min(1360px, calc(100% - 80px));
+  margin-top: 40px;
+  padding-block: 38px;
+  font-size: 1rem;
+  align-items: flex-end;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -.045em;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.brandMark {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  letter-spacing: -.08em;
+  padding-right: 4px;
+  background: none;
+  color: var(--primary);
+  width: 28px;
+  height: 32px;
+  padding: 0;
+  border-radius: 0;
+  font-size: 2.3rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.headerCaption {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.siteFooter span:first-child {
+  letter-spacing: .1em;
+}
+
+.skipLink {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+}
+
+.skipLink:focus {
+  top: 12px;
+}
+
+.accountNav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 1rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.accountNav button {
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: var(--primary);
+  min-height: 44px;
+  border: 0;
+  font-size: 1rem;
+  padding-inline: 6px;
+}
+
+.brand b {
+  color: var(--primary);
+}
+
+.siteFooter b {
+  color: var(--primary);
+}
+
+.siteNav {
+  display: flex;
+  align-items: stretch;
+  gap: 26px;
+  margin-right: auto;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.siteNav a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 650;
+  color: #5b6474;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.siteNav a[aria-current="page"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.accountNav .headerCreate {
+  padding: 10px 18px;
+  background: var(--primary);
+  color: white;
+  border-radius: 24px;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.userAvatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+}
+
+.headerCreate:hover {
+  background: #003bdc;
+}
+
+.siteFooter strong {
+  font-size: 1rem;
+  color: var(--ink);
+  letter-spacing: -.04em;
+}
+
+.siteFooter p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.siteHeader > * {
+  min-width: 0;
+}
+
+@media (max-width: 1160px) {
+  .siteHeader {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .siteNav {
+    gap: 18px;
+  }
+  .accountNav {
+    margin-left: auto;
+  }
+  .accountNav .userAvatar {
+    display: none;
+  }
+}
+
+@media (max-width: 940px) {
+  .siteHeader {
+    width: calc(100% - 40px);
+    padding-top: 16px;
+    padding-bottom: 0;
+    gap: 6px 14px;
+    background: white;
+  }
+  .siteHeader::before {
+    inset-inline: -20px;
+  }
+  .siteFooter {
+    width: calc(100% - 40px);
+  }
+  .siteNav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 28px;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .headerCaption {
+    display: none;
+  }
+  .siteHeader {
+    height: auto;
+    flex-wrap: wrap;
+    width: calc(100% - 32px);
+  }
+  .siteHeader::before {
+    inset-inline: -16px;
+  }
+  .accountNav {
+    font-size: 1rem;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .siteFooter {
+    width: calc(100% - 32px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .brand {
+    font-size: 1rem;
+  }
+  .brandMark {
+    width: 22px;
+    font-size: 1.8rem;
+  }
+  .accountNav .headerCreate {
+    font-size: 1rem;
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+  .accountNav > span:not(.userAvatar) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .siteNav {
+    gap: 8px 20px;
+    overflow: visible;
+  }
+  .siteNav a {
+    font-size: 1rem;
+    min-height: 46px;
+  }
+}
