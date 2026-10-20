@@ -44,7 +44,7 @@
   align-items: center;
   font-weight: 800;
   font-size: 1rem;
-  letter-spacing: -.045em;
+  letter-spacing: -0.045em;
   gap: 9px;
   white-space: nowrap;
 }
@@ -53,7 +53,7 @@
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  letter-spacing: -.08em;
+  letter-spacing: -0.08em;
   padding-right: 4px;
   background: none;
   color: var(--primary);
@@ -72,7 +72,7 @@
 }
 
 .siteFooter span:first-child {
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 
 .skipLink {
@@ -156,17 +156,6 @@
   gap: 4px;
 }
 
-.userAvatar {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: white;
-  font-weight: 700;
-}
-
 .headerCreate:hover {
   background: #003bdc;
 }
@@ -174,7 +163,7 @@
 .siteFooter strong {
   font-size: 1rem;
   color: var(--ink);
-  letter-spacing: -.04em;
+  letter-spacing: -0.04em;
 }
 
 .siteFooter p {
@@ -196,9 +185,6 @@
   }
   .accountNav {
     margin-left: auto;
-  }
-  .accountNav .userAvatar {
-    display: none;
   }
 }
 
@@ -261,13 +247,7 @@
     padding: 10px 14px;
     min-height: 44px;
   }
-  .accountNav > span:not(.userAvatar) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: none;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
+
   .siteNav {
     gap: 8px 20px;
     overflow: visible;
