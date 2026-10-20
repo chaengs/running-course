@@ -23,7 +23,7 @@
 }
 
 .previewMapCanvas :global(.leaflet-tile-pane) {
-  filter: saturate(.45) contrast(.9) brightness(1.06);
+  filter: saturate(0.45) contrast(0.9) brightness(1.06);
 }
 
 .previewPlaceholder {
@@ -36,27 +36,6 @@
   color: #687387;
   text-align: center;
   font-size: 1rem;
-}
-
-.previewStartLegend {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fffffff0;
-  padding: 3px 7px;
-  border-radius: 4px;
-  font-size: 1rem;
-  color: #24416c;
-}
-
-.previewStartLegend i {
-  width: 6px;
-  height: 6px;
-  background: #00c96b;
-  border-radius: 50%;
 }
 
 .previewAttribution {
