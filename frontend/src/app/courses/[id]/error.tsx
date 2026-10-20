@@ -33,7 +33,7 @@ export default function CourseDetailError({
             {pending ? "다시 불러오는 중…" : "다시 시도"}
           </button>
           <Link className={uiStyles.backLink} href="/">
-            코스 목록으로
+            목록으로
           </Link>
         </div>
       </section>
