@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getMyCourses, type MyCourse } from "@/lib/courses";
-import { courseDisplayName, formatDistance } from "@/lib/course-format";
+import { formatDistance } from "@/lib/course-format";
 
 type VisibilityFilter = "all" | "published" | "private";
 type CourseSort = "recent" | "views" | "bookmarks";
@@ -163,12 +163,7 @@ async function MyCourses({ searchParams }: PageProps) {
         <div className={myStyles.collectionToolbar}>
           <div>
             <p className={uiStyles.eyebrow}>COURSE LIBRARY</p>
-            <h2 id="my-course-list">
-              내가 만든 코스{" "}
-              <span className={uiStyles.courseCount}>
-                {count(stats.totalCourses)}
-              </span>
-            </h2>
+            <h2 id="my-course-list">내가 만든 코스</h2>
           </div>
           <form className={myStyles.sortForm} action="/my/courses" method="get">
             <input type="hidden" name="visibility" value={visibility} />
@@ -240,7 +235,7 @@ async function MyCourses({ searchParams }: PageProps) {
                   <th scope="col">생성일</th>
                   <th scope="col">코스 유형</th>
                   <th scope="col">총 거리</th>
-                  <th scope="col">러너 북마크</th>
+                  <th scope="col">총 북마크 수</th>
                   <th scope="col">총 조회수</th>
                   <th scope="col">공개 상태</th>
                   <th scope="col">
@@ -284,16 +279,13 @@ async function MyCourses({ searchParams }: PageProps) {
             )}
           </nav>
         )}
-        <p className={myStyles.listFootnote}>
-          한 페이지에 코스 최대 6개를 표시합니다.
-        </p>
       </section>
     </>
   );
 }
 
 function CourseRow({ course }: { course: MyCourse }) {
-  const name = courseDisplayName(course.name);
+  const name = course.name;
   const courseTypeLabel = course.courseType === "LOOP" ? "순환형" : "왕복형";
   const region = course.region
     ? [course.region.sido, course.region.sigungu, course.region.eupMyeonDong]
@@ -303,13 +295,6 @@ function CourseRow({ course }: { course: MyCourse }) {
   return (
     <tr>
       <td className={myStyles.courseNameCell}>
-        <span className={myStyles.routeThumbnail} aria-hidden="true">
-          <svg viewBox="0 0 44 44" fill="none">
-            <path d="M12 32c3-2 3-7 7-7s5 5 9 1 4-9 7-12" />
-            <circle cx="12" cy="32" r="3" />
-            <circle cx="35" cy="14" r="3" />
-          </svg>
-        </span>
         <div className={myStyles.courseNameText}>
           <Link prefetch={false} href={`/courses/${course.id}`}>
             {name}
@@ -328,7 +313,13 @@ function CourseRow({ course }: { course: MyCourse }) {
                   strokeWidth="1.8"
                   strokeLinejoin="round"
                 />
-                <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="2.5"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                />
               </svg>
               <span>{region}</span>
             </span>

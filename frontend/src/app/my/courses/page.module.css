@@ -37,7 +37,7 @@
 .metricTop p {
   margin: 0;
   color: #71809a;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
 
 .metricIcon {
@@ -78,7 +78,7 @@
 .metricValue strong {
   font-size: clamp(2rem, 3vw, 2.5rem);
   font-weight: 750;
-  letter-spacing: -.05em;
+  letter-spacing: -0.05em;
   overflow-wrap: anywhere;
 }
 
@@ -225,6 +225,7 @@
 .courseTable th:first-child,
 .courseTable td:first-child {
   padding-left: 24px;
+  text-align: left;
 }
 
 .courseTable th:last-child,
@@ -255,42 +256,6 @@
 
 .courseNameCell > * {
   vertical-align: middle;
-}
-
-.routeThumbnail {
-  display: inline-grid;
-  width: 56px;
-  height: 56px;
-  margin-right: 14px;
-  place-items: center;
-  border-radius: 12px;
-  color: var(--primary);
-  background: #edf2ff;
-  vertical-align: middle;
-}
-
-.routeThumbnail svg {
-  width: 42px;
-  height: 42px;
-}
-
-.routeThumbnail path {
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.routeThumbnail circle:first-of-type {
-  fill: var(--accent);
-  stroke: white;
-  stroke-width: 1.5;
-}
-
-.routeThumbnail circle:last-of-type {
-  fill: var(--primary);
-  stroke: white;
-  stroke-width: 1.5;
 }
 
 .courseNameText {
@@ -600,12 +565,24 @@
     grid-column: 1 / -1;
     padding-left: 6px;
   }
-  .courseTable td:nth-child(2)::before { content: "생성일: "; }
-  .courseTable td:nth-child(3)::before { content: "코스 유형: "; }
-  .courseTable td:nth-child(4)::before { content: "총 거리: "; }
-  .courseTable td:nth-child(5)::before { content: "러너 북마크: "; }
-  .courseTable td:nth-child(6)::before { content: "총 조회수: "; }
-  .courseTable td:nth-child(7)::before { content: "공개 상태: "; }
+  .courseTable td:nth-child(2)::before {
+    content: "생성일: ";
+  }
+  .courseTable td:nth-child(3)::before {
+    content: "코스 유형: ";
+  }
+  .courseTable td:nth-child(4)::before {
+    content: "총 거리: ";
+  }
+  .courseTable td:nth-child(5)::before {
+    content: "총 북마크 수: ";
+  }
+  .courseTable td:nth-child(6)::before {
+    content: "총 조회수: ";
+  }
+  .courseTable td:nth-child(7)::before {
+    content: "공개 상태: ";
+  }
   .courseTable td:nth-child(2),
   .courseTable td:nth-child(3),
   .courseTable td:nth-child(4),
@@ -641,9 +618,14 @@
 }
 
 @media (min-width: 681px) and (max-width: 1180px) {
-  .courseTableScroll { padding-inline: 12px; }
+  .courseTableScroll {
+    padding-inline: 12px;
+  }
   .courseTable,
-  .courseTable tbody { display: block; min-width: 0; }
+  .courseTable tbody {
+    display: block;
+    min-width: 0;
+  }
   .courseTable thead {
     position: absolute;
     width: 1px;
@@ -675,12 +657,28 @@
     font-weight: 650;
     white-space: nowrap;
   }
-  .courseTable td:first-child { grid-column: 1 / -1; }
-  .courseTable td:nth-child(2)::before { content: "생성일:"; }
-  .courseTable td:nth-child(3)::before { content: "코스 유형:"; }
-  .courseTable td:nth-child(4)::before { content: "총 거리:"; }
-  .courseTable td:nth-child(5)::before { content: "러너 북마크:"; }
-  .courseTable td:nth-child(6)::before { content: "총 조회수:"; }
-  .courseTable td:nth-child(7)::before { content: "공개 상태:"; }
-  .courseTable td:last-child { grid-column: 1 / -1; }
+  .courseTable td:first-child {
+    grid-column: 1 / -1;
+  }
+  .courseTable td:nth-child(2)::before {
+    content: "생성일:";
+  }
+  .courseTable td:nth-child(3)::before {
+    content: "코스 유형:";
+  }
+  .courseTable td:nth-child(4)::before {
+    content: "총 거리:";
+  }
+  .courseTable td:nth-child(5)::before {
+    content: "총 북마크 수:";
+  }
+  .courseTable td:nth-child(6)::before {
+    content: "총 조회수:";
+  }
+  .courseTable td:nth-child(7)::before {
+    content: "공개 상태:";
+  }
+  .courseTable td:last-child {
+    grid-column: 1 / -1;
+  }
 }
