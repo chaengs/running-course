@@ -3,7 +3,7 @@
   position: absolute;
   z-index: -1;
   inset: 0 calc((min(1360px, 100vw - 80px) - 100vw) / 2);
-  background: white;
+  background: var(--color-surface);
   border-bottom: 1px solid var(--line);
 }
 
@@ -82,7 +82,7 @@
   z-index: 100;
   padding: 12px;
   background: var(--primary);
-  color: white;
+  color: var(--color-surface);
 }
 
 .skipLink:focus {
@@ -103,7 +103,7 @@
 .accountNav button {
   border-radius: 6px;
   padding: 8px 12px;
-  background: white;
+  background: var(--color-surface);
   color: var(--primary);
   min-height: 44px;
   border: 0;
@@ -134,7 +134,7 @@
   align-items: center;
   font-size: 1rem;
   font-weight: 650;
-  color: #5b6474;
+  color: var(--color-neutral);
   border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
@@ -147,7 +147,7 @@
 .accountNav .headerCreate {
   padding: 10px 18px;
   background: var(--primary);
-  color: white;
+  color: var(--color-surface);
   border-radius: 24px;
   font-weight: 700;
   min-height: 44px;
@@ -157,7 +157,7 @@
 }
 
 .headerCreate:hover {
-  background: #003bdc;
+  background: var(--color-primary-hover);
 }
 
 .siteFooter strong {
@@ -194,7 +194,7 @@
     padding-top: 16px;
     padding-bottom: 0;
     gap: 6px 14px;
-    background: white;
+    background: var(--color-surface);
   }
   .siteHeader::before {
     inset-inline: -20px;

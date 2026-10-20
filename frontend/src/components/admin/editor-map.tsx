@@ -82,7 +82,7 @@ function EditorMap(props: Props) {
           radius: 8,
           color: "white",
           weight: 3,
-          fillColor: "#2563eb",
+          fillColor: "var(--color-primary)",
           fillOpacity: 1,
           interactive: false,
         }).addTo(instance);
@@ -191,7 +191,7 @@ function EditorMap(props: Props) {
     if (!map.current) return;
     const layer = L.layerGroup().addTo(map.current);
     markers.current = [];
-    L.polyline(props.points, { color: "#1450ff", weight: 5 }).addTo(layer);
+    L.polyline(props.points, { color: "var(--color-primary)", weight: 5 }).addTo(layer);
     props.points.forEach((point, index) => {
       if (props.closed && index === props.points.length - 1) return;
       const marker = L.marker(point, {

@@ -1,14 +1,14 @@
 .routeMap {
   width: 100%;
   border-radius: 12px;
-  background: #edf2ff;
+  background: var(--color-primary-soft);
   isolation: isolate;
   height: 465px;
 }
 
 .routeMapWrapper {
   overflow: hidden;
-  background: white;
+  background: var(--color-surface);
   border: 12px solid white;
   border-top: 0;
   border-radius: 0 0 10px 10px;
@@ -18,7 +18,7 @@
   border-radius: 0;
 }
 
-.routeMap :global(.leaflet-control-attribution.leaflet-control) {
+.routeMap:global(.leaflet-control-attribution.leaflet-control) {
   font-size: 0.5rem;
   line-height: 1.4;
 }
@@ -32,21 +32,6 @@
   flex-wrap: wrap;
 }
 
-.mapLegend {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  flex-wrap: wrap;
-  font-size: 1rem;
-}
-
-.mapLegend i {
-  width: 20px;
-  height: 3px;
-  background: var(--primary);
-}
-
 .mapTools button {
   padding: 9px 12px;
   border-radius: 6px;
@@ -54,13 +39,13 @@
   min-height: 44px;
   font-size: 1rem;
   border: 0;
-  background: #edf2ff;
+  background: var(--color-primary-soft);
 }
 
 .mapError {
   margin: 0;
   padding: 0 16px 14px;
-  color: #7b6030;
+  color: var(--color-neutral);
   line-height: 1.7;
   font-size: 1rem;
 }
@@ -76,7 +61,7 @@
   place-items: center;
   padding: 24px;
   text-align: center;
-  background: #edf2ff;
+  background: var(--color-primary-soft);
   color: var(--muted);
   font-size: 1.125rem;
   z-index: 1;
@@ -88,8 +73,8 @@
 }
 
 .mapTools button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
+  opacity: 0.5;
+  cursor:not-allowed;
 }
 
 .routeEndpoint span {
@@ -100,11 +85,11 @@
   border: 3px solid white;
   border-radius: 50%;
   background: var(--primary);
-  color: white;
+  color: var(--color-surface);
   font-family: "Pretendard", sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  box-shadow: 0 2px 7px #0005;
+  box-shadow: var(--shadow-marker);
 }
 
 @media (max-width: 600px) {

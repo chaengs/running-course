@@ -2,7 +2,7 @@
   width: 100%;
   margin-block: 24px;
   padding: 16px;
-  background: #f2f5fc;
+  background: var(--color-neutral-soft);
   border-radius: 12px;
 }
 
@@ -35,7 +35,7 @@
   align-items: center;
   padding: 3px;
   border-radius: 20px;
-  background: #687387;
+  background: var(--color-neutral);
   flex-shrink: 0;
   width: 48px;
   height: 28px;
@@ -43,7 +43,7 @@
 
 .visibilityTrack > span {
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-surface);
   transform: translateX(0);
   height: 22px;
   width: 22px;
@@ -58,13 +58,13 @@
 }
 
 .visibilityToggle input:focus-visible + .visibilityTrack {
-  outline: 3px solid #bd581f;
+  outline: 3px solid var(--color-primary);
   outline-offset: 4px;
 }
 
 .visibilityToggle input:disabled + .visibilityTrack {
   opacity: .5;
-  cursor: not-allowed;
+  cursor:not-allowed;
 }
 
 .visibilityCopy {

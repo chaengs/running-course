@@ -6,6 +6,7 @@ import { AccountNav } from "@/components/account-nav";
 import { MyCoursesToast } from "@/components/my-courses-toast";
 import { SiteNav, SiteNavFallback } from "@/components/site-nav";
 import "./reset.css";
+import "@/styles/palette.css";
 import "./globals.css";
 export const metadata: Metadata = {
     title: "Running Course | 러닝 코스 탐색",

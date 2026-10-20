@@ -156,8 +156,8 @@ function ElevationChart({
           >
             <defs>
               <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#1450ff" stopOpacity=".24" />
-                <stop offset="100%" stopColor="#1450ff" stopOpacity=".01" />
+                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity=".24" />
+                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity=".01" />
               </linearGradient>
             </defs>
             {axis.ticks.map((tick) => (
@@ -167,7 +167,7 @@ function ElevationChart({
                 x2="700"
                 y1={height(tick)}
                 y2={height(tick)}
-                stroke="#e5e9f3"
+                stroke="var(--color-neutral)"
                 strokeDasharray="4 5"
               />
             ))}
@@ -178,7 +178,7 @@ function ElevationChart({
             <polyline
               points={line}
               fill="none"
-              stroke="#1450ff"
+              stroke="var(--color-primary)"
               strokeWidth="3"
               vectorEffect="non-scaling-stroke"
             />
@@ -189,14 +189,14 @@ function ElevationChart({
                   x2={x(hoveredIndex)}
                   y1="15"
                   y2="195"
-                  stroke="#8795ad"
+                  stroke="var(--color-primary)"
                   strokeDasharray="4 4"
                 />
                 <circle
                   cx={x(hoveredIndex)}
                   cy={y(hoveredIndex)}
                   r="6"
-                  fill="#00b96b"
+                  fill="var(--color-secondary)"
                   stroke="white"
                   strokeWidth="3"
                 />
@@ -208,7 +208,7 @@ function ElevationChart({
                   cx={x(0)}
                   cy={y(0)}
                   r="5"
-                  fill="#00b96b"
+                  fill="var(--color-secondary)"
                   stroke="white"
                   strokeWidth="2"
                 />
@@ -216,7 +216,7 @@ function ElevationChart({
                   cx={x(samples.length - 1)}
                   cy={y(samples.length - 1)}
                   r="5"
-                  fill="#1450ff"
+                  fill="var(--color-primary)"
                   stroke="white"
                   strokeWidth="2"
                 />

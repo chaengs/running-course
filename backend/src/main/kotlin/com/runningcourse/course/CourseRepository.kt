@@ -9,9 +9,12 @@ class CourseRepository(
     private val jdbcTemplate: JdbcTemplate,
     private val jsonMapper: JsonMapper,
 ) {
-    fun findPublished(limit: Int, offset: Long, search: CourseSearch = CourseSearch()): List<CourseSummary> {
+    fun findPublished(limit: Int, offset: Long, search: CourseSearch = CourseSearch(), viewerId: Long? = null): List<CourseSummary> {
         val filter = filters(search)
         val center = search.center
+        val bookmarkExpression = if (viewerId != null) {
+            "EXISTS(SELECT 1 FROM course_bookmarks b WHERE b.course_id = courses.id AND b.user_id = ?)"
+        } else "FALSE"
         val distanceExpression = if (center != null) {
             "ST_Distance(start_location, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography)"
         } else "NULL::double precision"
@@ -22,6 +25,8 @@ class CourseRepository(
             """
             SELECT id, name, distance_meters, course_type,
                    region_sido, region_sigungu, region_eup_myeon_dong,
+                   elevation_profile #>> '{difficulty,level}' AS elevation_difficulty,
+                   $bookmarkExpression AS is_bookmarked,
                    ST_Y(start_location::geometry) AS latitude,
                    ST_X(start_location::geometry) AS longitude,
                    $distanceExpression AS distance_to_start_meters
@@ -39,9 +44,11 @@ class CourseRepository(
                     startLocation = StartLocation(rs.getDouble("latitude"), rs.getDouble("longitude")),
                     distanceToStartMeters = rs.getObject("distance_to_start_meters", Double::class.javaObjectType),
                     region = rs.readCourseRegion(),
+                    elevationDifficulty = rs.getString("elevation_difficulty")?.let { ElevationDifficultyLevel.valueOf(it) },
+                    isBookmarked = rs.getBoolean("is_bookmarked"),
                 )
             },
-            *(distanceArgs + filter.args + listOf(limit, offset)).toTypedArray(),
+            *((if (viewerId != null) listOf(viewerId) else emptyList()) + distanceArgs + filter.args + listOf(limit, offset)).toTypedArray(),
         )
     }
 

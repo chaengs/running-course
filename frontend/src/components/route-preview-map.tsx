@@ -96,7 +96,7 @@ export default function RoutePreviewMap({
         });
         tiles.addTo(map);
         L.polyline(path, {
-          color: "#1450ff",
+          color: "var(--color-primary)",
           weight: 3,
           opacity: 1,
           interactive: false,
@@ -105,7 +105,7 @@ export default function RoutePreviewMap({
           radius: 5,
           color: "white",
           weight: 2,
-          fillColor: "#00c96b",
+          fillColor: "var(--color-secondary)",
           fillOpacity: 1,
           interactive: false,
         }).addTo(map);

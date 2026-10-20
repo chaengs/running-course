@@ -23,7 +23,7 @@
   justify-content: center;
   gap: 8px;
   border-radius: 9px;
-  background: white;
+  background: var(--color-surface);
   color: var(--ink);
   font-size: 1rem;
   line-height: 1.5;
@@ -33,9 +33,9 @@
 }
 
 .editorToolbar button:disabled {
-  cursor: not-allowed;
-  color: #657084;
-  background: #f2f4f8;
+  cursor:not-allowed;
+  color: var(--color-neutral);
+  background: var(--color-neutral-soft);
 }
 
 .routeEditorPoint span {
@@ -44,24 +44,24 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #1450ff;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-surface);
   font-family: "Pretendard", sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  box-shadow: 0 0 0 2px white, 0 1px 5px #0005;
+  box-shadow: var(--shadow-marker);
 }
 
 .routeEditorPoint.selected span {
-  background: #bd581f;
+  background: var(--color-primary);
 }
 
 .editorMapTools {
   margin-bottom: 16px;
   padding: 8px;
   border-radius: 14px;
-  background: white;
-  box-shadow: 0 2px 8px #10214406;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
 }
 
 .editorToolbar svg {
@@ -69,23 +69,23 @@
 }
 
 .editorToolbar .editorToolReset {
-  color: #526078;
+  color: var(--color-neutral);
 }
 
 .editorToolbar .editorToolLocation {
-  color: #116446;
+  color: var(--color-success);
 }
 
 .editorToolbar button:not(:disabled):hover {
-  background: #eff2f8;
+  background: var(--color-neutral-soft);
 }
 
 .editorToolbar .editorToolLocation:not(:disabled):hover {
-  background: #daf0e3;
+  background: var(--color-success-soft);
 }
 
 .editorToolbar button:disabled svg {
-  color: #8a94a6;
+  color: var(--color-neutral);
 }
 
 .editorToolbar button:focus-visible {

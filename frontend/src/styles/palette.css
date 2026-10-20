@@ -1,0 +1,48 @@
+:root {
+  /* Brand palette */
+  --color-primary: #0e56fa;
+  --color-secondary: #00e575;
+  --color-secondary-soft: #dcffeb;
+  --color-tertiary: #0f172a;
+  --color-neutral: #64748b;
+
+  /* Surfaces and borders */
+  --color-surface: #fff;
+  --color-page: #f7f8fd;
+  --color-neutral-soft: #f8fafc;
+  --color-neutral-muted: #f3f5f8;
+  --color-disabled: #d9dde5;
+  --color-border: #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-border-strong: #cbd5e1;
+  --color-border-inverse: #31425f;
+
+  /* Primary tints */
+  --color-primary-hover: #003bdc;
+  --color-primary-subtle: #f8faff;
+  --color-primary-soft: #eff6ff;
+  --color-primary-light: #e8efff;
+  --color-primary-pale: #eef2ff;
+  --color-primary-border: #dbeafe;
+
+  /* Semantic states */
+  --color-success: #087044;
+  --color-success-soft: #e6f7ee;
+  --color-warning: #956000;
+  --color-warning-soft: #fff4cf;
+  --color-danger: #dc2626;
+  --color-danger-strong: #a72c37;
+  --color-danger-soft: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-purple: #7755c7;
+  --color-purple-soft: #f1edff;
+  --color-inverse-surface: #17243b;
+
+  /* Shared shadows */
+  --shadow-subtle: 0 2px 8px rgb(15 23 42 / 5%);
+  --shadow-raised: 0 8px 28px rgb(15 23 42 / 8%);
+  --shadow-overlay: 0 12px 36px rgb(15 23 42 / 20%);
+  --shadow-dialog: 0 20px 60px rgb(15 23 42 / 18%);
+  --shadow-primary: 0 4px 10px rgb(14 86 250 / 12%);
+  --shadow-marker: 0 0 0 2px #fff, 0 1px 5px rgb(15 23 42 / 35%);
+}

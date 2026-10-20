@@ -12,6 +12,8 @@ data class CourseSummary(
     val startLocation: StartLocation,
     val distanceToStartMeters: Double? = null,
     val region: CourseRegion? = null,
+    val elevationDifficulty: ElevationDifficultyLevel? = null,
+    val isBookmarked: Boolean = false,
 )
 
 data class CourseListResponse(

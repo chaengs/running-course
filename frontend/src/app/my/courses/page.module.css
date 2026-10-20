@@ -21,10 +21,10 @@
 .metricCard {
   min-width: 0;
   padding: 24px;
-  border: 1px solid #e7ebf3;
+  border: 1px solid var(--color-border);
   border-radius: 14px;
-  background: white;
-  box-shadow: 0 2px 8px #10214406;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
 }
 
 .metricTop {
@@ -36,7 +36,7 @@
 
 .metricTop p {
   margin: 0;
-  color: #71809a;
+  color: var(--color-neutral);
   letter-spacing: 0.04em;
 }
 
@@ -48,22 +48,22 @@
   place-items: center;
   border-radius: 12px;
   color: var(--primary);
-  background: #edf2ff;
+  background: var(--color-primary-soft);
 }
 
 .metricCard:nth-child(2) .metricIcon {
-  color: #128252;
-  background: #e9f8f0;
+  color: var(--color-success);
+  background: var(--color-success-soft);
 }
 
 .metricCard:nth-child(3) .metricIcon {
-  color: #b44765;
-  background: #fff0f3;
+  color: var(--color-danger);
+  background: var(--color-neutral-soft);
 }
 
 .metricCard:nth-child(4) .metricIcon {
-  color: #7755c7;
-  background: #f1edff;
+  color: var(--color-purple);
+  background: var(--color-purple-soft);
 }
 
 .metricValue {
@@ -96,10 +96,10 @@
 
 .courseCollection {
   padding: 24px 0 20px;
-  border: 1px solid #e7ebf3;
+  border: 1px solid var(--color-border);
   border-radius: 14px;
-  background: white;
-  box-shadow: 0 2px 8px #10214406;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
   overflow: hidden;
 }
 
@@ -138,13 +138,13 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
-  background: white;
+  background: var(--color-surface);
   font: inherit;
   font-size: 1rem;
 }
 
 .sortForm button {
-  color: white;
+  color: var(--color-surface);
   background: var(--primary);
   border-color: var(--primary);
   font-weight: 700;
@@ -158,7 +158,7 @@
   gap: 16px;
   margin-top: 22px;
   padding: 0 24px 16px;
-  border-bottom: 1px solid #edf0f6;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .filterTabs {
@@ -175,18 +175,18 @@
   min-height: 44px;
   padding: 8px 14px;
   border-radius: 9px;
-  color: #59677e;
+  color: var(--color-neutral);
   font-size: 1rem;
   font-weight: 650;
 }
 
 .filterTabs a:hover {
-  background: #f3f5fa;
+  background: var(--color-neutral-soft);
 }
 
 .filterTabs .activeFilter {
   color: var(--primary);
-  background: #edf2ff;
+  background: var(--color-primary-soft);
 }
 
 .filterTabs a span {
@@ -214,8 +214,8 @@
 
 .courseTable th {
   padding: 15px 18px;
-  color: #66748d;
-  background: #f7f8fc;
+  color: var(--color-neutral);
+  background: var(--color-neutral-soft);
   font-size: 1rem;
   font-weight: 650;
   text-align: center;
@@ -235,8 +235,8 @@
 
 .courseTable td {
   padding: 16px 18px;
-  border-bottom: 1px solid #eff1f6;
-  color: #657084;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-neutral);
   font-size: 1rem;
   text-align: center;
   white-space: nowrap;
@@ -247,7 +247,7 @@
 }
 
 .courseTable tbody tr:hover td {
-  background: #fbfcff;
+  background: var(--color-neutral-soft);
 }
 
 .courseNameCell {
@@ -320,7 +320,7 @@
 }
 
 .dateCell {
-  color: #657084;
+  color: var(--color-neutral);
   font-size: 1rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -332,21 +332,21 @@
   align-items: center;
   padding: 6px 12px;
   border-radius: 22px;
-  color: #385585;
-  background: #edf2fa;
+  color: var(--color-neutral);
+  background: var(--color-primary-soft);
   font-size: 1rem;
   font-weight: 650;
   white-space: nowrap;
 }
 
 .published {
-  color: #087044;
-  background: #e6f7ee;
+  color: var(--color-success);
+  background: var(--color-success-soft);
 }
 
 .private {
-  color: #5e687b;
-  background: #eff1f5;
+  color: var(--color-neutral);
+  background: var(--color-primary-soft);
 }
 
 .distanceCell strong {
@@ -368,7 +368,7 @@
 }
 
 .metricCell > span {
-  color: #8290a8;
+  color: var(--color-neutral);
   font-size: 1.125rem;
 }
 
@@ -386,7 +386,7 @@
   justify-content: center;
   gap: 20px;
   padding: 20px 24px 4px;
-  border-top: 1px solid #edf0f6;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .pagination a,
@@ -397,10 +397,10 @@
   align-items: center;
   justify-content: center;
   padding: 8px 12px;
-  border: 1px solid #dfe4ed;
+  border: 1px solid var(--color-border);
   border-radius: 9px;
   color: var(--ink);
-  background: white;
+  background: var(--color-surface);
   font-size: 1rem;
   font-weight: 650;
 }
@@ -408,7 +408,7 @@
 .pagination a:hover {
   color: var(--primary);
   border-color: var(--primary);
-  background: #f5f7ff;
+  background: var(--color-primary-soft);
 }
 
 .pagination a:focus-visible {
@@ -417,8 +417,8 @@
 }
 
 .pagination > span[aria-disabled="true"] {
-  color: #798397;
-  background: #f3f5f8;
+  color: var(--color-neutral);
+  background: var(--color-neutral-muted);
 }
 
 .pagination p {
@@ -541,7 +541,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 16px;
     padding: 14px 0;
-    border-bottom: 1px solid #eff1f6;
+    border-bottom: 1px solid var(--color-border-subtle);
   }
   .courseTable tbody tr:last-child {
     border-bottom: 0;
@@ -557,7 +557,7 @@
   .courseTable td::before {
     content: "";
     flex: 0 1 auto;
-    color: #66748d;
+    color: var(--color-neutral);
     font-weight: 650;
     white-space: nowrap;
   }
@@ -640,7 +640,7 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0 12px;
     padding: 12px 0;
-    border-bottom: 1px solid #eff1f6;
+    border-bottom: 1px solid var(--color-border-subtle);
   }
   .courseTable td {
     display: flex;
@@ -652,7 +652,7 @@
     white-space: normal;
   }
   .courseTable td::before {
-    color: #66748d;
+    color: var(--color-neutral);
     font-size: 1rem;
     font-weight: 650;
     white-space: nowrap;

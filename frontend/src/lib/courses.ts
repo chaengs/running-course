@@ -16,6 +16,8 @@ export type CourseSummary = {
   distanceMeters: number;
   courseType: CourseType;
   region: CourseRegion | null;
+  elevationDifficulty: "LOW" | "MEDIUM" | "HIGH" | null;
+  isBookmarked: boolean;
   startLocation: { latitude: number; longitude: number };
   distanceToStartMeters: number | null;
 };
@@ -47,6 +49,7 @@ export async function getCourses(page: number, size: number, filters: CourseSear
   }
 
   const response = await fetch(url, {
+    headers: await sessionHeaders(),
     cache: "no-store",
     signal: AbortSignal.timeout(5000),
   });

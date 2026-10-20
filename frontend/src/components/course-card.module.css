@@ -4,10 +4,13 @@
   min-width: 0;
   overflow-wrap: anywhere;
   padding: 22px;
-  border: 1px solid #eef0f7;
+  border: 1px solid var(--color-border);
   border-radius: 9px;
-  box-shadow: 0 2px 6px #122b5403;
-  transition: transform .18s, border-color .18s, box-shadow .18s;
+  box-shadow: var(--shadow-subtle);
+  transition:
+    transform 0.18s,
+    border-color 0.18s,
+    box-shadow 0.18s;
 }
 
 .courseDistance {
@@ -20,7 +23,7 @@
 .courseDistance strong {
   font-size: 3.5rem;
   font-weight: 500;
-  letter-spacing: -.06em;
+  letter-spacing: -0.06em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -33,44 +36,22 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #1450ff;
+  color: var(--color-primary);
   font-variant-numeric: tabular-nums;
   font-size: 1rem;
   margin: 0 0 12px;
 }
 
-.cardFooter {
-  padding-top: 17px;
-  border-top: 1px solid #edf0f7;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  border: 0;
-  background: #e8efff;
-  color: var(--primary);
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 1rem;
-  gap: 6px;
-  min-height: 48px;
-}
-
-.cardFooter svg {
-  flex-shrink: 0;
-  display: none;
-}
-
 .courseCard:hover {
-  box-shadow: 0 10px 28px #1450ff0b;
+  box-shadow: var(--shadow-raised);
   transform: translateY(-2px);
-  border-color: #cddaff;
+  border-color: var(--color-primary-border);
 }
 
 .courseCard:focus-within {
-  box-shadow: 0 10px 28px #1450ff0b;
+  box-shadow: var(--shadow-raised);
   transform: translateY(-2px);
-  border-color: #cddaff;
+  border-color: var(--color-primary-border);
 }
 
 .courseDetailLink::after {
@@ -106,7 +87,7 @@
   align-items: center;
   gap: 8px;
   margin: -8px 0 14px;
-  color: #52647f;
+  color: var(--color-neutral);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
@@ -126,9 +107,9 @@
 
 .cardMetrics {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  background: #f1f5ff;
+  background: var(--color-neutral-soft);
   border-radius: 6px;
   padding: 12px 5px;
   margin-bottom: 16px;
@@ -143,7 +124,7 @@
 }
 
 .cardMetrics span {
-  color: #778298;
+  color: var(--color-neutral);
   font-size: 1rem;
 }
 
@@ -171,7 +152,7 @@
 }
 
 .courseCard .courseDistance {
-  background: #f0f4ff;
+  background: var(--color-primary-soft);
   padding: 10px 14px;
   border-radius: 7px;
   margin: auto 0 4px;

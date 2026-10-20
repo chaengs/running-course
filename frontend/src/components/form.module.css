@@ -26,7 +26,7 @@
   font: inherit;
   color: var(--ink);
   border: 0;
-  background: #f2f5fc;
+  background: var(--color-neutral-soft);
   padding: 14px 16px;
   border-radius: 12px;
   font-size: 1rem;
@@ -41,7 +41,7 @@
   padding: 10px;
   font: inherit;
   color: var(--ink);
-  background: #f2f5fc;
+  background: var(--color-neutral-soft);
 }
 
 .editorFields textarea {
@@ -50,7 +50,7 @@
   color: var(--ink);
   resize: vertical;
   border: 0;
-  background: #f2f5fc;
+  background: var(--color-neutral-soft);
   padding: 14px 16px;
   border-radius: 12px;
   font-size: 1rem;
@@ -65,18 +65,18 @@
   margin-top: 6px;
   border-radius: 12px;
   font-size: 1rem;
-  box-shadow: 0 4px 10px #1450ff20;
+  box-shadow: var(--shadow-primary);
 }
 
 .editorFields .buttonPrimary:disabled {
-  color: #687080;
-  background: #d9dde5;
+  color: var(--color-neutral);
+  background: var(--color-disabled);
   box-shadow: none;
-  cursor: not-allowed;
+  cursor:not-allowed;
 }
 
 .editorMessage {
-  color: #86552c;
+  color: var(--color-warning);
   line-height: 1.8;
   font-size: 1rem;
 }
@@ -85,27 +85,27 @@
   --panel-padding: 26px;
   --panel-border: 0;
   --panel-radius: 18px;
-  --panel-shadow: 0 4px 18px #10214408;
+  --panel-shadow: var(--shadow-subtle);
 }
 
 .editorFields input::placeholder {
-  color: #65738b;
+  color: var(--color-neutral);
   opacity: 1;
 }
 
 .editorFields textarea::placeholder {
-  color: #65738b;
+  color: var(--color-neutral);
   opacity: 1;
 }
 
 .editorFields input:focus-visible {
-  background: white;
+  background: var(--color-surface);
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
 .editorFields textarea:focus-visible {
-  background: white;
+  background: var(--color-surface);
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }

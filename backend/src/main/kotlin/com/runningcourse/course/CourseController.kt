@@ -1,5 +1,6 @@
 package com.runningcourse.course
 
+import com.runningcourse.auth.AuthService
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.springframework.http.HttpStatus
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/courses")
-class CourseController(private val courseService: CourseService) {
+class CourseController(private val courseService: CourseService, private val auth: AuthService) {
     @GetMapping
     fun list(
         @RequestParam(defaultValue = "0") @Min(0) page: Int,
@@ -29,8 +31,9 @@ class CourseController(private val courseService: CourseService) {
         @RequestParam(required = false) radiusMeters: Int?,
         @RequestParam(required = false) targetDistanceMeters: Int?,
         @RequestParam(required = false) minimumDistanceMeters: Int?,
+        @RequestHeader("Authorization", required = false) authorization: String?,
     ): CourseListResponse = courseService.list(
-        page, size, CourseSearch(latitude, longitude, radiusMeters, targetDistanceMeters, minimumDistanceMeters),
+        page, size, CourseSearch(latitude, longitude, radiusMeters, targetDistanceMeters, minimumDistanceMeters), auth.current(authorization)?.id,
     )
 
     @GetMapping("/{id}")

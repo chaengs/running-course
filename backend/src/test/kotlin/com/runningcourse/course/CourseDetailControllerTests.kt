@@ -1,5 +1,6 @@
 package com.runningcourse.course
 
+import com.runningcourse.auth.AuthService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -18,6 +19,7 @@ import tools.jackson.databind.json.JsonMapper
 class CourseDetailControllerTests {
     @Autowired lateinit var mvc: MockMvc
     @MockitoBean lateinit var service: CourseService
+    @MockitoBean lateinit var auth: AuthService
 
     @Test
     fun `detail returns description and GeoJSON object with longitude first`() {

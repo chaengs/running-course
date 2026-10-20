@@ -22,7 +22,7 @@
   padding: 0;
   border: 1px solid transparent;
   border-radius: 10px;
-  color: #657084;
+  color: var(--color-neutral);
   background: transparent;
   text-decoration: none;
   cursor: pointer;
@@ -30,7 +30,7 @@
 
 .actionButton:hover:not(:disabled) {
   color: var(--primary);
-  background: #eef3ff;
+  background: var(--color-primary-soft);
 }
 
 .actionButton:focus-visible {
@@ -39,18 +39,18 @@
 }
 
 .actionButton:disabled {
-  color: #798397;
-  background: #f3f5f8;
-  cursor: not-allowed;
+  color: var(--color-neutral);
+  background: var(--color-neutral-muted);
+  cursor:not-allowed;
 }
 
 .deleteButton:hover:not(:disabled) {
-  color: #a32736;
-  background: #fff0f1;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
 }
 
 .downloadButton {
-  color: #798397;
+  color: var(--color-neutral);
 }
 
 .actionStatus {
@@ -64,8 +64,8 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
-  background: white;
-  box-shadow: 0 4px 16px #10214418;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-primary);
   font-size: 1rem;
   line-height: 1.5;
   white-space: normal;
@@ -78,15 +78,15 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: #101b3070;
+  background: var(--color-primary-soft);
 }
 
 .confirmDialog {
   width: min(100%, 440px);
   padding: 28px;
   border-radius: 16px;
-  background: white;
-  box-shadow: 0 20px 60px #101b3030;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-dialog);
 }
 
 .confirmDialog h3 {
@@ -121,15 +121,15 @@
 
 .cancelButton {
   color: var(--ink);
-  background: #eff2f7;
+  background: var(--color-neutral-soft);
 }
 
 .confirmDeleteButton {
-  color: white;
-  background: #b42335;
+  color: var(--color-surface);
+  background: var(--color-danger-strong);
 }
 
 .confirmDialog button:disabled {
-  cursor: not-allowed;
+  cursor:not-allowed;
   opacity: .65;
 }

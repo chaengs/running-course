@@ -11,7 +11,7 @@
 }
 
 .elevationMetrics > div {
-  background: white;
+  background: var(--color-surface);
   border-radius: 14px;
   padding: 16px;
   min-width: 0;
@@ -26,7 +26,7 @@
 }
 
 .elevationMetrics dt > span {
-  color: #1450ff;
+  color: var(--color-primary);
 }
 
 .elevationMetrics dd {
@@ -47,7 +47,7 @@
 
 .elevationPanel {
   padding: 24px;
-  background: white;
+  background: var(--color-surface);
   border-radius: 16px;
 }
 
@@ -68,8 +68,8 @@
   min-height: 44px;
   padding: 8px 16px;
   font-size: 1rem;
-  background: #eff3ff;
-  color: #1450ff;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
   border: 0;
   border-radius: 8px;
 }
@@ -113,7 +113,7 @@
 }
 
 .elevationChart:focus-visible {
-  outline: 3px solid #1450ff;
+  outline: 3px solid var(--color-primary);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -127,9 +127,9 @@
   padding: 8px 12px;
   transform: translate(-50%, calc(-100% - 10px));
   border-radius: 9px;
-  background: #fff;
-  color: #34415a;
-  box-shadow: 0 5px 18px #10214424;
+  background: var(--color-surface);
+  color: var(--color-tertiary);
+  box-shadow: var(--shadow-raised);
   font-size: 1rem;
   line-height: 1.35;
   text-align: center;
@@ -138,7 +138,7 @@
 }
 
 .elevationTooltip strong {
-  color: #153e9d;
+  color: var(--color-primary);
   font-size: 1rem;
 }
 
@@ -165,7 +165,7 @@
 
 .elevationPoint {
   display: block;
-  background: #f5f7ff;
+  background: var(--color-primary-soft);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 1rem;
@@ -178,12 +178,12 @@
   min-height: 190px;
   padding: 24px;
   border-radius: 10px;
-  background: #f8faff;
+  background: var(--color-primary-soft);
   color: var(--muted);
 }
 
 .elevationError {
-  color: #a52e21;
+  color: var(--color-danger);
   font-size: 1rem;
 }
 
@@ -200,22 +200,22 @@
 }
 
 .elevationDifficultyValue[data-level="LOW"] {
-  color: #137443;
+  color: var(--color-success);
 }
 
 .elevationDifficultyValue[data-level="MEDIUM"] {
-  color: #996000;
+  color: var(--color-warning);
 }
 
 .elevationDifficultyValue[data-level="HIGH"] {
-  color: #b52e36;
+  color: var(--color-danger);
 }
 
 .elevationDifficultyGuide {
   margin-block: 0 16px;
   padding: 12px 16px;
   border-radius: 12px;
-  background: white;
+  background: var(--color-surface);
   font-size: 1rem;
 }
 
@@ -288,7 +288,7 @@
 
 .elevationAutoStatus {
   color: var(--primary);
-  background: #eff3ff;
+  background: var(--color-primary-soft);
   border-radius: 20px;
   padding: 6px 12px;
   font-size: 1rem;

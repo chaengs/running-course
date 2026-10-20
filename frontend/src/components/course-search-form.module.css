@@ -3,10 +3,10 @@
   min-width: 0;
   padding: 24px;
   overflow-wrap: anywhere;
-  border: 1px solid #dce3f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 8px 24px -16px rgb(18 46 91 / 25%);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
 }
 
 .searchHeading {
@@ -27,7 +27,7 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  color: #1450ff;
+  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 4px;
   font-size: 1rem;
@@ -55,15 +55,15 @@
   min-width: 0;
   min-height: 52px;
   padding: 4px 6px 4px 14px;
-  border: 1px solid #dce3f0;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .controlIcon {
   display: inline-flex;
   flex: 0 0 24px;
-  color: #1450ff;
+  color: var(--color-primary);
 }
 
 .controlIcon svg {
@@ -90,7 +90,7 @@
   padding: 0 12px;
   border: 0;
   border-radius: 6px;
-  background: #eff3ff;
+  background: var(--color-primary-soft);
   color: var(--primary);
   font-size: 1rem;
   font-weight: 700;
@@ -117,16 +117,16 @@
   width: 100%;
   min-height: 52px;
   padding: 0 34px 0 12px;
-  border: 1px solid #dce3f0;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface);
   color: var(--ink);
   font-size: 1rem;
 }
 
 .searchField select:disabled {
-  background: #f1f2ee;
-  color: #777f8e;
+  background: var(--color-neutral-soft);
+  color: var(--color-neutral);
 }
 
 .distanceField legend {
@@ -144,9 +144,9 @@
   gap: 4px;
   overflow-x: auto;
   padding: 5px;
-  border: 1px solid #dce3f0;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface);
   scrollbar-width: thin;
 }
 
@@ -175,11 +175,11 @@
 
 .distanceChip:has(input:checked) {
   background: var(--primary);
-  color: #fff;
+  color: var(--color-surface);
 }
 
 .distanceChip:has(input:focus-visible) {
-  outline: 2px solid #1450ff;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -196,13 +196,13 @@
   border: 1px solid var(--primary);
   border-radius: 8px;
   background: var(--primary);
-  color: #fff;
+  color: var(--color-surface);
   font-size: 1rem;
   font-weight: 700;
 }
 
 .searchSubmit:hover {
-  background: #003bdc;
+  background: var(--color-primary-hover);
 }
 
 @media (max-width: 1160px) {

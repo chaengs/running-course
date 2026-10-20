@@ -18,11 +18,11 @@
   margin-inline: auto;
   max-width: 960px;
   padding: 24px 28px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 4px 20px -2px rgb(15 23 42 / 5%);
-  color: #0f172a;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  color: var(--color-tertiary);
 }
 
 .mapInstructionsHeader {
@@ -32,12 +32,12 @@
   gap: 16px;
   margin-bottom: 20px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .mapInstructionsHeader h3 {
   margin: 0;
-  color: #0e56fa;
+  color: var(--color-primary);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -45,7 +45,7 @@
 
 .mapInstructionsHeader p {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--color-neutral);
   font-size: 1rem;
   line-height: 1.45;
 }
@@ -56,10 +56,10 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  border: 1px solid #dbeafe;
+  border: 1px solid var(--color-border);
   border-radius: 999px;
-  background: #f8f9ff;
-  color: #0e56fa;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
   font-size: 1rem;
   font-weight: 600;
 }
@@ -89,9 +89,9 @@
   gap: 14px;
   min-width: 0;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--color-primary-soft);
 }
 
 .mapInstructionIcon {
@@ -100,11 +100,11 @@
   height: 40px;
   flex: 0 0 40px;
   place-items: center;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--color-border-strong);
   border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 2%);
-  color: #0e56fa;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  color: var(--color-primary);
 }
 
 .mapInstructionIcon svg {
@@ -118,7 +118,7 @@
 }
 
 .mapInstructionDeleteIcon {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .mapInstructionText,
@@ -133,7 +133,7 @@
 }
 
 .mapInstructionText > strong {
-  color: #1e293b;
+  color: var(--color-tertiary);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.4;
@@ -148,24 +148,22 @@
 
 .mapInstructionText > span > b {
   padding: 4px 8px;
-  border: 1px solid #cbd5e1;
   border-radius: 6px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
-  color: #0e56fa;
+  background: var(--color-surface);
+  color: var(--color-primary);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
 }
 
 .mapInstructionList li:last-child .mapInstructionText > span > b {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .mapInstructionText > span > span {
-  color: #64748b;
+  color: var(--color-neutral);
   font-size: 1rem;
   line-height: 1.4;
 }
@@ -177,8 +175,8 @@
   margin: 14px 0 0;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #eff6ff;
-  color: #1e40af;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
   font-size: 1rem;
   line-height: 1.45;
 }
@@ -275,7 +273,7 @@
 }
 
 .editorRequired {
-  color: #3e5aac;
+  color: var(--color-primary);
   font-size: 1rem;
 }
 
@@ -299,7 +297,7 @@
   gap: 4px;
   padding: 5px;
   border-radius: 12px;
-  background: #f2f5fc;
+  background: var(--color-neutral-soft);
 }
 
 .editorTypeOptions label {
@@ -329,20 +327,20 @@
   border-radius: 9px;
   text-align: center;
   font-size: 1rem;
-  color: #52617a;
+  color: var(--color-neutral);
 }
 
 .editorTypeOptions input:checked + span {
   background: var(--primary);
-  color: white;
-  box-shadow: 0 2px 5px #1450ff26;
+  color: var(--color-surface);
+  box-shadow: var(--shadow-primary);
 }
 
 .editorTypeOptions input:focus-visible + span {
-  outline: 3px solid #bd581f;
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .editorCourseType:disabled label {
-  cursor: not-allowed;
+  cursor:not-allowed;
 }

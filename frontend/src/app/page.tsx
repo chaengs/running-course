@@ -4,12 +4,11 @@ import uiStyles from "@/styles/ui.module.css";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { CourseCard } from "@/components/course-card";
+import { InfiniteCourseList } from "@/components/infinite-course-list";
 import { CourseListSkeleton } from "@/components/course-list-skeleton";
 import { CourseSearchForm } from "@/components/course-search-form";
 import { CourseResultsError } from "@/components/course-results-error";
 import {
-  courseDetailSearch,
   courseListHref,
   parseCourseListQuery,
   PAGE_SIZES,
@@ -105,7 +104,6 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
     hasLocation ||
     targetDistanceMeters !== undefined ||
     minimumDistanceMeters !== undefined;
-  const detailSearch = courseDetailSearch(query);
   return (
     <>
       <section
@@ -119,7 +117,7 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
           </div>
           <form action="/" className={homeStyles.pageSizeForm}>
             <FilterInputs filters={filters} />
-            <label htmlFor="page-size">페이지당</label>
+            <label htmlFor="page-size">한 번에</label>
             <select id="page-size" name="size" defaultValue={size}>
               {PAGE_SIZES.map((value) => (
                 <option key={value} value={value}>
@@ -131,48 +129,11 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
           </form>
         </div>
         {courses.content.length > 0 ? (
-          <>
-            <ul className={layoutStyles.courseGrid}>
-              {courses.content.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  detailSearch={detailSearch}
-                />
-              ))}
-            </ul>
-            <nav
-              className={homeStyles.pagination}
-              aria-label="코스 목록 페이지"
-            >
-              {page > 0 ? (
-                <Link
-                  prefetch={false}
-                  href={courseListHref(query, page - 1)}
-                  aria-label="이전 페이지"
-                >
-                  ← 이전
-                </Link>
-              ) : (
-                <span aria-disabled="true">← 이전</span>
-              )}
-              <p>
-                <strong>{page + 1}</strong> / {courses.totalPages}{" "}
-                <span className={uiStyles.srOnly}>페이지</span>
-              </p>
-              {page + 1 < courses.totalPages ? (
-                <Link
-                  prefetch={false}
-                  href={courseListHref(query, page + 1)}
-                  aria-label="다음 페이지"
-                >
-                  다음 →
-                </Link>
-              ) : (
-                <span aria-disabled="true">다음 →</span>
-              )}
-            </nav>
-          </>
+          <InfiniteCourseList
+            key={courseListHref(query)}
+            initialPage={courses}
+            query={query}
+          />
         ) : (
           <div className={uiStyles.emptyState}>
             <h3>
@@ -224,11 +185,6 @@ export default function Home({ searchParams }: { searchParams: SearchParams }) {
           <br />
           <em>새로운 코스에서</em>
         </h1>
-        <p className={homeStyles.heroDescription}>
-          가볍게 달리는 3km부터 도전하는 10km까지.
-          <br />
-          출발점으로 돌아오는 러닝 코스를 만나보세요.
-        </p>
         <div className={homeStyles.heroNote}>
           <span className={homeStyles.noteLine} />
           길을 고르는 시간은 줄이고, 달리는 시간을 늘려요.

@@ -1,5 +1,6 @@
 package com.runningcourse.course
 
+import com.runningcourse.auth.AuthService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 class CourseSearchControllerTests {
     @Autowired lateinit var mvc: MockMvc
     @MockitoBean lateinit var service: CourseService
+    @MockitoBean lateinit var auth: AuthService
 
     @Test
     fun `nearby filter and distance to start are exposed through list API`() {

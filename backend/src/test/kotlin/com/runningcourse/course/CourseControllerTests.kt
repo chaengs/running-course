@@ -1,5 +1,7 @@
 package com.runningcourse.course
 
+import com.runningcourse.auth.AuthService
+import com.runningcourse.auth.UserView
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class CourseControllerTests {
     @Autowired lateinit var mvc: MockMvc
     @MockitoBean lateinit var service: CourseService
+    @MockitoBean lateinit var auth: AuthService
 
     @Test
     fun `default list returns summary without full route`() {
@@ -42,6 +45,24 @@ class CourseControllerTests {
             .andExpect(jsonPath("$.page").value(2))
             .andExpect(jsonPath("$.size").value(2))
         verify(service).list(2, 2)
+    }
+
+    @Test
+    fun `list includes bookmark state for the signed in viewer`() {
+        val user = UserView(7, "runner@example.com", "runner")
+        val item = CourseSummary(
+            1, "찜한 코스", 4800, CourseType.LOOP, StartLocation(37.528, 126.934),
+            elevationDifficulty = ElevationDifficultyLevel.LOW,
+            isBookmarked = true,
+        )
+        `when`(auth.current("Bearer token")).thenReturn(user)
+        `when`(service.list(0, 20, CourseSearch(), user.id))
+            .thenReturn(CourseListResponse(listOf(item), 0, 20, 1, 1))
+
+        mvc.perform(get("/api/courses").header("Authorization", "Bearer token"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content[0].isBookmarked").value(true))
+            .andExpect(jsonPath("$.content[0].elevationDifficulty").value("LOW"))
     }
 
     @ParameterizedTest

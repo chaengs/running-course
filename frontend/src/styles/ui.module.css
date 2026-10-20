@@ -18,8 +18,8 @@
   font-size: 1rem;
   font-weight: 700;
   padding: 10px 14px;
-  background: #eef2fc;
-  border: 1px solid #e2e8f6;
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-border);
 }
 
 .cardTop {
@@ -32,21 +32,21 @@
 
 .typeBadge {
   display: inline-block;
-  color: #174bd0;
+  color: var(--color-primary);
   font-size: 1rem;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 12px;
-  background: #e8efff;
+  background: var(--color-primary-soft);
 }
 
 .emptyState {
   text-align: center;
   padding: 60px 20px;
-  border: 1px dashed #ccd8f5;
+  border: 1px dashed var(--color-border-strong);
   border-radius: 12px;
-  background: #f0f4ff;
-  border-color: #d4dff7;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-border);
 }
 
 .stateSymbol {
@@ -55,10 +55,10 @@
   margin: 0 auto 18px;
   width: 44px;
   height: 44px;
-  background: #e4ecff;
+  background: var(--color-primary-soft);
   border-radius: 50%;
   font-size: 1.75rem;
-  color: #1450ff;
+  color: var(--color-primary);
 }
 
 .emptyState h3 {
@@ -84,7 +84,7 @@
   align-items: center;
   justify-content: center;
   border: 0;
-  color: white;
+  color: var(--color-surface);
   margin-top: 12px;
   background: var(--primary);
   border-radius: 8px;
@@ -120,7 +120,7 @@
 .backLink {
   display: inline-flex;
   align-items: center;
-  color: #1450ff;
+  color: var(--color-primary);
   font-size: 1rem;
   min-height: 38px;
 }
@@ -152,9 +152,9 @@
   overflow-wrap: anywhere;
   border: var(--panel-border, 0);
   border-radius: var(--panel-radius, 10px);
-  background: white;
+  background: var(--color-surface);
   padding: var(--panel-padding, 24px);
-  box-shadow: var(--panel-shadow, 0 2px 4px #10214408);
+  box-shadow: var(--panel-shadow, var(--shadow-subtle));
   --eyebrow-margin: 7px;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .buttonPrimary:hover {
-  background: #003bdc;
+  background: var(--color-primary-hover);
 }
 
 .emptyState h2 {

@@ -7,7 +7,7 @@
   font: inherit;
   cursor: pointer;
   background: var(--primary);
-  color: white;
+  color: var(--color-surface);
   border: 0;
   border-radius: 7px;
   font-size: 1rem;
@@ -21,8 +21,8 @@
 }
 
 .courseBookmark button[aria-pressed="true"] {
-  background: #dcffeb;
-  color: #006f37;
+  background: var(--color-success-soft);
+  color: var(--color-success);
 }
 
 .courseBookmark button:disabled {

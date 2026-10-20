@@ -75,13 +75,13 @@ small {
 
 :root {
   color-scheme: light;
-  --bg: #f7f8fd;
-  --paper: #fff;
-  --ink: #101b30;
-  --muted: #687387;
-  --line: #e5e9f3;
-  --primary: #1450ff;
-  --accent: #00e575;
+  --bg: var(--color-page);
+  --paper: var(--color-surface);
+  --ink: var(--color-tertiary);
+  --muted: var(--color-neutral);
+  --line: var(--color-border);
+  --primary: var(--color-primary);
+  --accent: var(--color-secondary);
 }
 
 body {
@@ -127,16 +127,15 @@ textarea {
 }
 
 button:disabled {
-  cursor: not-allowed;
+  cursor:not-allowed;
 }
 
 select:disabled {
-  cursor: not-allowed;
+  cursor:not-allowed;
 }
 
 :focus-visible {
-  outline: 3px solid #bd581f;
-  outline-color: var(--primary);
+  outline: 3px solid var(--color-primary);
   outline-offset: 4px;
 }
 

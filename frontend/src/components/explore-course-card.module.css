@@ -1,0 +1,140 @@
+.courseCard {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.courseCard:hover,
+.courseCard:focus-within {
+  transform: translateY(-2px);
+  border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-raised);
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 14px;
+}
+
+.courseType,
+.difficulty {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.courseType {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.difficulty[data-level="LOW"] {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+}
+
+.difficulty[data-level="MEDIUM"] {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+}
+
+.difficulty[data-level="HIGH"] {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.bookmarkPosition {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.courseName {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.courseName a {
+  color: var(--color-tertiary);
+  text-decoration: none;
+}
+
+.courseName a:hover {
+  color: var(--color-primary);
+}
+
+.courseName a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.courseRegion {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin: 5px 0 12px;
+  color: var(--color-neutral);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.courseRegion svg {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary);
+}
+
+.courseRegion span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.courseCard .routePreview {
+  height: 144px;
+  margin: 0;
+  border-radius: 12px;
+}
+
+.distance {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.distance strong {
+  color: var(--color-primary);
+  font-size: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.distance span {
+  color: var(--color-neutral);
+  font-size: 1rem;
+  font-weight: 650;
+}
