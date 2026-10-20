@@ -86,7 +86,7 @@ export async function getCourse(id: string): Promise<CourseDetail | null> {
 export type MyCourse = { id: number; name: string; distanceMeters: number; courseType: CourseType; createdAt: string; region: CourseRegion | null; published: boolean; bookmarkCount: number; viewCount: number };
 export type MyCourseStats = { totalCourses: number; totalDistanceMeters: number; totalViews: number; totalBookmarks: number; publishedCourses: number; privateCourses: number };
 export type MyCoursesResponse = { content: MyCourse[]; stats: MyCourseStats; page: number; totalPages: number };
-export type BookmarkedCourse = Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType">;
+export type BookmarkedCourse = Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType" | "region" | "elevationDifficulty" | "isBookmarked">;
 export type BookmarkPage = { content: BookmarkedCourse[]; page: number; hasNext: boolean };
 export async function getBookmarkedCourses(page: number): Promise<BookmarkPage> {
   const url = new URL("/api/my/bookmarks", process.env.BACKEND_URL ?? "http://localhost:8080");

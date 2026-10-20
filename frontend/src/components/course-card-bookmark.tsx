@@ -4,7 +4,7 @@ import styles from "@/components/course-card-bookmark.module.css";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function CourseCardBookmark({ courseId, initialBookmarked }: { courseId: number; initialBookmarked: boolean }) {
+export function CourseCardBookmark({ courseId, initialBookmarked, refreshOnChange = false }: { courseId: number; initialBookmarked: boolean; refreshOnChange?: boolean }) {
   const router = useRouter();
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [pending, setPending] = useState(false);
@@ -27,6 +27,7 @@ export function CourseCardBookmark({ courseId, initialBookmarked }: { courseId: 
         throw new Error(body.message || "찜 상태를 변경하지 못했어요.");
       }
       setBookmarked((current) => !current);
+      if (refreshOnChange) router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "찜 상태를 변경하지 못했어요.");
     } finally {

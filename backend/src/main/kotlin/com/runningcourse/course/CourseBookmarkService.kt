@@ -6,7 +6,15 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 
 data class BookmarkStatus(val bookmarked: Boolean)
-data class BookmarkedCourse(val id: Long, val name: String, val distanceMeters: Int, val courseType: CourseType)
+data class BookmarkedCourse(
+    val id: Long,
+    val name: String,
+    val distanceMeters: Int,
+    val courseType: CourseType,
+    val region: CourseRegion?,
+    val elevationDifficulty: ElevationDifficultyLevel?,
+    val isBookmarked: Boolean = true,
+)
 data class BookmarkPage(val content: List<BookmarkedCourse>, val page: Int, val hasNext: Boolean)
 
 @Service

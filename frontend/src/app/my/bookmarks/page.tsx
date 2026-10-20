@@ -1,17 +1,14 @@
 import collectionStyles from "@/styles/collection.module.css";
 import uiStyles from "@/styles/ui.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
-import cardStyles from "@/components/course-card.module.css";
-import previewStyles from "@/components/route-preview.module.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getBookmarkedCourses } from "@/lib/courses";
-import { courseTypeLabels, formatDistance } from "@/lib/course-format";
-import { RoutePreview } from "@/components/route-preview";
-import { CourseBookmarkButton } from "@/components/course-bookmark-button";
+import { formatDistance } from "@/lib/course-format";
+import { ExploreCourseCard } from "@/components/explore-course-card";
 export const metadata: Metadata = { title: "찜한 코스 | Running Course" };
 type Props = {
   searchParams: Promise<{
@@ -58,38 +55,7 @@ async function Bookmarks({ searchParams }: Props) {
       {result.content.length ? (
         <ul className={layoutStyles.courseGrid}>
           {result.content.map((course) => (
-            <li
-              className={cardStyles.courseCard + " " + cardStyles.bookmarkCard}
-              key={course.id}
-            >
-              <RoutePreview
-                className={previewStyles.bookmarkPreview}
-                courseId={course.id}
-                name={course.name}
-              />
-              <span className={uiStyles.typeBadge}>
-                {courseTypeLabels[course.courseType]}
-              </span>
-              <h2>
-                <Link
-                  className={cardStyles.courseDetailLink}
-                  href={`/courses/${course.id}`}
-                  prefetch={false}
-                >
-                  {course.name}
-                </Link>
-              </h2>
-              <p className={cardStyles.courseDistance}>
-                <strong>{formatDistance(course.distanceMeters)}</strong>
-                <span>km</span>
-              </p>
-              <CourseBookmarkButton
-                className={cardStyles.cardBookmark}
-                courseId={course.id}
-                initialBookmarked
-                refreshOnChange
-              />
-            </li>
+            <ExploreCourseCard key={course.id} course={course} refreshOnBookmarkChange />
           ))}
         </ul>
       ) : (

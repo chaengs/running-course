@@ -29,7 +29,7 @@ class CourseBookmarkControllerTests {
 
     @Test fun `list uses authenticated identity and forwards page`() {
         `when`(auth.requireUser("Bearer test")).thenReturn(UserView(3, "runner@example.com", "러너"))
-        `when`(bookmarks.list(3, 1)).thenReturn(BookmarkPage(listOf(BookmarkedCourse(7, "한강 코스", 5000, CourseType.LOOP)), 1, false))
+        `when`(bookmarks.list(3, 1)).thenReturn(BookmarkPage(listOf(BookmarkedCourse(7, "한강 코스", 5000, CourseType.LOOP, null, null)), 1, false))
         mvc.perform(get("/api/my/bookmarks?page=1&userId=99").header("Authorization", "Bearer test"))
             .andExpect(status().isOk).andExpect(jsonPath("$.content[0].id").value(7))
             .andExpect(jsonPath("$.page").value(1)).andExpect(jsonPath("$.hasNext").value(false))

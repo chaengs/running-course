@@ -16,9 +16,11 @@ const difficultyLabels = {
 export function ExploreCourseCard({
   course,
   detailSearch = "",
+  refreshOnBookmarkChange = false,
 }: {
-  course: CourseSummary;
+  course: Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType" | "region" | "elevationDifficulty" | "isBookmarked">;
   detailSearch?: string;
+  refreshOnBookmarkChange?: boolean;
 }) {
   const region = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
     .filter((part): part is string => Boolean(part))
@@ -35,7 +37,7 @@ export function ExploreCourseCard({
             </span>
           )}
           <div className={cardStyles.bookmarkPosition}>
-            <CourseCardBookmark courseId={course.id} initialBookmarked={course.isBookmarked} />
+            <CourseCardBookmark courseId={course.id} initialBookmarked={course.isBookmarked} refreshOnChange={refreshOnBookmarkChange} />
           </div>
         </div>
         <h3 id={`explore-course-${course.id}`} className={cardStyles.courseName}>
