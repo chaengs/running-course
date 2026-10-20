@@ -18,6 +18,11 @@
   border-radius: 0;
 }
 
+.routeMap :global(.leaflet-control-attribution.leaflet-control) {
+  font-size: 0.5rem;
+  line-height: 1.4;
+}
+
 .mapTools {
   display: flex;
   justify-content: space-between;
