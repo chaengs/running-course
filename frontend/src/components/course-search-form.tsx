@@ -21,10 +21,8 @@ type LocationRegion = {
 };
 export function CourseSearchForm({
   filters,
-  size,
 }: {
   filters: CourseSearchFilters;
-  size: number;
 }) {
   const initialLocation =
     filters.latitude !== undefined && filters.longitude !== undefined
@@ -111,7 +109,7 @@ export function CourseSearchForm({
         {(initialLocation || filters.targetDistanceMeters || filters.minimumDistanceMeters !== undefined) && (
           <Link
             className={searchStyles.searchReset}
-            href={size === 6 ? "/" : `/?size=${size}`}
+            href="/"
           >
             조건 초기화
           </Link>
@@ -122,7 +120,6 @@ export function CourseSearchForm({
         className={searchStyles.courseSearchForm}
         prefetch={false}
       >
-        <input type="hidden" name="size" value={size} />
         {distanceChoice !== "" && distanceChoice !== "greater" && (
           <input type="hidden" name="targetDistanceMeters" value={distanceChoice} />
         )}

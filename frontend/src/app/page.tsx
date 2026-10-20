@@ -11,43 +11,12 @@ import { CourseResultsError } from "@/components/course-results-error";
 import {
   courseListHref,
   parseCourseListQuery,
-  PAGE_SIZES,
   type CourseListQuery,
-  type CourseSearchFilters,
 } from "@/lib/course-search";
 import { getCourses } from "@/lib/courses";
 type SearchParams = Promise<{
   [key: string]: string | string[] | undefined;
 }>;
-function FilterInputs({ filters }: { filters: CourseSearchFilters }) {
-  return (
-    <>
-      {filters.latitude !== undefined && (
-        <input type="hidden" name="latitude" value={filters.latitude} />
-      )}
-      {filters.longitude !== undefined && (
-        <input type="hidden" name="longitude" value={filters.longitude} />
-      )}
-      {filters.radiusMeters !== undefined && (
-        <input type="hidden" name="radiusMeters" value={filters.radiusMeters} />
-      )}
-      {filters.targetDistanceMeters !== undefined && (
-        <input
-          type="hidden"
-          name="targetDistanceMeters"
-          value={filters.targetDistanceMeters}
-        />
-      )}
-      {filters.minimumDistanceMeters !== undefined && (
-        <input
-          type="hidden"
-          name="minimumDistanceMeters"
-          value={filters.minimumDistanceMeters}
-        />
-      )}
-    </>
-  );
-}
 async function CourseSearch({ searchParams }: { searchParams: SearchParams }) {
   const rawQuery = await searchParams;
   const query = parseCourseListQuery(rawQuery);
@@ -58,7 +27,6 @@ async function CourseSearch({ searchParams }: { searchParams: SearchParams }) {
     radiusMeters,
     targetDistanceMeters,
     minimumDistanceMeters,
-    size,
   } = query;
   const filters = {
     latitude,
@@ -72,7 +40,6 @@ async function CourseSearch({ searchParams }: { searchParams: SearchParams }) {
       <CourseSearchForm
         key={`${latitude}-${longitude}-${radiusMeters}-${targetDistanceMeters}-${minimumDistanceMeters}`}
         filters={filters}
-        size={size}
       />
       <Suspense key={courseListHref(query)} fallback={<CourseListSkeleton />}>
         <CourseResults query={query} />
@@ -115,18 +82,6 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
             <p className={uiStyles.eyebrow}>FIND YOUR NEXT RUN</p>
             <h2 id="courses-title">러닝 코스</h2>
           </div>
-          <form action="/" className={homeStyles.pageSizeForm}>
-            <FilterInputs filters={filters} />
-            <label htmlFor="page-size">한 번에</label>
-            <select id="page-size" name="size" defaultValue={size}>
-              {PAGE_SIZES.map((value) => (
-                <option key={value} value={value}>
-                  {value}개
-                </option>
-              ))}
-            </select>
-            <button type="submit">적용</button>
-          </form>
         </div>
         {courses.content.length > 0 ? (
           <InfiniteCourseList
@@ -159,10 +114,7 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
               </Link>
             ) : (
               hasFilters && (
-                <Link
-                  className={uiStyles.buttonPrimary}
-                  href={size === 6 ? "/" : `/?size=${size}`}
-                >
+                <Link className={uiStyles.buttonPrimary} href="/">
                   전체 코스 보기
                 </Link>
               )

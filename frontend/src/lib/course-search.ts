@@ -13,7 +13,7 @@ export type CourseListQuery = CourseSearchFilters & {
 
 type RawSearchParams = { [key: string]: string | string[] | undefined };
 
-export const PAGE_SIZES = [3, 6, 12] as const;
+export const COURSE_PAGE_SIZE = 6;
 export const RADIUS_OPTIONS = [1000, 2000, 5000, 10000] as const;
 export const TARGET_DISTANCE_OPTIONS = [3000, 5000, 10000] as const;
 
@@ -36,9 +36,8 @@ function optionalCoordinate(value: string | undefined, min: number, max: number)
 
 export function parseCourseListQuery(query: RawSearchParams): CourseListQuery | null {
   const rawPage = singleValue(query.page) ?? "0";
-  const rawSize = singleValue(query.size) ?? "6";
   const page = optionalInteger(rawPage, 0, 2147483647);
-  const size = optionalInteger(rawSize, 1, 100);
+  const size = COURSE_PAGE_SIZE;
   const latitude = optionalCoordinate(singleValue(query.latitude), -90, 90);
   const longitude = optionalCoordinate(singleValue(query.longitude), -180, 180);
   const radiusMeters = optionalInteger(singleValue(query.radiusMeters), 1, 50000);
@@ -46,8 +45,7 @@ export function parseCourseListQuery(query: RawSearchParams): CourseListQuery | 
   const minimumDistanceMeters = optionalInteger(singleValue(query.minimumDistanceMeters), 1, 100000);
 
   if (
-    page === null || page === undefined || size === null || size === undefined ||
-    !PAGE_SIZES.includes(size as (typeof PAGE_SIZES)[number]) ||
+    page === null || page === undefined ||
     latitude === null || longitude === null || radiusMeters === null || targetDistanceMeters === null || minimumDistanceMeters === null ||
     (targetDistanceMeters !== undefined && minimumDistanceMeters !== undefined) ||
     (latitude === undefined) !== (longitude === undefined) ||
@@ -60,7 +58,6 @@ export function parseCourseListQuery(query: RawSearchParams): CourseListQuery | 
 export function courseListHref(query: CourseListQuery, page = query.page) {
   const params = new URLSearchParams();
   if (page > 0) params.set("page", String(page));
-  if (query.size !== 6) params.set("size", String(query.size));
   if (query.latitude !== undefined && query.longitude !== undefined) {
     params.set("latitude", String(query.latitude));
     params.set("longitude", String(query.longitude));

@@ -30,40 +30,6 @@
   padding-bottom: 70px;
 }
 
-.pageSizeForm {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-}
-
-.pageSizeForm label {
-  color: var(--muted);
-}
-
-.pageSizeForm select {
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: var(--ink);
-  min-height: 44px;
-  background: var(--color-surface);
-  border-color: var(--color-border);
-  font-size: 1rem;
-}
-
-.pageSizeForm button {
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: var(--ink);
-  min-height: 44px;
-  background: var(--color-surface);
-  border-color: var(--color-border);
-  font-size: 1rem;
-}
-
 .listDescription {
   color: var(--muted);
   line-height: 1.6;
@@ -110,10 +76,4 @@
     font-size: 2.4rem;
   }
 
-  .pageSizeForm {
-    gap: 5px;
-  }
-  .pageSizeForm label {
-    display: none;
-  }
 }
