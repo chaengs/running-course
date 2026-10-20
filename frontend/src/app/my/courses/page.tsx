@@ -3,7 +3,6 @@ import myStyles from "@/app/my/courses/page.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
 import uiStyles from "@/styles/ui.module.css";
 import { MyCourseRowActions } from "@/components/my-course-row-actions";
-import { MyCoursesToast } from "@/components/my-courses-toast";
 import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
@@ -145,7 +144,7 @@ async function MyCourses({ searchParams }: PageProps) {
           value={count(stats.totalBookmarks)}
           unit="개"
           icon="bookmarks"
-          description="러너들이 내 코스를 북마크한 수"
+          description="러너들이 내 코스를 찜한 수"
         />
         <MetricCard
           label="TOTAL VIEWS"
@@ -171,7 +170,7 @@ async function MyCourses({ searchParams }: PageProps) {
             <select id="course-sort" name="sort" defaultValue={sort}>
               <option value="recent">최근 작성순</option>
               <option value="views">조회 많은 순</option>
-              <option value="bookmarks">북마크 많은 순</option>
+              <option value="bookmarks">찜 많은 순</option>
             </select>
             <button type="submit">적용</button>
           </form>
@@ -235,7 +234,7 @@ async function MyCourses({ searchParams }: PageProps) {
                   <th scope="col">생성일</th>
                   <th scope="col">코스 유형</th>
                   <th scope="col">총 거리</th>
-                  <th scope="col">총 북마크 수</th>
+                  <th scope="col">총 찜 수</th>
                   <th scope="col">총 조회수</th>
                   <th scope="col">공개 상태</th>
                   <th scope="col">
@@ -388,7 +387,6 @@ export default function MyCoursesPage(props: PageProps) {
       >
         <MyCourses searchParams={props.searchParams} />
       </Suspense>
-      <MyCoursesToast />
     </main>
   );
 }

@@ -105,17 +105,6 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
     hasLocation ||
     targetDistanceMeters !== undefined ||
     minimumDistanceMeters !== undefined;
-  const filterDescription = [
-    hasLocation
-      ? `현재 위치에서 ${(radiusMeters ?? 2000) / 1000}km 이내`
-      : undefined,
-    targetDistanceMeters !== undefined
-      ? `${targetDistanceMeters / 1000}km 코스(±10%)`
-      : undefined,
-    minimumDistanceMeters !== undefined ? "10km 초과 코스" : undefined,
-  ]
-    .filter(Boolean)
-    .join(" · ");
   const detailSearch = courseDetailSearch(query);
   return (
     <>

@@ -1,5 +1,5 @@
 .courseBookmark {
-  margin-block: 1rem;
+  margin: 0;
 }
 
 .courseBookmark button {
@@ -13,6 +13,10 @@
   font-size: 1rem;
   padding: 11px 16px;
   width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-weight: 700;
 }
 
@@ -27,7 +31,7 @@
 }
 
 .courseBookmark p {
-  margin-block: .5rem;
+  margin: .5rem 0 0;
   font-size: 1rem;
   color: var(--muted);
 }

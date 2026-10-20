@@ -158,7 +158,7 @@ export function MyCourseRowActions({
           >
             <h3 id={`delete-course-${id}`}>코스를 삭제할까요?</h3>
             <p id={`delete-course-description-${id}`}>
-              “{name}” 코스와 북마크 정보가 함께 삭제됩니다. 이 작업은 되돌릴 수
+              “{name}” 코스와 찜 정보가 함께 삭제됩니다. 이 작업은 되돌릴 수
               없어요.
             </p>
             <div>

@@ -1,3 +1,4 @@
+import type { CourseElevationProfile } from "@/components/course-elevation";
 import "server-only";
 import { sessionHeaders } from "@/lib/session";
 import type { CourseSearchFilters } from "@/lib/course-search";
@@ -7,8 +8,6 @@ export type CourseRegion = {
   sido: string | null;
   sigungu: string | null;
   eupMyeonDong: string | null;
-  source: string;
-  resolvedAt: string;
 };
 
 export type CourseSummary = {
@@ -60,6 +59,8 @@ export type CourseDetail = Omit<CourseSummary, "distanceToStartMeters"> & {
   routeGeojson: { type: "LineString"; coordinates: [number, number][] };
   ownerId: number | null;
   published: boolean;
+  elevationProfile: CourseElevationProfile | null;
+  bookmarkCount: number;
 };
 
 export async function getCourse(id: string): Promise<CourseDetail | null> {
@@ -88,7 +89,7 @@ export async function getBookmarkedCourses(page: number): Promise<BookmarkPage> 
   const url = new URL("/api/my/bookmarks", process.env.BACKEND_URL ?? "http://localhost:8080");
   url.searchParams.set("page", String(page));
   const response = await fetch(url, { headers: await sessionHeaders(), cache: "no-store", signal: AbortSignal.timeout(5000) });
-  if (!response.ok) throw new Error("북마크 코스를 불러오지 못했어요.");
+  if (!response.ok) throw new Error("찜한 코스를 불러오지 못했어요.");
   return response.json();
 }
 

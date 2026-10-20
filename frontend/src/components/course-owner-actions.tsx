@@ -1,64 +1,117 @@
 "use client";
 import ownerStyles from "@/components/course-owner-actions.module.css";
-import uiStyles from "@/styles/ui.module.css";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-export function CourseOwnerActions({ id, published }: {
-    id: number;
-    published: boolean;
-}) {
-    const router = useRouter();
-    const [pending, setPending] = useState(false);
-    const locked = useRef(false);
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [message, setMessage] = useState("");
-    async function mutate(remove: boolean) {
-        if (locked.current)
-            return;
-        locked.current = true;
-        setPending(true);
-        setMessage("");
-        try {
-            const response = await fetch(`/api/courses/${id}${remove ? "" : "/visibility"}`, {
-                method: remove ? "DELETE" : "PATCH", headers: { "Content-Type": "application/json" },
-                body: remove ? undefined : JSON.stringify({ published: !published }),
-            });
-            if (!response.ok)
-                throw new Error((await response.json()).message);
-            if (remove)
-                router.replace("/my/courses");
-            else
-                setMessage(published ? "비공개로 변경했어요. 공유 URL로 다른 사람이 볼 수 없어요." : "공개했어요. URL로 코스를 공유할 수 있어요.");
-            router.refresh();
-        }
-        catch (error) {
-            setMessage(error instanceof Error ? error.message : "다시 시도해 주세요.");
-        }
-        finally {
-            locked.current = false;
-            setPending(false);
-        }
+export function CourseOwnerActions({ id }: { id: number }) {
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+  const locked = useRef(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [message, setMessage] = useState("");
+  async function removeCourse() {
+    if (locked.current) return;
+    locked.current = true;
+    setPending(true);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/courses/${id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error((await response.json()).message);
+      router.replace("/my/courses");
+      router.refresh();
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "다시 시도해 주세요.",
+      );
+    } finally {
+      locked.current = false;
+      setPending(false);
     }
-    return <section className={ownerStyles.ownerActions} aria-label="내 코스 관리">
-    <span className={uiStyles.typeBadge}>{published ? "공개 코스" : "비공개 · 나만 보기"}</span>
-    <Link className={uiStyles.backLink} href={`/courses/${id}/edit`}>코스 수정</Link>
-    {!published && <p className={uiStyles.mapCaption}>공개하면 누구나 경로를 볼 수 있어요. 집 등 개인 위치가 포함됐는지 확인하세요.</p>}
-    <button type="button" disabled={pending} onClick={() => mutate(false)}>{published ? "비공개로 변경" : "공개하기"}</button>
-    <button type="button" disabled={pending} onClick={() => setConfirmDelete(!confirmDelete)}>삭제</button>
-    {confirmDelete && <div role="alert"><p>이 코스를 영구 삭제할까요?</p><button type="button" disabled={pending} onClick={() => mutate(true)}>삭제 확인</button><button type="button" disabled={pending} onClick={() => setConfirmDelete(false)}>취소</button></div>}
-    <p role="status">{message}</p>
-  </section>;
+  }
+  return (
+    <section className={ownerStyles.ownerActions} aria-label="내 코스 관리">
+      <button
+        className={ownerStyles.deleteIconButton}
+        type="button"
+        disabled={pending}
+        onClick={() => setConfirmDelete(!confirmDelete)}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3" />
+        </svg>
+        <span>코스 삭제</span>
+      </button>
+      {confirmDelete && (
+        <div className={ownerStyles.deleteConfirm} role="alert">
+          <p>이 코스를 영구 삭제할까요?</p>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => removeCourse()}
+          >
+            삭제
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => setConfirmDelete(false)}
+          >
+            취소
+          </button>
+        </div>
+      )}
+      <p role="status">{message}</p>
+    </section>
+  );
 }
-export function ShareCourseButton() {
-    const [message, setMessage] = useState("");
-    return <><button type="button" className={ownerStyles.shareButton} onClick={async () => {
-            try {
-                await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}`);
-                setMessage("공개 코스 URL을 복사했어요.");
-            }
-            catch {
-                setMessage("주소창의 URL을 복사해 주세요.");
-            }
-        }}>공유 URL 복사</button><p className={uiStyles.mapCaption} role="status">{message}</p></>;
+export function ShareCourseButton({ className = "" }: { className?: string }) {
+  return (
+    <div className={ownerStyles.shareControl}>
+      <button
+        type="button"
+        className={`${ownerStyles.shareButton} ${className}`}
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(
+              `${window.location.origin}${window.location.pathname}`,
+            );
+            window.dispatchEvent(
+              new CustomEvent("running-course:toast", {
+                detail: "공유 링크를 복사했어요",
+              }),
+            );
+          } catch {
+            window.dispatchEvent(
+              new CustomEvent("running-course:toast", {
+                detail: "주소 복사에 실패했어요. 주소창에서 링크를 복사해 주세요.",
+              }),
+            );
+          }
+        }}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4" />
+        </svg>
+        링크 공유
+      </button>
+    </div>
+  );
 }

@@ -13,7 +13,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -32,17 +32,8 @@
 
 .detailHeading h1 {
   overflow-wrap: anywhere;
-  font-size: clamp(2rem,3.2vw,2.8rem);
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
   margin-top: 10px;
-}
-
-.detailIntro {
-  margin: 18px 0 0;
-  line-height: 1.8;
-  font-size: 1.125rem;
-  color: #7c8599;
-  margin-top: 14px;
-  max-width: 650px;
 }
 
 @media (max-width: 1160px) and (min-width: 941px) {
@@ -53,7 +44,7 @@
 
 @media (max-width: 940px) {
   .courseGrid {
-    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -73,8 +64,5 @@
   }
   .detailHeading h1 {
     font-size: 2rem;
-  }
-  .detailIntro {
-    font-size: 1rem;
   }
 }

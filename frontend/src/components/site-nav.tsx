@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 const links = [
   { href: "/", label: "코스 탐색" },
-  { href: "/my/bookmarks", label: "북마크" },
+  { href: "/my/bookmarks", label: "찜" },
   { href: "/my/courses", label: "내가 만든 코스" },
 ];
 export function SiteNavFallback() {

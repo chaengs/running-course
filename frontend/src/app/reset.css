@@ -1,0 +1,37 @@
+/* Normalize browser defaults before the application styles are loaded. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  appearance: none;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+}

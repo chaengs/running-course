@@ -16,7 +16,7 @@ async function mutate(request: NextRequest, { params }: Context) {
       method: request.method, headers: { Authorization: `Bearer ${token}` }, cache: "no-store", signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) {
-      const message = response.status === 401 ? "로그인이 만료됐어요. 다시 로그인해 주세요." : response.status === 404 ? "삭제되었거나 비공개인 코스예요." : "북마크를 변경하지 못했어요. 다시 시도해 주세요.";
+      const message = response.status === 401 ? "로그인이 만료됐어요. 다시 로그인해 주세요." : response.status === 404 ? "삭제되었거나 비공개인 코스예요." : "찜 상태를 변경하지 못했어요. 다시 시도해 주세요.";
       return NextResponse.json({ message }, { status: response.status });
     }
     return new NextResponse(null, { status: 204 });

@@ -2,12 +2,14 @@ import uiStyles from "@/styles/ui.module.css";
 import Link from "next/link";
 import { sessionHeaders } from "@/lib/session";
 import { CourseBookmarkButton } from "./course-bookmark-button";
-export async function CourseBookmark({ courseId, loggedIn }: {
+export async function CourseBookmark({ courseId, loggedIn, bookmarkCount, className = "" }: {
     courseId: number;
     loggedIn: boolean;
+    bookmarkCount: number;
+    className?: string;
 }) {
     if (!loggedIn)
-        return <p><Link className={uiStyles.backLink} href="/login">로그인하고 코스 북마크하기 →</Link></p>;
+        return <Link className={`${uiStyles.backLink} ${className}`} href="/login">♡ 찜 {bookmarkCount}</Link>;
     let bookmarked: boolean | null = null;
     try {
         const response = await fetch(new URL(`/api/my/bookmarks/${courseId}`, process.env.BACKEND_URL ?? "http://localhost:8080"), {
@@ -22,6 +24,6 @@ export async function CourseBookmark({ courseId, loggedIn }: {
     }
     catch { /* Keep the course and map available if bookmark lookup fails. */ }
     if (bookmarked === null)
-        return <p role="status">북마크 상태를 확인하지 못했어요. 페이지를 새로고침해 주세요.</p>;
-    return <CourseBookmarkButton key={`${courseId}-${bookmarked}`} courseId={courseId} initialBookmarked={bookmarked}/>;
+        return <p role="status">찜 상태를 확인하지 못했어요. 페이지를 새로고침해 주세요.</p>;
+    return <CourseBookmarkButton key={`${courseId}-${bookmarked}`} courseId={courseId} initialBookmarked={bookmarked} bookmarkCount={bookmarkCount} className={className}/>;
 }

@@ -8,139 +8,116 @@ import { after } from "next/server";
 import { Suspense } from "react";
 import { CourseDetailSkeleton } from "@/components/course-detail-skeleton";
 import { CourseRouteMap } from "@/components/course-route-map";
+import { CourseElevation } from "@/components/course-elevation";
+import { MapMarkerIcon } from "@/components/map-marker-icon";
 import { courseTypeLabels, formatDistance } from "@/lib/course-format";
 import { courseListHref, parseCourseListQuery } from "@/lib/course-search";
 import { getCourse, recordCourseView } from "@/lib/courses";
 import { getCurrentUser, sessionHeaders } from "@/lib/session";
-import {
-  CourseOwnerActions,
-  ShareCourseButton,
-} from "@/components/course-owner-actions";
+import { CourseOwnerActions, ShareCourseButton } from "@/components/course-owner-actions";
 import { CourseBookmark } from "@/components/course-bookmark";
+
 type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-  searchParams: Promise<{
-    [key: string]: string | string[] | undefined;
-  }>;
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
+
 export const metadata: Metadata = { title: "코스 상세 | Running Course" };
+
 async function CourseDetailContent({ params, searchParams }: Props) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807"))
-    notFound();
-  const [course, user, authHeaders] = await Promise.all([
-    getCourse(id),
-    getCurrentUser(),
-    sessionHeaders(),
-  ]);
+  if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807")) notFound();
+  const [course, user, authHeaders] = await Promise.all([getCourse(id), getCurrentUser(), sessionHeaders()]);
   if (!course) notFound();
-  after(() =>
-    recordCourseView(course.id, course.ownerId === user?.id, authHeaders),
-  );
+  after(() => recordCourseView(course.id, course.ownerId === user?.id, authHeaders));
+
   const listQuery = parseCourseListQuery(query) ?? { page: 0, size: 6 };
-  const name = course.name;
-  const regionLabel = [
-    course.region?.sido,
-    course.region?.sigungu,
-    course.region?.eupMyeonDong,
-  ]
-    .filter((part): part is string => Boolean(part))
-    .join(" · ");
+  const regionLabel = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
+    .filter((part): part is string => Boolean(part)).join(" · ");
+  const profile = course.elevationProfile;
+  const difficultyLabel = profile?.difficulty.level === "LOW" ? "하" : profile?.difficulty.level === "MEDIUM" ? "중" : profile?.difficulty.level === "HIGH" ? "상" : null;
+
   return (
     <main id="main-content" className={layoutStyles.detailPage}>
-      <Link className={uiStyles.backLink} href={courseListHref(listQuery)}>
-        ← 코스 목록으로
-      </Link>
-      <header className={layoutStyles.detailHeading}>
-        <p className={uiStyles.eyebrow}>YOUR NEXT RUN</p>
-        <div className={uiStyles.cardTop}>
-          <span className={uiStyles.typeBadge}>
-            {courseTypeLabels[course.courseType]}
-          </span>
+      <Link className={uiStyles.backLink} href={courseListHref(listQuery)}>← 코스 목록으로</Link>
+      <header className={detailStyles.detailHeader}>
+        <div className={detailStyles.headerTop}>
+          <div className={detailStyles.titleBlock}>
+            <div className={detailStyles.chips}>
+              {regionLabel && <span className={detailStyles.chip}><MapMarkerIcon />{regionLabel}</span>}
+              <span className={detailStyles.chip}>{courseTypeLabels[course.courseType]}</span>
+              <span className={`${detailStyles.chip} ${course.published ? detailStyles.chipPublic : detailStyles.chipPrivate}`}>
+                {course.published ? "전체 공개" : "비공개"}
+              </span>
+            </div>
+            <h1>{course.name}</h1>
+          </div>
+          <div className={detailStyles.headerActions}>
+            {course.published && <>
+              <Suspense fallback={<span className={detailStyles.chip}>찜 {course.bookmarkCount}</span>}>
+                <CourseBookmark className={detailStyles.headerBookmark} courseId={course.id} loggedIn={Boolean(user)} bookmarkCount={course.bookmarkCount} />
+              </Suspense>
+              <ShareCourseButton className={detailStyles.headerShare} />
+            </>}
+            {course.ownerId === user?.id && <CourseOwnerActions id={course.id} />}
+          </div>
         </div>
-        <h1>{name}</h1>
-        <p className={layoutStyles.detailIntro}>
-          출발점으로 돌아오는 길, 나만의 페이스로 달려보세요.
-        </p>
       </header>
+
       <div className={detailStyles.detailGrid}>
-        <section
-          className={detailStyles.routeSection}
-          aria-labelledby="route-title"
-        >
-          <div className={detailStyles.routeHeading}>
-            <h2 id="route-title">전체 경로</h2>
-          </div>
-          <CourseRouteMap route={course.routeGeojson} name={course.name} />
-          <p className={uiStyles.mapCaption}>
-            지도를 드래그하거나 마우스 휠·확대/축소 버튼으로 경로를 살펴보세요.
-          </p>
-          <section className={detailStyles.routeGuide}>
-            <p className={uiStyles.eyebrow}>RUN YOUR OWN PACE</p>
-            <h2>코스 러닝 가이드</h2>
-            <div className={detailStyles.guideGrid}>
-              <div>
-                <span>01 · START</span>
-                <h3>출발 지점 확인</h3>
-                <p>지도에서 출발점을 확인하고, 주변 보행 환경을 살펴보세요.</p>
-              </div>
-              <div>
-                <span>02 · ROUTE</span>
-                <h3>나만의 페이스로</h3>
-                <p>
-                  전체 {formatDistance(course.distanceMeters)}km의 경로를
-                  확인하고 러닝을 준비하세요.
-                </p>
-              </div>
+        <div className={detailStyles.routeColumn}>
+          <section className={detailStyles.routeCard} aria-labelledby="route-title">
+            <div className={detailStyles.routeHeading}>
+              <h2 id="route-title">전체 경로</h2>
+              <span className={detailStyles.routeHint}>저장된 코스 경로</span>
             </div>
+            <CourseRouteMap route={course.routeGeojson} name={course.name} />
           </section>
-        </section>
-        <aside className={uiStyles.courseInfo} aria-labelledby="info-title">
-          <p className={uiStyles.eyebrow}>COURSE TELEMETRY</p>
-          <h2 id="info-title">코스 상세 데이터</h2>
-          <dl className={detailStyles.detailStats}>
-            <div>
-              <dt>총거리</dt>
-              <dd className={detailStyles.detailDistance}>
-                {formatDistance(course.distanceMeters)}
-                <span>km</span>
-              </dd>
-            </div>
-            <div>
-              <dt>코스 유형</dt>
-              <dd>{courseTypeLabels[course.courseType]}</dd>
-            </div>
-            <div>
-              <dt>출발 지역</dt>
-              <dd>{regionLabel || "지역 정보 없음"}</dd>
-            </div>
-          </dl>
-          {course.ownerId === user?.id && (
-            <CourseOwnerActions id={course.id} published={course.published} />
-          )}
-          {course.published && <ShareCourseButton />}
-          {course.published && (
-            <Suspense fallback={<p role="status">북마크 확인 중…</p>}>
-              <CourseBookmark courseId={course.id} loggedIn={Boolean(user)} />
-            </Suspense>
-          )}
-          <div className={detailStyles.courseDescription}>
-            <h3>코스 소개</h3>
-            <p>
-              {course.description.trim() || "아직 등록된 코스 설명이 없어요."}
-            </p>
-          </div>
+          <section className={detailStyles.elevationCard} aria-label="코스 고도 프로필">
+            {profile ? <CourseElevation route={course.routeGeojson} length={course.distanceMeters} initialProfile={profile} readOnly showMetrics={false} /> : <>
+              <div className={detailStyles.elevationHeading}><h2>고도 프로필</h2></div>
+              <p className={detailStyles.elevationEmpty}>저장된 고도 정보가 아직 없습니다.</p>
+            </>}
+          </section>
+        </div>
+
+        <aside className={detailStyles.infoColumn}>
+          <section className={detailStyles.infoCard} aria-labelledby="info-title">
+            <h2 id="info-title">코스 정보</h2>
+            <dl className={detailStyles.distanceTile}>
+              <dt>총 거리</dt>
+              <dd>{formatDistance(course.distanceMeters)}<span>km</span></dd>
+            </dl>
+            <dl className={detailStyles.metricGrid}>
+              <div className={detailStyles.metricTile}>
+                <dt>최고 고도</dt>
+                <dd>{profile ? Math.round(profile.maxElevationMeters) : "—"}<span>{profile ? "m" : ""}</span></dd>
+              </div>
+              <div className={detailStyles.metricTile}>
+                <dt>누적 고도</dt>
+                <dd>{profile ? Math.round(profile.ascentMeters) : "—"}<span>{profile ? "m" : ""}</span></dd>
+              </div>
+              <div className={detailStyles.metricTile}>
+                <dt>예상 난이도</dt>
+                <dd className={detailStyles.difficulty} data-level={profile?.difficulty.level}>{difficultyLabel ?? "—"}</dd>
+                <span className={detailStyles.difficultyHelp}>고도 기준</span>
+              </div>
+              <div className={detailStyles.metricTile}>
+                <dt>코스 유형</dt>
+                <dd>{courseTypeLabels[course.courseType]}</dd>
+              </div>
+            </dl>
+          </section>
+          <section className={detailStyles.descriptionCard} aria-labelledby="description-title">
+            <h2 id="description-title">코스 소개</h2>
+            <p>{course.description.trim() || "아직 등록된 코스 설명이 없어요."}</p>
+          </section>
         </aside>
       </div>
     </main>
   );
 }
+
 export default function CourseDetailPage(props: Props) {
-  return (
-    <Suspense fallback={<CourseDetailSkeleton />}>
-      <CourseDetailContent {...props} />
-    </Suspense>
-  );
+  return <Suspense fallback={<CourseDetailSkeleton />}><CourseDetailContent {...props} /></Suspense>;
 }

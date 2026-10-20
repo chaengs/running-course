@@ -9,6 +9,8 @@
   margin-inline: 0;
 }
 
+.shareControl { min-width: 0; }
+
 .shareButton {
   border-radius: 6px;
   padding: 8px 12px;
@@ -21,18 +23,18 @@
 }
 
 .ownerActions {
-  border-radius: 10px;
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #f4f7ff;
-  border: 0;
-  font-size: 1rem;
+  position: relative;
+  display: inline-flex;
 }
 
-.ownerActions > button {
-  margin-inline: 6px;
-}
+.ownerActions .deleteIconButton { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: auto; min-width: 0; height: 44px; padding: 0 14px; border: 1px solid #f3d5d6; border-radius: 999px; color: #bd414b; background: #fff0f0; cursor: pointer; white-space: nowrap; }
+.ownerActions .deleteIconButton:hover { background: #ffe5e6; }
+.deleteIconButton span { font-size: 1rem; font-weight: 650; }
+.deleteConfirm { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; width: min(300px, 80vw); padding: 16px; border: 1px solid #e3e8f0; border-radius: 12px; background: white; box-shadow: 0 12px 28px #10214422; }
+.deleteConfirm p { margin: 0 0 12px; font-size: 1rem; }
+.deleteConfirm button { min-height: 44px; margin-right: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); font: inherit; }
+.deleteConfirm button:first-of-type { color: white; background: #a72c37; border-color: #a72c37; }
+.ownerActions > p { margin: 4px 0 0; position: absolute; top: 100%; right: 0; font-size: 1rem; white-space: nowrap; }
 
-.ownerActions > a {
-  margin-inline: 6px;
-}
+.shareButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.shareControl > p { min-height: 0; margin: 0; }

@@ -575,7 +575,7 @@
     content: "총 거리: ";
   }
   .courseTable td:nth-child(5)::before {
-    content: "총 북마크 수: ";
+    content: "총 찜 수: ";
   }
   .courseTable td:nth-child(6)::before {
     content: "총 조회수: ";
@@ -670,7 +670,7 @@
     content: "총 거리:";
   }
   .courseTable td:nth-child(5)::before {
-    content: "총 북마크 수:";
+    content: "총 찜 수:";
   }
   .courseTable td:nth-child(6)::before {
     content: "총 조회수:";

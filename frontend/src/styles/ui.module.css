@@ -16,9 +16,9 @@
   border-radius: 7px;
   line-height: 1.7;
   font-size: 1rem;
+  font-weight: 700;
   padding: 10px 14px;
   background: #eef2fc;
-  color: #59687f;
   border: 1px solid #e2e8f6;
 }
 
@@ -39,7 +39,6 @@
   border-radius: 12px;
   background: #e8efff;
 }
-
 
 .emptyState {
   text-align: center;
