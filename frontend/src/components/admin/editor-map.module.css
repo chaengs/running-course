@@ -78,13 +78,10 @@
 
 .editorToolbar .editorToolDelete {
   color: #a32736;
-  background: #fff2f3;
 }
 
 .editorToolbar .editorToolLoop {
   color: #362499;
-  background: #e9e5ff;
-  border-color: #d9d1ff;
 }
 
 .editorToolbar .editorToolReset {
@@ -93,7 +90,6 @@
 
 .editorToolbar .editorToolLocation {
   color: #116446;
-  background: #edf8f1;
 }
 
 .editorToolbar button:not(:disabled):hover {

@@ -19,7 +19,7 @@ data class CreateCourseRequest(val name: String, val description: String = "", v
             if (!valid) throw ResponseStatusException(HttpStatus.BAD_REQUEST, message)
         }
         check(name.trim().length in 1..100, "코스 이름은 1~100자로 입력해 주세요.")
-        check(description.length <= 5000, "코스 소개는 5000자 이하여야 합니다.")
+        check(description.length <= 300, "코스 소개는 300자 이하여야 합니다.")
         val route = routeGeojson
         check(route.type == "LineString", "LineString 경로만 저장할 수 있습니다.")
         check(route.coordinates.size in 4..10000, "경로점은 4~10000개여야 합니다.")
