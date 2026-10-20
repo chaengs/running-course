@@ -4,7 +4,7 @@ import uiStyles from "@/styles/ui.module.css";
 import editorStyles from "@/components/admin/course-editor.module.css";
 import formStyles from "@/components/form.module.css";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import {
   initialRouteEditorState,
@@ -40,6 +40,7 @@ export function CourseEditor({
 }: {
   initialCourse?: EditableCourse;
 }) {
+  const router = useRouter();
   const [{ points, selected }, dispatch] = useReducer(routeEditorReducer, {
     ...initialRouteEditorState,
     points: initialCourse?.points ?? initialRouteEditorState.points,
@@ -59,10 +60,6 @@ export function CourseEditor({
     useState<CourseElevationProfile | null>(
       initialCourse?.elevationProfile ?? null,
     );
-  const [saved, setSaved] = useState<{
-    id: number;
-    distanceMeters: number;
-  } | null>(null);
   const closed =
     points.length > 2 &&
     points[0].lat === points.at(-1)?.lat &&
@@ -91,7 +88,7 @@ export function CourseEditor({
     [],
   );
   async function saveCourse() {
-    if (savingRef.current || saved) return;
+    if (savingRef.current) return;
     if (name.trim().length > 30) {
       setMessage("코스 이름은 30자 이하로 입력해 주세요.");
       return;
@@ -132,8 +129,7 @@ export function CourseEditor({
       );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
-      setSaved(result);
-      setMessage(`코스를 ${published ? "공개" : "비공개"}로 저장했어요.`);
+      router.push(`/courses/${result.id}`);
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -190,10 +186,7 @@ export function CourseEditor({
       <p className={`${uiStyles.editorHint} ${editorStyles.editorIntro}`}>
         지도에 점을 찍어 나만의 코스를 그려보세요.
       </p>
-      <fieldset
-        className={formStyles.editorSaveFields}
-        disabled={saving || saved !== null}
-      >
+      <fieldset className={formStyles.editorSaveFields} disabled={saving}>
         <div className={editorStyles.editorGrid}>
           <section aria-label="코스 경로 편집">
             <EditorMap
@@ -292,23 +285,7 @@ export function CourseEditor({
             aria-labelledby="editor-info-title"
           >
             <header className={editorStyles.editorInfoHeading}>
-              <h2 id="editor-info-title">
-                <svg
-                  aria-hidden="true"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                  <path d="M14 17.5h7M17.5 14v7" />
-                </svg>
-                코스 정보 입력
-              </h2>
+              <h2 id="editor-info-title">코스 정보 입력</h2>
             </header>
             <label>
               <span className={editorStyles.editorFieldHeading}>
@@ -379,44 +356,26 @@ export function CourseEditor({
             <CourseVisibilityToggle
               published={published}
               onChange={setPublished}
-              disabled={saving || saved !== null}
+              disabled={saving}
             />
-            {published && (
-              <p className={formStyles.mapCaption}>
-                공개하기 전에 집 등 개인 위치가 경로에 포함됐는지 확인하세요.
-              </p>
-            )}
             <button
               className={formStyles.buttonPrimary}
               type="button"
               onClick={saveCourse}
-              disabled={saving || saved !== null || !canSave}
+              disabled={saving || !canSave}
             >
               {saving
                 ? "저장 중…"
-                : saved
-                  ? "저장 완료"
-                  : initialCourse
-                    ? "수정 저장"
-                    : "코스 저장 및 등록"}
+                : initialCourse
+                  ? "수정 저장"
+                  : "코스 저장 및 등록"}
             </button>
-            <p className={formStyles.mapCaption}>
-              저장 후에도 내용을 수정할 수 있어요.
-            </p>
             <p role="status" className={formStyles.editorMessage}>
               {message}
             </p>
           </section>
         </div>
       </fieldset>
-      {saved && (
-        <p role="status">
-          저장 거리: {(saved.distanceMeters / 1000).toFixed(2)}km ·{" "}
-          <Link className={uiStyles.backLink} href={`/courses/${saved.id}`}>
-            저장한 코스 상세 보기 →
-          </Link>
-        </p>
-      )}
     </>
   );
 }
