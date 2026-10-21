@@ -60,6 +60,7 @@ export async function getCourses(page: number, size: number, filters: CourseSear
 export type CourseDetail = Omit<CourseSummary, "distanceToStartMeters"> & {
   description: string;
   routeGeojson: { type: "LineString"; coordinates: [number, number][] };
+  routeWaypoints: { type: "LineString"; coordinates: [number, number][] } | null;
   ownerId: number | null;
   published: boolean;
   elevationProfile: CourseElevationProfile | null;

@@ -10,6 +10,7 @@ data class CourseDetail(
     val courseType: CourseType,
     val startLocation: StartLocation,
     val routeGeojson: JsonNode,
+    val routeWaypoints: JsonNode? = null,
     val ownerId: Long? = null,
     val published: Boolean = true,
     val region: CourseRegion? = null,

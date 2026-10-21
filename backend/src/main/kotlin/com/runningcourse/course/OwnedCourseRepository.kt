@@ -62,7 +62,7 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
     )
 
     fun findById(id: Long, owner: Long): CourseDetail? = jdbc.query("""
-        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published, elevation_profile,
+        SELECT id, name, description, distance_meters, course_type, route_geojson, route_waypoints, owner_id, published, elevation_profile,
                region_sido, region_sigungu, region_eup_myeon_dong,
                (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
                ST_Y(start_location::geometry) AS latitude, ST_X(start_location::geometry) AS longitude
@@ -75,6 +75,7 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
             courseType = CourseType.valueOf(rs.getString("course_type")),
             startLocation = StartLocation(rs.getDouble("latitude"), rs.getDouble("longitude")),
             routeGeojson = mapper.readTree(rs.getString("route_geojson")),
+            routeWaypoints = rs.getString("route_waypoints")?.let(mapper::readTree),
             ownerId = owner,
             published = rs.getBoolean("published"),
             region = rs.readCourseRegion(),
@@ -94,13 +95,14 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
     fun update(id: Long, owner: Long, request: CreateCourseRequest, region: CourseRegion?): CreatedCourse? = jdbc.query("""
         WITH route AS (SELECT ST_SetSRID(ST_GeomFromGeoJSON(?),4326) AS geom),
         measured AS (SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route)
-        UPDATE courses SET name = ?, description = ?, course_type = ?, route_geojson = ST_AsGeoJSON(geom)::jsonb, elevation_profile = ?::jsonb,
+        UPDATE courses SET name = ?, description = ?, course_type = ?, route_geojson = ST_AsGeoJSON(geom)::jsonb, route_waypoints = ?::jsonb, elevation_profile = ?::jsonb,
         start_location = ST_StartPoint(geom)::geography, distance_meters = distance, published = COALESCE(?, courses.published),
         region_sido = ?, region_sigungu = ?, region_eup_myeon_dong = ?, updated_at = CURRENT_TIMESTAMP
         FROM measured WHERE id = ? AND owner_id = ? AND distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(), { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
-        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name, request.elevationProfile?.let(mapper::writeValueAsString),
+        mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name,
+        mapper.writeValueAsString(request.routeWaypoints ?: request.routeGeojson), request.elevationProfile?.let(mapper::writeValueAsString),
         request.published, region?.sido, region?.sigungu, region?.eupMyeonDong, id, owner,
     ).singleOrNull()
 

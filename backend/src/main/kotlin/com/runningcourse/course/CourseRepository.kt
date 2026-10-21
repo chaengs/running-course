@@ -85,7 +85,7 @@ class CourseRepository(
 
     fun findPublishedById(id: Long): CourseDetail? = jdbcTemplate.query(
         """
-        SELECT id, name, description, distance_meters, course_type, route_geojson, owner_id, published, elevation_profile,
+        SELECT id, name, description, distance_meters, course_type, route_geojson, route_waypoints, owner_id, published, elevation_profile,
                region_sido, region_sigungu, region_eup_myeon_dong,
                (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
                ST_Y(start_location::geometry) AS latitude,
@@ -102,6 +102,7 @@ class CourseRepository(
                 courseType = CourseType.valueOf(rs.getString("course_type")),
                 startLocation = StartLocation(rs.getDouble("latitude"), rs.getDouble("longitude")),
                 routeGeojson = jsonMapper.readTree(rs.getString("route_geojson")),
+                routeWaypoints = rs.getString("route_waypoints")?.let(jsonMapper::readTree),
                 ownerId = rs.getObject("owner_id", Long::class.javaObjectType),
                 published = rs.getBoolean("published"),
                 region = rs.readCourseRegion(),

@@ -9,7 +9,6 @@ import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import {
   initialRouteEditorState,
   routeEditorReducer,
-  routeLength,
   type RoutePoint,
 } from "@/lib/route-editor";
 import { CourseVisibilityToggle } from "@/components/course-visibility-toggle";
@@ -49,6 +48,8 @@ type EditableCourse = {
   description: string;
   courseType: string;
   points: RoutePoint[];
+  routeCoordinates: RoutePoint[];
+  distanceMeters: number;
   published: boolean;
   elevationProfile: CourseElevationProfile | null;
 };
@@ -72,6 +73,7 @@ export function CourseEditor({
   const [published, setPublished] = useState(initialCourse?.published ?? false);
   const [message, setMessage] = useState("");
   const [walkingSegments, setWalkingSegments] = useState<WalkingSegment[]>([]);
+  const [routeDirty, setRouteDirty] = useState(false);
   const walkingSegmentsRef = useRef<WalkingSegment[]>([]);
   const anchorsRef = useRef(points);
   const [routing, setRouting] = useState(false);
@@ -87,19 +89,19 @@ export function CourseEditor({
     points[0].lat === points.at(-1)?.lat &&
     points[0].lng === points.at(-1)?.lng;
   const walkingRoute = useMemo(
-    () => initialCourse ? points : joinWalkingSegments(walkingSegments),
-    [initialCourse, points, walkingSegments],
+    () => initialCourse && !routeDirty ? initialCourse.routeCoordinates : joinWalkingSegments(walkingSegments),
+    [initialCourse, routeDirty, walkingSegments],
   );
   const length = useMemo(
-    () => initialCourse ? routeLength(points) : walkingSegments.reduce((sum, segment) => sum + segment.distanceMeters, 0),
-    [initialCourse, points, walkingSegments],
+    () => initialCourse && !routeDirty ? initialCourse.distanceMeters : walkingSegments.reduce((sum, segment) => sum + segment.distanceMeters, 0),
+    [initialCourse, routeDirty, walkingSegments],
   );
   const canSave =
     name.trim().length > 0 &&
     name.trim().length <= 30 &&
     new Set(points.map(({ lat, lng }) => `${lat},${lng}`)).size >= 3 &&
     closed &&
-    (Boolean(initialCourse) || (!routing && walkingSegments.length === points.length - 1 && walkingRoute.length > 1)) &&
+    ((Boolean(initialCourse) && !routeDirty) || (!routing && walkingSegments.length === points.length - 1 && walkingRoute.length > 1)) &&
     length >= 1 &&
     length <= 100000;
   const geojson = useMemo(
@@ -110,7 +112,7 @@ export function CourseEditor({
     [walkingRoute],
   );
   const calculateWalkingRoute = useCallback(async (next: RoutePoint[], fromSegment: number) => {
-    if (initialCourse || next.length < 2) {
+    if (next.length < 2) {
       walkingSegmentsRef.current = [];
       setWalkingSegments([]);
       return;
@@ -155,14 +157,14 @@ export function CourseEditor({
       routingRef.current = false;
       setRouting(false);
     }
-  }, [initialCourse]);
+  }, []);
   const updatePoints = useCallback((next: RoutePoint[]) => {
     if (routingRef.current) return;
     const previous = anchorsRef.current;
     anchorsRef.current = next;
     dispatch({ type: "replace", points: next });
     setMessage("");
-    if (initialCourse) return;
+    if (initialCourse) setRouteDirty(true);
     if (next.length < 2) {
       walkingSegmentsRef.current = [];
       setWalkingSegments([]);
@@ -171,11 +173,13 @@ export function CourseEditor({
     const isAppend = next.length === previous.length + 1 && previous.every((point, index) => samePoint(point, next[index]));
     let changedIndex = 0;
     while (changedIndex < Math.min(previous.length, next.length) && samePoint(previous[changedIndex], next[changedIndex])) changedIndex += 1;
-    const fromSegment = isAppend && walkingSegmentsRef.current.length === previous.length - 1
-      ? previous.length - 1
-      : Math.max(0, changedIndex - 1);
+    const fromSegment = initialCourse && !routeDirty
+      ? 0
+      : isAppend && walkingSegmentsRef.current.length === previous.length - 1
+        ? previous.length - 1
+        : Math.max(0, changedIndex - 1);
     void calculateWalkingRoute(next, Math.min(next.length - 2, fromSegment));
-  }, [calculateWalkingRoute, initialCourse]);
+  }, [calculateWalkingRoute, initialCourse, routeDirty]);
   const selectPoint = useCallback(
     (index: number) => dispatch({ type: "select", index }),
     [],
@@ -194,7 +198,7 @@ export function CourseEditor({
       distinctPoints.size < 3 ||
       !closed ||
       routing ||
-      (!initialCourse && (walkingSegments.length !== points.length - 1 || walkingRoute.length < 2)) ||
+      ((!initialCourse || routeDirty) && (walkingSegments.length !== points.length - 1 || walkingRoute.length < 2)) ||
       length < 1 ||
       length > 100000
     ) {
@@ -217,6 +221,10 @@ export function CourseEditor({
             description: description.trim(),
             courseType,
             routeGeojson: geojson,
+            routeWaypoints: {
+              type: "LineString",
+              coordinates: points.map(({ lat, lng }) => [lng, lat]),
+            },
             published,
             elevationProfile,
           }),
@@ -286,7 +294,7 @@ export function CourseEditor({
           <section aria-label="코스 경로 편집">
             <EditorMap
               points={points}
-              displayRoute={initialCourse ? undefined : walkingRoute}
+              displayRoute={walkingRoute}
               selected={selected}
               onChange={updatePoints}
               onSelect={selectPoint}

@@ -53,9 +53,13 @@ class CourseRepositoryIntegrationTests {
             calculatedAt = java.time.Instant.parse("2026-01-01T00:00:00Z"),
             difficulty = ElevationDifficulty(ElevationDifficultyLevel.LOW, 0.0),
         )
+        val editableWaypoints = RouteGeometry("LineString", listOf(
+            listOf(126.934, 37.528), listOf(126.9345, 37.528),
+            listOf(126.935, 37.529), listOf(126.934, 37.528),
+        ))
         val request = CreateCourseRequest(" 새 코스 ", " 소개 ", CourseType.LOOP,
             RouteGeometry("LineString", listOf(listOf(126.934, 37.528), listOf(126.935, 37.528), listOf(126.935, 37.529), listOf(126.934, 37.528))),
-            elevationProfile = profile)
+            elevationProfile = profile, routeWaypoints = editableWaypoints)
         val mapper = JsonMapper.builder().build()
         val region = CourseRegion("서울특별시", "마포구", "공덕동")
         val created = CourseCreateService(CourseCreateRepository(jdbc, mapper), CourseRegionResolver { _, _ -> region }).create(request, 123)
@@ -71,6 +75,8 @@ class CourseRepositoryIntegrationTests {
         org.junit.jupiter.api.Assertions.assertTrue(created.distanceMeters in 300..400)
         assertEquals(created.distanceMeters, detail.distanceMeters)
         assertEquals(4, detail.routeGeojson.get("coordinates").size())
+        assertEquals(4, detail.routeWaypoints?.get("coordinates")?.size())
+        assertEquals(126.9345, detail.routeWaypoints?.get("coordinates")?.get(1)?.get(0)?.doubleValue())
         ownerService.visibility(created.id, 123, true)
         assertEquals(region, repository.findPublishedById(created.id)?.region)
     }

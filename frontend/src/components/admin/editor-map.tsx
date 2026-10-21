@@ -32,7 +32,7 @@ function EditorMap(props: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const pathLayer = useRef<L.LayerGroup | null>(null);
-  const initialPoints = useRef(props.points);
+  const initialPoints = useRef(props.displayRoute?.length ? props.displayRoute : props.points);
   const markers = useRef<L.Marker[]>([]);
   const pendingStartClick = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tileError, setTileError] = useState(false);

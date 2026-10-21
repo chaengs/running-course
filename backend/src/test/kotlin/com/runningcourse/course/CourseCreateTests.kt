@@ -12,6 +12,17 @@ class CourseCreateTests {
     private fun request(coordinates: List<List<Double>> = points) = CreateCourseRequest("실제 코스", "설명", CourseType.LOOP, RouteGeometry("LineString", coordinates))
 
     @Test fun `closed valid route is accepted`() { assertDoesNotThrow { request().validate() } }
+    @Test fun `valid editable waypoints are accepted independently of route geometry`() {
+        val waypoints = RouteGeometry("LineString", listOf(
+            listOf(126.934, 37.528), listOf(126.935, 37.528),
+            listOf(126.935, 37.529), listOf(126.934, 37.528),
+        ))
+        assertDoesNotThrow { request().copy(routeWaypoints = waypoints).validate() }
+    }
+    @Test fun `open editable waypoints are rejected`() {
+        val openWaypoints = RouteGeometry("LineString", points.dropLast(1) + listOf(listOf(126.936, 37.529)))
+        assertThrows(ResponseStatusException::class.java) { request().copy(routeWaypoints = openWaypoints).validate() }
+    }
     @Test fun `open route is rejected`() { assertThrows(ResponseStatusException::class.java) { request(points.dropLast(1) + listOf(listOf(126.936, 37.529))).validate() } }
     @Test fun `invalid coordinate dimensions ranges and nonfinite numbers are rejected`() {
         for (point in listOf(listOf(181.0, 37.0), listOf(126.0, Double.NaN), listOf(126.0), listOf(126.0, 37.0, 1.0))) {

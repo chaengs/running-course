@@ -13,7 +13,7 @@ import tools.jackson.databind.json.JsonMapper
 import java.net.URI
 
 data class RouteGeometry(val type: String, val coordinates: List<List<Double>>)
-data class CreateCourseRequest(val name: String, val description: String = "", val courseType: CourseType, val routeGeojson: RouteGeometry, val published: Boolean? = null, val elevationProfile: ElevationProfile? = null) {
+data class CreateCourseRequest(val name: String, val description: String = "", val courseType: CourseType, val routeGeojson: RouteGeometry, val published: Boolean? = null, val elevationProfile: ElevationProfile? = null, val routeWaypoints: RouteGeometry? = null) {
     fun validate() {
         fun check(valid: Boolean, message: String) {
             if (!valid) throw ResponseStatusException(HttpStatus.BAD_REQUEST, message)
@@ -26,6 +26,13 @@ data class CreateCourseRequest(val name: String, val description: String = "", v
         check(route.coordinates.all { it.size == 2 && it[0].isFinite() && it[1].isFinite() && it[0] in -180.0..180.0 && it[1] in -90.0..90.0 }, "경로 좌표가 올바르지 않습니다.")
         check(route.coordinates.first() == route.coordinates.last(), "출발점과 도착점이 같아야 합니다.")
         check(route.coordinates.distinct().size >= 3, "서로 다른 경로점이 3개 이상 필요합니다.")
+        routeWaypoints?.let { waypoints ->
+            check(waypoints.type == "LineString", "경유점은 LineString 형식이어야 합니다.")
+            check(waypoints.coordinates.size in 4..10000, "경유점은 4~10000개여야 합니다.")
+            check(waypoints.coordinates.all { it.size == 2 && it[0].isFinite() && it[1].isFinite() && it[0] in -180.0..180.0 && it[1] in -90.0..90.0 }, "경유점 좌표가 올바르지 않습니다.")
+            check(waypoints.coordinates.first() == waypoints.coordinates.last(), "경유점의 출발점과 도착점이 같아야 합니다.")
+            check(waypoints.coordinates.distinct().size >= 3, "서로 다른 경유점이 3개 이상 필요합니다.")
+        }
     }
 }
 
@@ -40,14 +47,15 @@ class CourseCreateRepository(private val jdbc: JdbcTemplate, private val mapper:
         ), measured AS (
           SELECT geom, ROUND(ST_Length(geom::geography))::integer AS distance FROM route
         )
-        INSERT INTO courses (name, description, course_type, route_geojson, start_location, distance_meters, published, owner_id, elevation_profile,
+        INSERT INTO courses (name, description, course_type, route_geojson, route_waypoints, start_location, distance_meters, published, owner_id, elevation_profile,
                              region_sido, region_sigungu, region_eup_myeon_dong)
-        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?, ?::jsonb, ?, ?, ?
+        SELECT ?, ?, ?, ST_AsGeoJSON(geom)::jsonb, ?::jsonb, ST_StartPoint(geom)::geography, distance, ?, ?, ?::jsonb, ?, ?, ?
         FROM measured WHERE distance BETWEEN 1 AND 100000
         RETURNING id, distance_meters
         """.trimIndent(),
         { rs, _ -> CreatedCourse(rs.getLong("id"), rs.getInt("distance_meters")) },
         mapper.writeValueAsString(request.routeGeojson), request.name.trim(), request.description.trim(), request.courseType.name,
+        mapper.writeValueAsString(request.routeWaypoints ?: request.routeGeojson),
         request.published ?: false, ownerId, request.elevationProfile?.let(mapper::writeValueAsString), region?.sido, region?.sigungu, region?.eupMyeonDong,
     ).singleOrNull()
 }
