@@ -28,6 +28,7 @@ data class MyCourseStats(
 )
 data class MyCoursesResponse(val content: List<MyCourse>, val stats: MyCourseStats, val page: Int, val totalPages: Long)
 data class VisibilityRequest(val published: Boolean)
+data class BulkVisibilityRequest(val courseIds: List<Long>, val published: Boolean)
 
 @Service
 class OwnedCourseService(
@@ -71,6 +72,16 @@ class OwnedCourseService(
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "코스를 찾을 수 없습니다.")
     }
     @Transactional
+    fun bulkVisibility(owner: Long, request: BulkVisibilityRequest) {
+        val ids = request.courseIds.distinct()
+        if (ids.isEmpty() || ids.size > 6 || ids.any { it <= 0 })
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "공개 변경할 코스를 확인해 주세요.")
+        ids.forEach { id ->
+            if (!repository.updateVisibility(id, owner, request.published))
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "선택한 코스 중 일부를 찾을 수 없습니다.")
+        }
+    }
+    @Transactional
     fun delete(id: Long, owner: Long) {
         if (!repository.delete(id, owner))
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "코스를 찾을 수 없습니다.")
@@ -91,6 +102,8 @@ class OwnedCourseController(private val auth: AuthService, private val courses: 
     @PutMapping("/{id}") fun update(@PathVariable id: Long, @RequestHeader("Authorization", required = false) authorization: String?, @RequestBody request: CreateCourseRequest) = courses.update(id, auth.requireUser(authorization).id, request)
     @PatchMapping("/{id}/visibility") @ResponseStatus(HttpStatus.NO_CONTENT)
     fun visibility(@PathVariable id: Long, @RequestHeader("Authorization", required = false) authorization: String?, @RequestBody request: VisibilityRequest) = courses.visibility(id, auth.requireUser(authorization).id, request.published)
+    @PatchMapping("/visibility") @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun bulkVisibility(@RequestHeader("Authorization", required = false) authorization: String?, @RequestBody request: BulkVisibilityRequest) = courses.bulkVisibility(auth.requireUser(authorization).id, request)
     @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(@PathVariable id: Long, @RequestHeader("Authorization", required = false) authorization: String?) = courses.delete(id, auth.requireUser(authorization).id)
 }

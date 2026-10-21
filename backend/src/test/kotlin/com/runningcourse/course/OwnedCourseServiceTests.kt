@@ -52,4 +52,39 @@ class OwnedCourseServiceTests {
         assertEquals(400, assertThrows(ResponseStatusException::class.java) { service.list(2, 0, "secret", "recent") }.statusCode.value())
         assertEquals(400, assertThrows(ResponseStatusException::class.java) { service.list(2, 0, "all", "random") }.statusCode.value())
     }
+
+    @Test fun `bulk visibility updates each selected course for the owner`() {
+        `when`(repository.updateVisibility(1, 2, true)).thenReturn(true)
+        `when`(repository.updateVisibility(3, 2, true)).thenReturn(true)
+
+        service.bulkVisibility(2, BulkVisibilityRequest(listOf(1, 3), true))
+
+        verify(repository).updateVisibility(1, 2, true)
+        verify(repository).updateVisibility(3, 2, true)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test fun `bulk visibility rejects empty and oversized selections`() {
+        assertEquals(400, assertThrows(ResponseStatusException::class.java) {
+            service.bulkVisibility(2, BulkVisibilityRequest(emptyList(), true))
+        }.statusCode.value())
+        assertEquals(400, assertThrows(ResponseStatusException::class.java) {
+            service.bulkVisibility(2, BulkVisibilityRequest((1L..7L).toList(), true))
+        }.statusCode.value())
+        verifyNoInteractions(repository)
+    }
+
+    @Test fun `bulk visibility stops when a selected course is not owned`() {
+        `when`(repository.updateVisibility(1, 2, true)).thenReturn(true)
+        `when`(repository.updateVisibility(3, 2, true)).thenReturn(false)
+
+        val error = assertThrows(ResponseStatusException::class.java) {
+            service.bulkVisibility(2, BulkVisibilityRequest(listOf(1, 3, 4), true))
+        }
+
+        assertEquals(404, error.statusCode.value())
+        verify(repository).updateVisibility(1, 2, true)
+        verify(repository).updateVisibility(3, 2, true)
+        verifyNoMoreInteractions(repository)
+    }
 }
