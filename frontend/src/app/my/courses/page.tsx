@@ -185,7 +185,7 @@ export default function MyCoursesPage(props: PageProps) {
   return (
     <main id="main-content" className={layoutStyles.detailPage}>
       <header
-        className={`${layoutStyles.detailHeading} ${collectionStyles.collectionHeading} ${myStyles.pageHeading}`}
+        className={`${layoutStyles.detailHeading} ${myStyles.pageHeading}`}
       >
         <div>
           <p className={uiStyles.eyebrow}>COURSE LIBRARY · MY RUNNING SPACE</p>
@@ -195,9 +195,6 @@ export default function MyCoursesPage(props: PageProps) {
             관리하세요.
           </p>
         </div>
-        <Link className={collectionStyles.buttonPrimary} href="/courses/new">
-          <span aria-hidden="true">＋</span> 새 코스 그리기
-        </Link>
       </header>
       <Suspense
         fallback={
