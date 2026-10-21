@@ -42,28 +42,14 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: -0.045em;
-  gap: 9px;
   white-space: nowrap;
 }
 
-.brandMark {
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  letter-spacing: -0.08em;
-  padding-right: 4px;
-  background: none;
-  color: var(--primary);
-  width: 28px;
-  height: 32px;
-  padding: 0;
-  border-radius: 0;
-  font-size: 2.3rem;
-  font-style: normal;
-  font-weight: 900;
+.brandLogo {
+  display: block;
+  width: 280px;
+  height: auto;
+  max-width: 100%;
 }
 
 .headerCaption {
@@ -122,7 +108,7 @@
 .siteNav {
   display: flex;
   align-items: stretch;
-  gap: 26px;
+  gap: 36px;
   margin-right: auto;
   min-width: 0;
   flex-wrap: wrap;
@@ -132,16 +118,17 @@
   min-height: 44px;
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 650;
   color: var(--color-neutral);
-  border-bottom: 2px solid transparent;
+  border-bottom: 4px solid transparent;
   white-space: nowrap;
 }
 
 .siteNav a[aria-current="page"] {
   color: var(--primary);
   border-bottom-color: var(--primary);
+  font-weight: 750;
 }
 
 .accountNav .headerCreate {
@@ -153,7 +140,17 @@
   min-height: 44px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+}
+
+.headerCreateIcon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
 }
 
 .headerCreate:hover {
@@ -181,7 +178,7 @@
     flex-wrap: wrap;
   }
   .siteNav {
-    gap: 18px;
+    gap: 24px;
   }
   .accountNav {
     margin-left: auto;
@@ -206,7 +203,7 @@
     order: 3;
     width: 100%;
     justify-content: flex-start;
-    gap: 28px;
+    gap: 32px;
     overflow-x: auto;
   }
 }
@@ -235,12 +232,8 @@
     align-items: flex-start;
     gap: 24px;
   }
-  .brand {
-    font-size: 1rem;
-  }
-  .brandMark {
-    width: 22px;
-    font-size: 1.8rem;
+  .brandLogo {
+    width: 220px;
   }
   .accountNav .headerCreate {
     font-size: 1rem;
@@ -253,7 +246,7 @@
     overflow: visible;
   }
   .siteNav a {
-    font-size: 1rem;
+    font-size: 1.125rem;
     min-height: 46px;
   }
 }
