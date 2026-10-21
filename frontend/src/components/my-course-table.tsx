@@ -159,6 +159,7 @@ export function MyCourseTable({
               </span>
             )}
           </button>
+          <p className={myStyles.resultCount}>{count(visibleCount)}개 표시</p>
         </div>
       </div>
 
