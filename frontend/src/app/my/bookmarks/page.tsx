@@ -7,7 +7,6 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getBookmarkedCourses } from "@/lib/courses";
-import { formatDistance } from "@/lib/course-format";
 import { ExploreCourseCard } from "@/components/explore-course-card";
 export const metadata: Metadata = { title: "찜한 코스 | Running Course" };
 type Props = {
@@ -28,30 +27,6 @@ async function Bookmarks({ searchParams }: Props) {
   const result = await getBookmarkedCourses(page);
   return (
     <>
-      <div className={collectionStyles.collectionBanner}>
-        <div>
-          <span className={uiStyles.eyebrow}>SAVED COURSES</span>
-          <strong>
-            {result.content.length}
-            <small>개 코스</small>
-          </strong>
-        </div>
-        <div>
-          <span className={uiStyles.eyebrow}>TOTAL DISTANCE</span>
-          <strong>
-            {formatDistance(
-              result.content.reduce(
-                (sum, course) => sum + course.distanceMeters,
-                0,
-              ),
-            )}
-            <small>km</small>
-          </strong>
-        </div>
-        <div className={collectionStyles.collectionNote}>
-          <span className={uiStyles.liveDot} /> 다음 러닝을 위한 나만의 컬렉션
-        </div>
-      </div>
       {result.content.length ? (
         <ul className={layoutStyles.courseGrid}>
           {result.content.map((course) => (
