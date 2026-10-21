@@ -16,6 +16,7 @@ import { createMapTiles } from "@/lib/leaflet-map";
 import { CourseAddressSearch, type AddressSearchResult } from "@/components/admin/course-address-search";
 type Props = {
   points: RoutePoint[];
+  displayRoute?: RoutePoint[];
   selected: number | null;
   closed: boolean;
   onChange: (points: RoutePoint[]) => void;
@@ -30,6 +31,7 @@ function EditorMap(props: Props) {
   const Tools = props.tools;
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
+  const pathLayer = useRef<L.LayerGroup | null>(null);
   const initialPoints = useRef(props.points);
   const markers = useRef<L.Marker[]>([]);
   const pendingStartClick = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -183,6 +185,7 @@ function EditorMap(props: Props) {
         padding: [24, 24],
       });
     map.current = instance;
+    pathLayer.current = L.layerGroup().addTo(instance);
     const tiles = createMapTiles().addTo(instance);
     tiles.on("tileerror", () => setTileError(true));
     instance.on("click", (event: L.LeafletMouseEvent) => {
@@ -204,13 +207,13 @@ function EditorMap(props: Props) {
       observer.disconnect();
       instance.remove();
       map.current = null;
+      pathLayer.current = null;
     };
   }, []);
   useEffect(() => {
     if (!map.current) return;
     const layer = L.layerGroup().addTo(map.current);
     markers.current = [];
-    L.polyline(props.points, { color: "var(--color-primary)", weight: 5 }).addTo(layer);
     props.points.forEach((point, index) => {
       if (props.closed && index === props.points.length - 1) return;
       const marker = L.marker(point, {
@@ -242,6 +245,15 @@ function EditorMap(props: Props) {
       pendingStartClick.current = null;
     };
   }, [props.points, props.closed]);
+  useEffect(() => {
+    const layer = pathLayer.current;
+    if (!layer) return;
+    layer.clearLayers();
+    const route = props.displayRoute ?? props.points;
+    if (route.length > 1) {
+      L.polyline(route, { color: "var(--color-primary)", weight: 5 }).addTo(layer);
+    }
+  }, [props.displayRoute, props.points]);
   // 선택 변경에는 기존 마커의 스타일만 갱신합니다.
   useEffect(() => {
     markers.current.forEach((marker, index) => {
