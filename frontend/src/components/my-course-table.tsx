@@ -27,13 +27,11 @@ export function MyCourseTable({
   visibility,
   sort,
   counts,
-  visibleCount,
 }: {
   courses: MyCourse[];
   visibility: string;
   sort: string;
   counts: { all: number; published: number; private: number };
-  visibleCount: number;
 }) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -159,7 +157,6 @@ export function MyCourseTable({
               </span>
             )}
           </button>
-          <p className={myStyles.resultCount}>{count(visibleCount)}개 표시</p>
         </div>
       </div>
 

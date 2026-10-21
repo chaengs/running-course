@@ -125,7 +125,6 @@ async function MyCourses({ searchParams }: PageProps) {
             published: stats.publishedCourses,
             private: stats.privateCourses,
           }}
-          visibleCount={visibleCount}
         />
 
         {visibleCount === 0 ? (
