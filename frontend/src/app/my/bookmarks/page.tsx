@@ -30,14 +30,14 @@ async function Bookmarks({ searchParams }: Props) {
     <>
       <div className={collectionStyles.collectionBanner}>
         <div>
-          <span className={uiStyles.eyebrow}>SAVED COURSES · 현재 페이지</span>
+          <span className={uiStyles.eyebrow}>SAVED COURSES</span>
           <strong>
             {result.content.length}
             <small>개 코스</small>
           </strong>
         </div>
         <div>
-          <span className={uiStyles.eyebrow}>TOTAL DISTANCE · 현재 페이지</span>
+          <span className={uiStyles.eyebrow}>TOTAL DISTANCE</span>
           <strong>
             {formatDistance(
               result.content.reduce(
@@ -55,7 +55,11 @@ async function Bookmarks({ searchParams }: Props) {
       {result.content.length ? (
         <ul className={layoutStyles.courseGrid}>
           {result.content.map((course) => (
-            <ExploreCourseCard key={course.id} course={course} refreshOnBookmarkChange />
+            <ExploreCourseCard
+              key={course.id}
+              course={course}
+              refreshOnBookmarkChange
+            />
           ))}
         </ul>
       ) : (
