@@ -85,7 +85,7 @@ export default function CourseMap({ route, name }: Props) {
         .addTo(map)
         .bindTooltip(title);
     }
-    marker(first, "S", closed ? "출발 · 도착" : "출발");
+    marker(first, "⚑", closed ? "출발 · 도착" : "출발");
     if (!closed) marker(last, "E", "도착");
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 17 });
     const observer = new ResizeObserver(() => map.invalidateSize());

@@ -82,12 +82,12 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 3px solid white;
+  border: 2px solid white;
   border-radius: 50%;
   background: var(--primary);
   color: var(--color-surface);
   font-family: "Pretendard", sans-serif;
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   box-shadow: var(--shadow-marker);
 }
