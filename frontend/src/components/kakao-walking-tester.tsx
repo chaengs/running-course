@@ -19,6 +19,7 @@ const EditorMap = dynamic(() => import("@/components/admin/editor-map"), {
 
 type RouteMode = "SHORTEST" | "BROAD_FIRST" | "ACCESSIBLE";
 type Segment = {
+  requestKey: string;
   distanceMeters: number;
   durationSeconds: number;
   points: RoutePoint[];
@@ -79,6 +80,7 @@ export function KakaoWalkingTester() {
     pendingRef.current = true;
     setPending(true);
     setMessage("");
+    const cachedSegments = new Map(previousSegments.map(segment => [segment.requestKey, segment]));
     const nextSegments = previousSegments.slice(0, startSegment);
     segmentsRef.current = nextSegments;
     setSegments(nextSegments);
@@ -86,6 +88,15 @@ export function KakaoWalkingTester() {
       for (let index = startSegment; index < points.length - 1; index += 1) {
         const previousRouteEnd = index > 0 ? nextSegments[index - 1]?.points.at(-1) : undefined;
         const start = previousRouteEnd ?? points[index];
+        const closingPoint = isClosedRoute && index === points.length - 2 ? nextSegments[0]?.points[0] : undefined;
+        const requestKey = JSON.stringify([start, points[index + 1], mode, index > 0, closingPoint ?? null]);
+        const cached = cachedSegments.get(requestKey);
+        if (cached) {
+          nextSegments[index] = cached;
+          segmentsRef.current = [...nextSegments];
+          setSegments([...nextSegments]);
+          continue;
+        }
         const response = await fetch("/api/test/kakao-walking", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -113,6 +124,7 @@ export function KakaoWalkingTester() {
         }
 
         nextSegments[index] = {
+          requestKey,
           distanceMeters: body.distanceMeters,
           durationSeconds: body.durationSeconds,
           points: rawPoints,

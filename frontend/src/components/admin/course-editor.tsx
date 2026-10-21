@@ -19,7 +19,7 @@ import {
 import { EditorToolIcon } from "./editor-tool-icon";
 import type { WalkingRoutePoint } from "@/lib/kakao-walking";
 
-type WalkingSegment = { distanceMeters: number; points: RoutePoint[] };
+type WalkingSegment = { requestKey: string; distanceMeters: number; points: RoutePoint[] };
 
 function samePoint(a: RoutePoint, b: RoutePoint) {
   return a.lat === b.lat && a.lng === b.lng;
@@ -119,6 +119,7 @@ export function CourseEditor({
     }
     routingRef.current = true;
     setRouting(true);
+    const cachedSegments = new Map(walkingSegmentsRef.current.map(segment => [segment.requestKey, segment]));
     const nextSegments = walkingSegmentsRef.current.slice(0, fromSegment);
     walkingSegmentsRef.current = nextSegments;
     setWalkingSegments([...nextSegments]);
@@ -126,6 +127,17 @@ export function CourseEditor({
       for (let index = fromSegment; index < next.length - 1; index += 1) {
         const previousEnd = index > 0 ? nextSegments[index - 1]?.points.at(-1) : undefined;
         const start = previousEnd ?? next[index];
+        const closingPoint = next.length > 2 && samePoint(next[0], next.at(-1)!) && index === next.length - 2
+          ? nextSegments[0]?.points[0] : undefined;
+        // Reuse only when the request inputs and the pinned loop endpoint are unchanged.
+        const requestKey = JSON.stringify([start, next[index + 1], "SHORTEST", index > 0, closingPoint ?? null]);
+        const cached = cachedSegments.get(requestKey);
+        if (cached) {
+          nextSegments[index] = cached;
+          walkingSegmentsRef.current = [...nextSegments];
+          setWalkingSegments([...nextSegments]);
+          continue;
+        }
         const response = await fetch("/api/walking-routes/segment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -147,7 +159,7 @@ export function CourseEditor({
           const routeStart = nextSegments[0].points[0];
           routePoints[routePoints.length - 1] = routeStart;
         }
-        nextSegments[index] = { distanceMeters: body.distanceMeters, points: routePoints };
+        nextSegments[index] = { requestKey, distanceMeters: body.distanceMeters, points: routePoints };
         walkingSegmentsRef.current = [...nextSegments];
         setWalkingSegments([...nextSegments]);
       }
