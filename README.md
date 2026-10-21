@@ -69,10 +69,12 @@ Next.js 서버가 백엔드에 요청하므로 현재 연결에는 CORS 설정�
 | Backend  | DATABASE_URL                          | jdbc:postgresql://localhost:5432/running_course |
 | Backend  | DATABASE_USERNAME / DATABASE_PASSWORD | running_course / local_password                 |
 | Backend  | PORT                                  | 8080                                            |
+| Backend  | KAKAO_REST_API_KEY                    | 주소 검색용 Kakao REST API 키 (기본값 없음)     |
 | Frontend | BACKEND_URL                           | http://localhost:8080                           |
 
 백엔드 변수는 IntelliJ Run Configuration 또는 셸 환경변수로 전달합니다.
 실제 환경변수 파일은 커밋하지 마세요. 운영 환경에서는 별도 비밀값을 사용하세요.
+주소 검색을 사용하려면 [Kakao Developers](https://developers.kakao.com/)에서 REST API 키를 발급한 뒤 백엔드 실행 환경에 `KAKAO_REST_API_KEY`로 설정하고 Spring Boot를 재시작하세요. 이 키는 프론트엔드 환경변수에 넣지 마세요.
 
 ## 검증
 

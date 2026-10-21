@@ -64,6 +64,86 @@
   box-shadow: var(--shadow-subtle);
 }
 
+.addressSearch {
+  position: relative;
+  z-index: 1000;
+  margin-bottom: 8px;
+}
+
+.addressSearchInput {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--color-tertiary);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.addressSearchInput:focus-visible,
+.addressSearchResults button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.addressSearchResults {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  list-style: none;
+}
+
+.addressSearchResults button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-tertiary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.addressSearchResults button:hover {
+  background: var(--color-primary-soft);
+}
+
+.addressSearchResults strong,
+.addressSearchResults span {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.addressSearchResults span {
+  color: var(--color-neutral);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .editorToolbar svg {
   flex-shrink: 0;
 }

@@ -13,6 +13,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { RoutePoint } from "@/lib/route-editor";
 import { createMapTiles } from "@/lib/leaflet-map";
+import { CourseAddressSearch, type AddressSearchResult } from "@/components/admin/course-address-search";
 type Props = {
   points: RoutePoint[];
   selected: number | null;
@@ -37,6 +38,7 @@ function EditorMap(props: Props) {
   const [locationMessage, setLocationMessage] = useState("");
   const locationPending = useRef(false);
   const locationMarker = useRef<L.CircleMarker | null>(null);
+  const addressMarker = useRef<L.CircleMarker | null>(null);
   const initialLocationRequest = useRef<Promise<GeolocationPosition> | null>(
     null,
   );
@@ -106,6 +108,22 @@ function EditorMap(props: Props) {
   const requestInitialLocation = useEffectEvent(() =>
     moveToCurrentLocation(true),
   );
+  function moveToAddress(result: AddressSearchResult) {
+    const instance = map.current;
+    if (!instance) return;
+    interacted.current = true;
+    const position: L.LatLngTuple = [result.latitude, result.longitude];
+    instance.setView(position, 16);
+    addressMarker.current?.remove();
+    addressMarker.current = L.circleMarker(position, {
+      radius: 8,
+      color: "white",
+      weight: 3,
+      fillColor: "var(--color-primary)",
+      fillOpacity: 1,
+      interactive: false,
+    }).addTo(instance);
+  }
   // 지도 리스너를 다시 등록하지 않고 최신 React 상태를 읽습니다.
   const addPoint = useEffectEvent((point: RoutePoint) => {
     if (!props.closed) props.onChange([...props.points, point]);
@@ -182,6 +200,7 @@ function EditorMap(props: Props) {
       locationPending.current = false;
       setLocating(false);
       locationMarker.current = null;
+      addressMarker.current = null;
       observer.disconnect();
       instance.remove();
       map.current = null;
@@ -234,6 +253,7 @@ function EditorMap(props: Props) {
   return (
     <>
       <div className={mapStyles.editorMapTools}>
+        <CourseAddressSearch onSelect={moveToAddress} />
         <div
           className={mapStyles.editorToolbar}
           role="group"
