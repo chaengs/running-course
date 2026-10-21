@@ -18,6 +18,23 @@ import {
   type CourseElevationProfile,
 } from "@/components/course-elevation";
 import { EditorToolIcon } from "./editor-tool-icon";
+import type { WalkingRoutePoint } from "@/lib/kakao-walking";
+
+type WalkingSegment = { distanceMeters: number; points: RoutePoint[] };
+
+function samePoint(a: RoutePoint, b: RoutePoint) {
+  return a.lat === b.lat && a.lng === b.lng;
+}
+
+function joinWalkingSegments(segments: WalkingSegment[]) {
+  const points: RoutePoint[] = [];
+  for (const segment of segments) {
+    for (const point of (points.length ? segment.points.slice(1) : segment.points)) {
+      if (!points.length || !samePoint(points.at(-1)!, point)) points.push(point);
+    }
+  }
+  return points;
+}
 const EditorMap = dynamic(() => import("./editor-map"), {
   ssr: false,
   loading: () => (
@@ -54,6 +71,11 @@ export function CourseEditor({
   );
   const [published, setPublished] = useState(initialCourse?.published ?? false);
   const [message, setMessage] = useState("");
+  const [walkingSegments, setWalkingSegments] = useState<WalkingSegment[]>([]);
+  const walkingSegmentsRef = useRef<WalkingSegment[]>([]);
+  const anchorsRef = useRef(points);
+  const [routing, setRouting] = useState(false);
+  const routingRef = useRef(false);
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
   const [elevationProfile, setElevationProfile] =
@@ -64,25 +86,96 @@ export function CourseEditor({
     points.length > 2 &&
     points[0].lat === points.at(-1)?.lat &&
     points[0].lng === points.at(-1)?.lng;
-  const length = useMemo(() => routeLength(points), [points]);
+  const walkingRoute = useMemo(
+    () => initialCourse ? points : joinWalkingSegments(walkingSegments),
+    [initialCourse, points, walkingSegments],
+  );
+  const length = useMemo(
+    () => initialCourse ? routeLength(points) : walkingSegments.reduce((sum, segment) => sum + segment.distanceMeters, 0),
+    [initialCourse, points, walkingSegments],
+  );
   const canSave =
     name.trim().length > 0 &&
     name.trim().length <= 30 &&
     new Set(points.map(({ lat, lng }) => `${lat},${lng}`)).size >= 3 &&
     closed &&
+    (Boolean(initialCourse) || (!routing && walkingSegments.length === points.length - 1 && walkingRoute.length > 1)) &&
     length >= 1 &&
     length <= 100000;
   const geojson = useMemo(
     () => ({
       type: "LineString",
-      coordinates: points.map(({ lat, lng }) => [lng, lat]),
+      coordinates: walkingRoute.map(({ lat, lng }) => [lng, lat]),
     }),
-    [points],
+    [walkingRoute],
   );
+  const calculateWalkingRoute = useCallback(async (next: RoutePoint[], fromSegment: number) => {
+    if (initialCourse || next.length < 2) {
+      walkingSegmentsRef.current = [];
+      setWalkingSegments([]);
+      return;
+    }
+    routingRef.current = true;
+    setRouting(true);
+    const nextSegments = walkingSegmentsRef.current.slice(0, fromSegment);
+    walkingSegmentsRef.current = nextSegments;
+    setWalkingSegments([...nextSegments]);
+    try {
+      for (let index = fromSegment; index < next.length - 1; index += 1) {
+        const previousEnd = index > 0 ? nextSegments[index - 1]?.points.at(-1) : undefined;
+        const start = previousEnd ?? next[index];
+        const response = await fetch("/api/walking-routes/segment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            points: [
+              { latitude: start.lat, longitude: start.lng },
+              { latitude: next[index + 1].lat, longitude: next[index + 1].lng },
+            ],
+            routeMode: "SHORTEST",
+          }),
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.message ?? "카카오 도보 경로를 계산하지 못했어요.");
+        const routePoints = (body.points as WalkingRoutePoint[]).map(({ latitude, longitude }) => ({ lat: latitude, lng: longitude }));
+        if (routePoints.length < 2) throw new Error("표시할 도보 경로가 없습니다.");
+        if (previousEnd) routePoints[0] = previousEnd;
+        const isClosingSegment = next.length > 2 && samePoint(next[0], next.at(-1)!) && index === next.length - 2;
+        if (isClosingSegment && nextSegments[0]?.points[0]) {
+          const routeStart = nextSegments[0].points[0];
+          routePoints[routePoints.length - 1] = routeStart;
+        }
+        nextSegments[index] = { distanceMeters: body.distanceMeters, points: routePoints };
+        walkingSegmentsRef.current = [...nextSegments];
+        setWalkingSegments([...nextSegments]);
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "도보 경로를 계산하지 못했어요.");
+    } finally {
+      routingRef.current = false;
+      setRouting(false);
+    }
+  }, [initialCourse]);
   const updatePoints = useCallback((next: RoutePoint[]) => {
+    if (routingRef.current) return;
+    const previous = anchorsRef.current;
+    anchorsRef.current = next;
     dispatch({ type: "replace", points: next });
     setMessage("");
-  }, []);
+    if (initialCourse) return;
+    if (next.length < 2) {
+      walkingSegmentsRef.current = [];
+      setWalkingSegments([]);
+      return;
+    }
+    const isAppend = next.length === previous.length + 1 && previous.every((point, index) => samePoint(point, next[index]));
+    let changedIndex = 0;
+    while (changedIndex < Math.min(previous.length, next.length) && samePoint(previous[changedIndex], next[changedIndex])) changedIndex += 1;
+    const fromSegment = isAppend && walkingSegmentsRef.current.length === previous.length - 1
+      ? previous.length - 1
+      : Math.max(0, changedIndex - 1);
+    void calculateWalkingRoute(next, Math.min(next.length - 2, fromSegment));
+  }, [calculateWalkingRoute, initialCourse]);
   const selectPoint = useCallback(
     (index: number) => dispatch({ type: "select", index }),
     [],
@@ -100,6 +193,8 @@ export function CourseEditor({
       !name.trim() ||
       distinctPoints.size < 3 ||
       !closed ||
+      routing ||
+      (!initialCourse && (walkingSegments.length !== points.length - 1 || walkingRoute.length < 2)) ||
       length < 1 ||
       length > 100000
     ) {
@@ -186,11 +281,12 @@ export function CourseEditor({
       <p className={`${uiStyles.editorHint} ${editorStyles.editorIntro}`}>
         지도에 점을 찍어 나만의 코스를 그려보세요.
       </p>
-      <fieldset className={formStyles.editorSaveFields} disabled={saving}>
+      <fieldset className={formStyles.editorSaveFields} disabled={saving || routing}>
         <div className={editorStyles.editorGrid}>
           <section aria-label="코스 경로 편집">
             <EditorMap
               points={points}
+              displayRoute={initialCourse ? undefined : walkingRoute}
               selected={selected}
               onChange={updatePoints}
               onSelect={selectPoint}
@@ -356,7 +452,7 @@ export function CourseEditor({
             <CourseVisibilityToggle
               published={published}
               onChange={setPublished}
-              disabled={saving}
+              disabled={saving || routing}
             />
             <button
               className={formStyles.buttonPrimary}
