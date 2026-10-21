@@ -47,10 +47,7 @@ export function CourseAddressSearch({
       const params = new URLSearchParams({ query: normalized });
       void fetch(`/api/addresses/search?${params}`, {
         cache: "no-store",
-        signal: AbortSignal.any([
-          request.signal,
-          AbortSignal.timeout(10000),
-        ]),
+        signal: AbortSignal.any([request.signal, AbortSignal.timeout(10000)]),
       })
         .then(async (response) => {
           const body = await response.json();
@@ -90,7 +87,8 @@ export function CourseAddressSearch({
 
   function select(result: AddressSearchResult) {
     onSelect(result);
-    const selectedLabel = result.placeName ?? result.roadAddressName ?? result.addressName;
+    const selectedLabel =
+      result.placeName ?? result.roadAddressName ?? result.addressName;
     ignoredQuery.current = selectedLabel.trim();
     setQuery(selectedLabel);
     setResults([]);
@@ -98,28 +96,53 @@ export function CourseAddressSearch({
 
   return (
     <div className={mapStyles.addressSearch}>
-      <label className={mapStyles.visuallyHidden} htmlFor="course-address-search">
+      <label
+        className={mapStyles.visuallyHidden}
+        htmlFor="course-address-search"
+      >
         주소 검색
       </label>
-      <input
-        className={mapStyles.addressSearchInput}
-        id="course-address-search"
-        type="search"
-        value={query}
-        onChange={changeQuery}
-        placeholder="주소를 검색해 지도를 이동하세요"
-        minLength={2}
-        maxLength={100}
-        autoComplete="off"
-        aria-busy={pending}
-      />
+      <div className={mapStyles.addressSearchField}>
+        <svg
+          className={mapStyles.addressSearchIcon}
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <circle cx="10.8" cy="10.8" r="6.8" />
+          <path d="m16 16 4.5 4.5" />
+        </svg>
+        <input
+          className={mapStyles.addressSearchInput}
+          id="course-address-search"
+          type="search"
+          value={query}
+          onChange={changeQuery}
+          placeholder="출발지 주소나 장소를 검색해보세요. (예: 여의도한강공원)"
+          minLength={2}
+          maxLength={100}
+          autoComplete="off"
+          aria-busy={pending}
+        />
+      </div>
       {results.length > 0 && (
-        <ul className={mapStyles.addressSearchResults} aria-label="주소 검색 결과">
+        <ul
+          className={mapStyles.addressSearchResults}
+          aria-label="주소 검색 결과"
+        >
           {results.map((result) => (
-            <li key={`${result.latitude},${result.longitude},${result.addressName}`}>
+            <li
+              key={`${result.latitude},${result.longitude},${result.addressName}`}
+            >
               <button type="button" onClick={() => select(result)}>
-                <strong>{result.placeName ?? result.roadAddressName ?? result.addressName}</strong>
-                {getSecondaryLabel(result) && <span>{getSecondaryLabel(result)}</span>}
+                <strong>
+                  {result.placeName ??
+                    result.roadAddressName ??
+                    result.addressName}
+                </strong>
+                {getSecondaryLabel(result) && (
+                  <span>{getSecondaryLabel(result)}</span>
+                )}
               </button>
             </li>
           ))}
