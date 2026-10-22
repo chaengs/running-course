@@ -1,0 +1,346 @@
+.editorGrid {
+  display: grid;
+  align-items: start;
+  gap: 26px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.editorGrid > section:first-child {
+  min-width: 0;
+}
+
+.editorIntro {
+  border: 0;
+}
+
+.mapInstructions {
+  margin-top: 14px;
+  margin-inline: auto;
+  max-width: 960px;
+  padding: 24px 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  color: var(--color-tertiary);
+}
+
+.mapInstructionsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.mapInstructionsHeader h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.mapInstructionsHeader p {
+  margin: 4px 0 0;
+  color: var(--color-neutral);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.mapInstructionsBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mapInstructionsBadge svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.mapInstructionList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapInstructionList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+}
+
+.mapInstructionIcon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+  color: var(--color-primary);
+}
+
+.mapInstructionIcon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.mapInstructionDeleteIcon {
+  color: var(--color-danger);
+}
+
+.mapInstructionText,
+.mapInstructionText > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.mapInstructionText {
+  gap: 6px;
+}
+
+.mapInstructionText > strong {
+  color: var(--color-tertiary);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mapInstructionText > span {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mapInstructionText > span > b {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.mapInstructionList li:last-child .mapInstructionText > span > b {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.mapInstructionText > span > span {
+  color: var(--color-neutral);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.mapInstructionsTip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.mapInstructionsTip svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+@media (max-width: 1160px) {
+  .editorGrid {
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 940px) {
+  .editorGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .mapInstructions {
+    padding: 18px;
+  }
+  .mapInstructionsHeader {
+    align-items: flex-start;
+  }
+  .mapInstructionsBadge {
+    max-width: 150px;
+    flex-wrap: wrap;
+  }
+  .mapInstructionList {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mapInstructions {
+    padding: 16px;
+  }
+  .mapInstructionsHeader {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mapInstructionList {
+    grid-template-columns: 1fr;
+  }
+  .mapInstructionList li {
+    padding: 14px;
+  }
+}
+
+.editorInfoHeading {
+  padding-bottom: 18px;
+}
+
+.editorInfoHeading h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+}
+
+.editorInfoHeading svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.editorFieldHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.editorDescriptionHeading {
+  align-items: flex-start;
+}
+
+.editorFieldHint {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.editorRequired {
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.editorCourseType {
+  min-width: 0;
+  margin: 24px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.editorCourseType legend {
+  margin-bottom: 9px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.editorTypeOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 5px;
+  border-radius: 12px;
+  background: var(--color-neutral-soft);
+}
+
+.editorTypeOptions label {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.editorTypeOptions input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
+
+.editorTypeOptions span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  padding: 10px 6px;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--color-neutral);
+}
+
+.editorTypeOptions input:checked + span {
+  background: var(--primary);
+  color: var(--color-surface);
+  box-shadow: var(--shadow-primary);
+}
+
+.editorTypeOptions input:focus-visible + span {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.editorCourseType:disabled label {
+  cursor:not-allowed;
+}

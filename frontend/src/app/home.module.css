@@ -1,0 +1,79 @@
+.hero {
+  position: relative;
+  padding: 64px 40px 38px;
+  margin-top: 28px;
+  background: var(--color-primary-soft);
+  border-radius: 12px 12px 0 0;
+}
+
+.heroNote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  font-size: 1rem;
+  color: var(--color-neutral);
+}
+
+.noteLine {
+  width: 28px;
+  flex-shrink: 0;
+  background: var(--accent);
+  height: 3px;
+}
+
+.listSection {
+  border-top: 1px solid var(--line);
+  min-height: 380px;
+  border: 0;
+  padding-top: 0;
+  padding-bottom: 70px;
+}
+
+.listDescription {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 4px 0 18px;
+}
+
+.infiniteControls {
+  display: grid;
+  justify-items: center;
+  margin-top: 24px;
+}
+
+.infiniteControls p {
+  min-height: 24px;
+  margin: 10px 0 0;
+  color: var(--color-neutral);
+  font-size: 1rem;
+  text-align: center;
+}
+
+@media (min-width: 1600px) {
+  .hero {
+    padding-top: 76px;
+  }
+}
+
+@media (max-width: 940px) {
+  .hero {
+    margin-top: 22px;
+    padding: 38px 28px 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroNote {
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+  .hero {
+    padding: 32px 20px 24px;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+  }
+
+}

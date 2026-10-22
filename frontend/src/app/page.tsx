@@ -1,41 +1,150 @@
+import homeStyles from "@/app/home.module.css";
+import layoutStyles from "@/styles/page-layout.module.css";
+import uiStyles from "@/styles/ui.module.css";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
-
-type Health = { status: string; database: string; postgisVersion: string | null };
-
-async function getHealth(): Promise<Health | null> {
-  try {
-    const response = await fetch(`${process.env.BACKEND_URL ?? "http://localhost:8080"}/api/health`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(3000),
-    });
-    if (!response.ok) return null;
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
-
-async function ConnectionStatus() {
-  const health = await getHealth();
+import { InfiniteCourseList } from "@/components/infinite-course-list";
+import { CourseListSkeleton } from "@/components/course-list-skeleton";
+import { CourseSearchForm } from "@/components/course-search-form";
+import { CourseResultsError } from "@/components/course-results-error";
+import {
+  courseListHref,
+  parseCourseListQuery,
+  type CourseListQuery,
+} from "@/lib/course-search";
+import { getCourses } from "@/lib/courses";
+type SearchParams = Promise<{
+  [key: string]: string | string[] | undefined;
+}>;
+async function CourseSearch({ searchParams }: { searchParams: SearchParams }) {
+  const rawQuery = await searchParams;
+  const query = parseCourseListQuery(rawQuery);
+  if (!query) redirect("/");
+  const {
+    latitude,
+    longitude,
+    radiusMeters,
+    targetDistanceMeters,
+    minimumDistanceMeters,
+  } = query;
+  const filters = {
+    latitude,
+    longitude,
+    radiusMeters,
+    targetDistanceMeters,
+    minimumDistanceMeters,
+  };
   return (
-    <main>
-      <p className="eyebrow">RUNNING COURSE</p>
-      <h1>새로운 길에서도,<br />내 페이스대로.</h1>
-      <p className="intro">내 주변에서 원하는 거리만큼 달리고 출발점으로 돌아오는 코스를 준비하고 있어요.</p>
-      <section aria-labelledby="status-title">
-        <h2 id="status-title">개발 환경 연결 상태</h2>
-        <dl>
-          <div><dt>프론트엔드</dt><dd>Next.js 실행 중</dd></div>
-          <div><dt>백엔드</dt><dd>{health?.status === "UP" ? "연결됨" : "연결 대기"}</dd></div>
-          <div><dt>데이터베이스</dt><dd>{health?.database === "UP" ? `PostgreSQL · PostGIS ${health.postgisVersion ?? ""}` : "연결 대기"}</dd></div>
-        </dl>
-        {!health && <p className="hint">Docker DB와 Spring Boot를 실행한 뒤 페이지를 새로고침하세요.</p>}
-      </section>
-      <p className="hint">첫 구현 목표: 위치 선택 → 주변 코스 검색 → 코스 상세 확인</p>
-    </main>
+    <>
+      <CourseSearchForm
+        key={`${latitude}-${longitude}-${radiusMeters}-${targetDistanceMeters}-${minimumDistanceMeters}`}
+        filters={filters}
+      />
+      <Suspense key={courseListHref(query)} fallback={<CourseListSkeleton />}>
+        <CourseResults query={query} />
+      </Suspense>
+    </>
   );
 }
-
-export default function Home() {
-  return <Suspense fallback={<main><p role="status">연결 상태를 확인하고 있어요…</p></main>}><ConnectionStatus /></Suspense>;
+async function CourseResults({ query }: { query: CourseListQuery }) {
+  const {
+    page,
+    size,
+    latitude,
+    longitude,
+    radiusMeters,
+    targetDistanceMeters,
+    minimumDistanceMeters,
+  } = query;
+  const filters = {
+    latitude,
+    longitude,
+    radiusMeters,
+    targetDistanceMeters,
+    minimumDistanceMeters,
+  };
+  const courses = await getCourses(page, size, filters).catch(() => null);
+  if (!courses) return <CourseResultsError />;
+  const hasLocation = latitude !== undefined;
+  const hasFilters =
+    hasLocation ||
+    targetDistanceMeters !== undefined ||
+    minimumDistanceMeters !== undefined;
+  return (
+    <>
+      <section
+        className={homeStyles.listSection}
+        aria-labelledby="courses-title"
+      >
+        <div className={layoutStyles.listToolbar}>
+          <div>
+            <p className={uiStyles.eyebrow}>FIND YOUR NEXT RUN</p>
+            <h2 id="courses-title">러닝 코스</h2>
+          </div>
+        </div>
+        {courses.content.length > 0 ? (
+          <InfiniteCourseList
+            key={courseListHref(query)}
+            initialPage={courses}
+            query={query}
+          />
+        ) : (
+          <div className={uiStyles.emptyState}>
+            <h3>
+              {courses.totalElements > 0
+                ? "이 페이지에는 코스가 없어요"
+                : hasFilters
+                  ? "조건에 맞는 코스가 없어요"
+                  : "아직 등록된 코스가 없어요"}
+            </h3>
+            <p>
+              {courses.totalElements > 0
+                ? "첫 페이지에서 달릴 코스를 찾아보세요."
+                : hasFilters
+                  ? "검색 반경을 넓히거나 목표 거리를 바꿔보세요."
+                  : "새로운 코스가 공개되면 이곳에서 확인할 수 있어요."}
+            </p>
+            {page > 0 ? (
+              <Link
+                className={uiStyles.buttonPrimary}
+                href={courseListHref(query, 0)}
+              >
+                첫 페이지로
+              </Link>
+            ) : (
+              hasFilters && (
+                <Link className={uiStyles.buttonPrimary} href="/">
+                  전체 코스 보기
+                </Link>
+              )
+            )}
+          </div>
+        )}
+      </section>
+    </>
+  );
+}
+export default function Home({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <main id="main-content">
+      <header className={homeStyles.hero}>
+        <p className={uiStyles.eyebrow}>
+          <span className={uiStyles.liveDot} /> A NEW ROUTE · YOUR OWN PACE
+        </p>
+        <h1>
+          다음 달리기는,
+          <br />
+          <em>새로운 코스에서</em>
+        </h1>
+        <div className={homeStyles.heroNote}>
+          <span className={homeStyles.noteLine} />
+          길을 고르는 시간은 줄이고, 달리는 시간을 늘려요.
+        </div>
+      </header>
+      <Suspense fallback={<CourseListSkeleton />}>
+        <CourseSearch searchParams={searchParams} />
+      </Suspense>
+    </main>
+  );
 }

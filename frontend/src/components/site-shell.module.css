@@ -1,0 +1,252 @@
+.siteHeader::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc((min(1360px, 100vw - 80px) - 100vw) / 2);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.siteHeader {
+  margin-inline: auto;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  width: min(1360px, calc(100% - 80px));
+  min-height: 84px;
+  padding-block: 16px;
+  gap: 28px;
+  border: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.siteFooter {
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  width: min(1360px, calc(100% - 80px));
+  margin-top: 40px;
+  padding-block: 38px;
+  font-size: 1rem;
+  align-items: flex-end;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.brandLogo {
+  display: block;
+  width: 280px;
+  height: auto;
+  max-width: 100%;
+}
+
+.headerCaption {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.siteFooter span:first-child {
+  letter-spacing: 0.1em;
+}
+
+.skipLink {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px;
+  background: var(--primary);
+  color: var(--color-surface);
+}
+
+.skipLink:focus {
+  top: 12px;
+}
+
+.accountNav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 1rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.accountNav button {
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--primary);
+  min-height: 44px;
+  border: 0;
+  font-size: 1rem;
+  padding-inline: 6px;
+}
+
+.brand b {
+  color: var(--primary);
+}
+
+.siteFooter b {
+  color: var(--primary);
+}
+
+.siteNav {
+  display: flex;
+  align-items: stretch;
+  gap: 36px;
+  margin-right: auto;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.siteNav a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 650;
+  color: var(--color-neutral);
+  border-bottom: 4px solid transparent;
+  white-space: nowrap;
+}
+
+.siteNav a[aria-current="page"] {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 750;
+}
+
+.accountNav .headerCreate {
+  padding: 10px 18px;
+  background: var(--primary);
+  color: var(--color-surface);
+  border-radius: 24px;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerCreateIcon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.headerCreate:hover {
+  background: var(--color-primary-hover);
+}
+
+.siteFooter strong {
+  font-size: 1rem;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+}
+
+.siteFooter p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.siteHeader > * {
+  min-width: 0;
+}
+
+@media (max-width: 1160px) {
+  .siteHeader {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .siteNav {
+    gap: 24px;
+  }
+  .accountNav {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 940px) {
+  .siteHeader {
+    width: calc(100% - 40px);
+    padding-top: 16px;
+    padding-bottom: 0;
+    gap: 6px 14px;
+    background: var(--color-surface);
+  }
+  .siteHeader::before {
+    inset-inline: -20px;
+  }
+  .siteFooter {
+    width: calc(100% - 40px);
+  }
+  .siteNav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 32px;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .headerCaption {
+    display: none;
+  }
+  .siteHeader {
+    height: auto;
+    flex-wrap: wrap;
+    width: calc(100% - 32px);
+  }
+  .siteHeader::before {
+    inset-inline: -16px;
+  }
+  .accountNav {
+    font-size: 1rem;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .siteFooter {
+    width: calc(100% - 32px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .brandLogo {
+    width: 220px;
+  }
+  .accountNav .headerCreate {
+    font-size: 1rem;
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+
+  .siteNav {
+    gap: 8px 20px;
+    overflow: visible;
+  }
+  .siteNav a {
+    font-size: 1.125rem;
+    min-height: 46px;
+  }
+}

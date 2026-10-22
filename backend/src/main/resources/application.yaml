@@ -13,6 +13,15 @@ spring:
     enabled: true
 server:
   port: ${PORT:8080}
+geocoding:
+  kakao:
+    address-url: ${KAKAO_ADDRESS_SEARCH_URL:https://dapi.kakao.com/v2/local/search/address.json}
+    keyword-url: ${KAKAO_KEYWORD_SEARCH_URL:https://dapi.kakao.com/v2/local/search/keyword.json}
+    walking-url: ${KAKAO_WALKING_ROUTE_URL:https://dapi.kakao.com/v2/routing/walk}
+    rest-api-key: ${KAKAO_REST_API_KEY:}
+  nominatim:
+    reverse-url: ${NOMINATIM_REVERSE_URL:https://nominatim.openstreetmap.org/reverse}
+    user-agent: ${NOMINATIM_USER_AGENT:RunningCourse/0.1.0 (https://github.com/chaengs/running-course)}
 management:
   endpoints:
     web:

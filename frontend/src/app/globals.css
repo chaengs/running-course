@@ -1,13 +1,226 @@
-* { box-sizing: border-box; }
-:root { color-scheme: light; }
-body { margin: 0; background: #f5f7f3; color: #182c22; font-family: Arial, "Apple SD Gothic Neo", sans-serif; }
-main { max-width: 860px; margin: 0 auto; padding: 80px 24px; }
-.eyebrow { color: #39784a; letter-spacing: .16em; font-size: 13px; font-weight: 700; }
-h1 { font-size: clamp(36px, 7vw, 60px); line-height: 1.2; letter-spacing: -.05em; }
-.intro { max-width: 560px; color: #526057; line-height: 1.8; }
-section { margin: 40px 0 24px; padding: 24px; border: 1px solid #dce3da; border-radius: 16px; background: white; }
-h2 { font-size: 18px; margin-top: 0; }
-dl { margin-bottom: 0; }
-dl div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid #edf0ea; }
-dt { color: #526057; } dd { margin: 0; font-weight: 600; }
-.hint { font-size: 14px; line-height: 1.7; color: #526057; }
+* {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-display: swap;
+}
+
+html {
+  font-size: max(100%, 16px);
+}
+
+small {
+  font-size: 1rem;
+}
+
+:root {
+  color-scheme: light;
+  --bg: var(--color-page);
+  --paper: var(--color-surface);
+  --ink: var(--color-tertiary);
+  --muted: var(--color-neutral);
+  --line: var(--color-border);
+  --primary: var(--color-primary);
+  --accent: var(--color-secondary);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: -.025em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  min-width: 0;
+  white-space: normal;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+select {
+  font: inherit;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  min-width: 0;
+}
+
+textarea {
+  font: inherit;
+  min-width: 0;
+}
+
+button:disabled {
+  cursor:not-allowed;
+}
+
+select:disabled {
+  cursor:not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+main {
+  margin-inline: auto;
+  width: min(1360px, calc(100% - 80px));
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4.2vw, 3.65rem);
+  line-height: 1.14;
+  font-weight: 800;
+  letter-spacing: -.07em;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--ink);
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 750;
+  letter-spacing: -.045em;
+}
+
+h3 {
+  margin: 24px 0 12px;
+  font-size: 1.375rem;
+  line-height: 1.6;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+
+.leaflet-container {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  font-size: 1rem;
+  line-height: 1.6;
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.leaflet-container .leaflet-tooltip {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.leaflet-container .leaflet-popup-content {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.leaflet-container .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+  *::before {
+    animation: none !important;
+  }
+  *::after {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 940px) {
+  main {
+    width: calc(100% - 40px);
+  }
+}
+
+@media (max-width: 600px) {
+  main {
+    width: calc(100% - 32px);
+  }
+}

@@ -1,0 +1,43 @@
+.ownerActions button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--primary);
+  min-height: 44px;
+  font-size: 1rem;
+  margin-inline: 0;
+}
+
+.shareControl { min-width: 0; }
+
+.shareButton {
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--primary);
+  min-height: 44px;
+  width: 100%;
+  font-size: 1rem;
+  background: var(--color-primary-soft);
+  border: 0;
+}
+
+.ownerActions {
+  position: relative;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.ownerActions .editIconButton { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 0; height: 44px; padding: 0 14px; border: 1px solid var(--color-primary-border); border-radius: 999px; color: var(--color-primary); background: var(--color-primary-soft); cursor: pointer; text-decoration: none; white-space: nowrap; }
+.editIconButton span { font-size: 1rem; font-weight: 650; }
+.ownerActions .deleteIconButton { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: auto; min-width: 0; height: 44px; padding: 0 14px; border: 1px solid var(--color-danger-border); border-radius: 999px; color: var(--color-danger); background: var(--color-danger-soft); cursor: pointer; white-space: nowrap; }
+.ownerActions .deleteIconButton:hover { background: var(--color-danger-soft); }
+.deleteIconButton span { font-size: 1rem; font-weight: 650; }
+.deleteConfirm { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; width: min(300px, 80vw); padding: 16px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); box-shadow: var(--shadow-overlay); }
+.deleteConfirm p { margin: 0 0 12px; font-size: 1rem; }
+.deleteConfirm button { min-height: 44px; margin-right: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--color-surface); color: var(--ink); font: inherit; }
+.deleteConfirm button:first-of-type { color: var(--color-surface); background: var(--color-danger-strong); border-color: var(--color-danger-strong); }
+.ownerActions > p { margin: 4px 0 0; position: absolute; top: 100%; right: 0; font-size: 1rem; white-space: nowrap; }
+
+.shareButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.shareControl > p { min-height: 0; margin: 0; }

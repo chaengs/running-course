@@ -1,0 +1,80 @@
+.visibilityControl {
+  width: 100%;
+  margin-block: 24px;
+  padding: 16px;
+  background: var(--color-neutral-soft);
+  border-radius: 12px;
+}
+
+.visibilityToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  position: relative;
+  cursor: pointer;
+  font-weight: 700;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.visibilityToggle input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
+
+.visibilityTrack {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 20px;
+  background: var(--color-neutral);
+  flex-shrink: 0;
+  width: 48px;
+  height: 28px;
+}
+
+.visibilityTrack > span {
+  border-radius: 50%;
+  background: var(--color-surface);
+  transform: translateX(0);
+  height: 22px;
+  width: 22px;
+}
+
+.visibilityToggle input:checked + .visibilityTrack {
+  background: var(--primary);
+}
+
+.visibilityToggle input:checked + .visibilityTrack > span {
+  transform: translateX(20px);
+}
+
+.visibilityToggle input:focus-visible + .visibilityTrack {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+.visibilityToggle input:disabled + .visibilityTrack {
+  opacity: .5;
+  cursor:not-allowed;
+}
+
+.visibilityCopy {
+  display: grid;
+  gap: 4px;
+}
+
+.visibilityDescription {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}

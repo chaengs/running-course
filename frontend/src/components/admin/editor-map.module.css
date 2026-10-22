@@ -1,0 +1,211 @@
+.editorMap:where(fieldset:disabled *) {
+  pointer-events: none;
+}
+
+.editorMap {
+  width: 100%;
+  isolation: isolate;
+  height: 580px;
+  border: 0;
+  border-radius: 10px;
+}
+
+.editorToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.editorToolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 650;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.editorToolbar button:disabled {
+  cursor:not-allowed;
+  color: var(--color-neutral);
+  background: var(--color-neutral-soft);
+}
+
+.routeEditorPoint span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-marker);
+}
+
+.routeEditorPoint.selected span {
+  background: var(--color-primary);
+}
+
+.editorMapTools {
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-subtle);
+}
+
+.addressSearch {
+  position: relative;
+  z-index: 1000;
+  margin-bottom: 8px;
+}
+
+.addressSearchField {
+  position: relative;
+}
+
+.addressSearchIcon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  stroke: var(--color-primary);
+  stroke-linecap: round;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.addressSearchInput {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 14px 10px 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--color-tertiary);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.addressSearchInput:focus-visible,
+.addressSearchResults button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.addressSearchResults {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  list-style: none;
+}
+
+.addressSearchResults button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-tertiary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.addressSearchResults button:hover {
+  background: var(--color-primary-soft);
+}
+
+.addressSearchResults strong,
+.addressSearchResults span {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.addressSearchResults span {
+  color: var(--color-neutral);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.editorToolbar svg {
+  flex-shrink: 0;
+}
+
+.editorToolbar .editorToolReset {
+  color: var(--color-neutral);
+}
+
+.editorToolbar .editorToolLocation {
+  color: var(--color-success);
+}
+
+.editorToolbar button:not(:disabled):hover {
+  background: var(--color-neutral-soft);
+}
+
+.editorToolbar .editorToolLocation:not(:disabled):hover {
+  background: var(--color-success-soft);
+}
+
+.editorToolbar button:disabled svg {
+  color: var(--color-neutral);
+}
+
+.editorToolbar button:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.editorLocationStatus {
+  margin: 8px 6px 2px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .editorMap {
+    height: 410px;
+  }
+  .editorToolbar {
+    align-items: stretch;
+  }
+  .editorToolbar button {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+}
