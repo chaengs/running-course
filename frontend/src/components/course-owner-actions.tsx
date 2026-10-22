@@ -1,5 +1,6 @@
 "use client";
 import ownerStyles from "@/components/course-owner-actions.module.css";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 export function CourseOwnerActions({ id }: { id: number }) {
@@ -29,6 +30,21 @@ export function CourseOwnerActions({ id }: { id: number }) {
   }
   return (
     <section className={ownerStyles.ownerActions} aria-label="내 코스 관리">
+      <Link className={ownerStyles.editIconButton} href={`/courses/${id}/edit`}>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <path d="M12 20h9" />
+          <path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z" />
+        </svg>
+        <span>코스 수정</span>
+      </Link>
       <button
         className={ownerStyles.deleteIconButton}
         type="button"
