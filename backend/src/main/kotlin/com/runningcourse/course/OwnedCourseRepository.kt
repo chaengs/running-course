@@ -65,6 +65,7 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
         SELECT id, name, description, distance_meters, course_type, route_geojson, route_waypoints, owner_id, published, elevation_profile,
                region_sido, region_sigungu, region_eup_myeon_dong,
                (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
+               EXISTS(SELECT 1 FROM course_bookmarks b WHERE b.course_id = courses.id AND b.user_id = courses.owner_id) AS is_bookmarked,
                ST_Y(start_location::geometry) AS latitude, ST_X(start_location::geometry) AS longitude
         FROM courses WHERE id = ? AND owner_id = ?
         """.trimIndent(), { rs, _ -> CourseDetail(
@@ -81,6 +82,7 @@ class OwnedCourseRepository(private val jdbc: JdbcTemplate, private val mapper: 
             region = rs.readCourseRegion(),
             elevationProfile = rs.getString("elevation_profile")?.let { mapper.readValue(it, ElevationProfile::class.java) },
             bookmarkCount = rs.getLong("bookmark_count"),
+            isBookmarked = rs.getBoolean("is_bookmarked"),
         ) }, id, owner).singleOrNull()
 
     // 서비스 트랜잭션에서 소유권 확인부터 수정 완료까지 행 잠금을 유지합니다.

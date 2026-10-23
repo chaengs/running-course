@@ -26,7 +26,7 @@ class CourseDetailControllerTests {
         val route = JsonMapper.builder().build().readTree(
             """{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}""",
         )
-        `when`(service.detail(1)).thenReturn(
+        `when`(service.detail(1, null)).thenReturn(
             CourseDetail(1, "테스트 코스", "공개 코스 설명", 4800, CourseType.LOOP, StartLocation(37.528, 126.934), route),
         )
         mvc.perform(get("/api/courses/1"))
@@ -48,7 +48,7 @@ class CourseDetailControllerTests {
 
     @Test
     fun `unavailable course returns safe not found problem response`() {
-        `when`(service.detail(99)).thenThrow(CourseNotFoundException())
+        `when`(service.detail(99, null)).thenThrow(CourseNotFoundException())
         mvc.perform(get("/api/courses/99"))
             .andExpect(status().isNotFound)
             .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
@@ -61,6 +61,23 @@ class CourseDetailControllerTests {
         mvc.perform(post("/api/courses/1/view"))
             .andExpect(status().isNoContent)
         org.mockito.Mockito.verify(service).recordView(1)
+    }
+
+    @Test
+    fun `detail resolves optional viewer identity from authorization`() {
+        `when`(auth.current("Bearer test")).thenReturn(com.runningcourse.auth.UserView(8, "runner@example.com", "러너"))
+        val route = JsonMapper.builder().build().readTree(
+            """{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529]]}""",
+        )
+        `when`(service.detail(1, 8)).thenReturn(
+            CourseDetail(1, "찜한 비공개 코스", "", 4800, CourseType.LOOP, StartLocation(37.528, 126.934), route, published = false, isBookmarked = true),
+        )
+
+        mvc.perform(get("/api/courses/1").header("Authorization", "Bearer test"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.published").value(false))
+            .andExpect(jsonPath("$.isBookmarked").value(true))
+        org.mockito.Mockito.verify(service).detail(1, 8)
     }
 
     @ParameterizedTest

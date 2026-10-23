@@ -63,7 +63,7 @@ class CourseRepositoryIntegrationTests {
         val mapper = JsonMapper.builder().build()
         val region = CourseRegion("서울특별시", "마포구", "공덕동")
         val created = CourseCreateService(CourseCreateRepository(jdbc, mapper), CourseRegionResolver { _, _ -> region }).create(request, 123)
-        assertNull(repository.findPublishedById(created.id))
+        assertNull(repository.findVisibleById(created.id, null))
         val ownerService = OwnedCourseService(OwnedCourseRepository(jdbc, mapper), CourseRegionResolver { _, _ -> null })
         val detail = ownerService.detail(created.id, 123)
         assertEquals(false, detail.published)
@@ -78,7 +78,7 @@ class CourseRepositoryIntegrationTests {
         assertEquals(4, detail.routeWaypoints?.get("coordinates")?.size())
         assertEquals(126.9345, detail.routeWaypoints?.get("coordinates")?.get(1)?.get(0)?.doubleValue())
         ownerService.visibility(created.id, 123, true)
-        assertEquals(region, repository.findPublishedById(created.id)?.region)
+        assertEquals(region, repository.findVisibleById(created.id, null)?.region)
     }
 
     private fun insert(
@@ -115,7 +115,7 @@ class CourseRepositoryIntegrationTests {
     @Test
     fun `detail maps stored description and full GeoJSON without double encoding`() {
         val id = repository.findPublished(1, 0).single().id
-        val detail = requireNotNull(repository.findPublishedById(id))
+        val detail = requireNotNull(repository.findVisibleById(id, null))
         assertEquals("공개 첫 코스", detail.name)
         assertEquals("코스 상세 설명", detail.description)
         assertEquals(4800, detail.distanceMeters)
@@ -132,8 +132,21 @@ class CourseRepositoryIntegrationTests {
         val privateId = requireNotNull(jdbc.queryForObject(
             "SELECT id FROM pg_temp.courses WHERE name = ?", Long::class.java, "비공개 코스",
         ))
-        assertNull(repository.findPublishedById(privateId))
-        assertNull(repository.findPublishedById(Long.MAX_VALUE))
+        assertNull(repository.findVisibleById(privateId, null))
+        assertNull(repository.findVisibleById(Long.MAX_VALUE, null))
+    }
+
+    @Test
+    fun `private course detail is visible only to owner or existing bookmarker`() {
+        val privateId = requireNotNull(jdbc.queryForObject(
+            "SELECT id FROM pg_temp.courses WHERE name = ?", Long::class.java, "비공개 코스",
+        ))
+        jdbc.update("INSERT INTO course_bookmarks(user_id, course_id) VALUES (7, ?)", privateId)
+
+        assertNull(repository.findVisibleById(privateId, null))
+        assertNull(repository.findVisibleById(privateId, 8))
+        assertEquals(privateId, repository.findVisibleById(privateId, 7)?.id)
+        assertTrue(repository.findVisibleById(privateId, 7)?.isBookmarked == true)
     }
 
     @Test
