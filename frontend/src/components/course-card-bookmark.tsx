@@ -85,7 +85,7 @@ export function CourseCardBookmark({
       {confirmPrivateUnbookmark && (
         <ConfirmationDialog
           title="찜을 해제할까요?"
-          description="이 코스는 비공개 상태예요.\n찜을 해제하면 작성자가 다시 공개할 때까지 볼 수 없어요."
+          description={<>이 코스는 비공개 상태예요.<br />찜을 해제하면 작성자가 다시 공개할 때까지 볼 수 없어요.</>}
           confirmLabel="찜 해제"
           pending={pending}
           onCancel={() => setConfirmPrivateUnbookmark(false)}

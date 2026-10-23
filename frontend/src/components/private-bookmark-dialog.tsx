@@ -1,7 +1,8 @@
 "use client";
 
 import styles from "@/components/private-bookmark-dialog.module.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export function ConfirmationDialog({
   title,
@@ -15,20 +16,30 @@ export function ConfirmationDialog({
   onCancel: () => void;
   onConfirm: () => void;
   title: string;
-  description: string;
+  description: ReactNode;
   confirmLabel: string;
 }) {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const portalTarget = useSyncExternalStore(
+    () => () => {},
+    () => document.body,
+    () => null,
+  );
 
   useEffect(() => {
     previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    cancelRef.current?.focus();
     return () => previouslyFocusedRef.current?.focus();
   }, []);
 
-  return (
+  useEffect(() => {
+    if (portalTarget) cancelRef.current?.focus();
+  }, [portalTarget]);
+
+  if (!portalTarget) return null;
+
+  return createPortal(
     <div className={styles.backdrop}>
       <section
         className={styles.dialog}
@@ -49,7 +60,9 @@ export function ConfirmationDialog({
         }}
       >
         <h2 id="private-bookmark-title">{title}</h2>
-        <p id="private-bookmark-description" className={styles.description}>{description}</p>
+        <p id="private-bookmark-description" className={styles.description}>
+          {description}
+        </p>
         <div className={styles.actions}>
           <button
             ref={cancelRef}
@@ -71,6 +84,7 @@ export function ConfirmationDialog({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    portalTarget,
   );
 }
