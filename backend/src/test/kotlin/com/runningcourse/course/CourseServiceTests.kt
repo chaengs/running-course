@@ -43,13 +43,13 @@ class CourseServiceTests {
             """{"type":"LineString","coordinates":[[126.934,37.528],[126.935,37.529],[126.934,37.528]]}""",
         )
         val detail = CourseDetail(1, "테스트 코스", "설명", 4800, CourseType.LOOP, StartLocation(37.528, 126.934), route)
-        `when`(repository.findPublishedById(1)).thenReturn(detail)
+        `when`(repository.findVisibleById(1, null)).thenReturn(detail)
         assertEquals(detail, service.detail(1))
     }
 
     @Test
     fun `unavailable detail raises not found instead of returning null`() {
-        `when`(repository.findPublishedById(99)).thenReturn(null)
+        `when`(repository.findVisibleById(99, null)).thenReturn(null)
         assertThrows(CourseNotFoundException::class.java) { service.detail(99) }
     }
 

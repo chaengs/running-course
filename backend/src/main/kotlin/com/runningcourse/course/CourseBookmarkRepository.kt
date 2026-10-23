@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository
 class CourseBookmarkRepository(private val jdbc: JdbcTemplate) {
     fun findAll(userId: Long, page: Int): List<BookmarkedCourse> = jdbc.query(
         """
-        SELECT c.id, c.name, c.distance_meters, c.course_type,
+        SELECT c.id, c.name, c.distance_meters, c.course_type, c.published,
                c.region_sido, c.region_sigungu, c.region_eup_myeon_dong,
                c.elevation_profile #>> '{difficulty,level}' AS elevation_difficulty
         FROM course_bookmarks b JOIN courses c ON c.id = b.course_id
-        WHERE b.user_id = ? AND c.published = TRUE
+        WHERE b.user_id = ?
         ORDER BY b.created_at DESC, b.course_id DESC
         LIMIT 21 OFFSET ?
         """.trimIndent(),
@@ -22,6 +22,7 @@ class CourseBookmarkRepository(private val jdbc: JdbcTemplate) {
             courseType = CourseType.valueOf(rs.getString("course_type")),
             region = rs.readCourseRegion(),
             elevationDifficulty = rs.getString("elevation_difficulty")?.let(ElevationDifficultyLevel::valueOf),
+            published = rs.getBoolean("published"),
         ) },
         userId, page.toLong() * 20
     )

@@ -52,15 +52,13 @@ class CourseBookmarkIntegrationTests {
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM course_bookmarks", Int::class.java))
     }
 
-    @Test fun `private and missing courses cannot be bookmarked or inspected`() {
+    @Test fun `private and missing courses cannot be newly bookmarked`() {
         jdbc.update("UPDATE courses SET published = FALSE WHERE id = ?", courseId)
         for (id in listOf(courseId, Long.MAX_VALUE)) {
             assertEquals(404, assertThrows(ResponseStatusException::class.java) {
                 transaction.executeWithoutResult { service.add(1, id) }
             }.statusCode.value())
-            assertEquals(404, assertThrows(ResponseStatusException::class.java) {
-                transaction.executeWithoutResult { service.status(1, id) }
-            }.statusCode.value())
+            assertFalse(bookmarked(1))
         }
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM course_bookmarks", Int::class.java))
     }
@@ -81,13 +79,22 @@ class CourseBookmarkIntegrationTests {
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM course_bookmarks", Int::class.java))
     }
 
-    @Test fun `list contains only current users public courses and hides unpublished or deleted ones`() {
+    @Test fun `list keeps an existing bookmark after course becomes private`() {
         transaction.executeWithoutResult { service.add(1, courseId) }
         assertEquals(listOf(courseId), service.list(1, 0).content.map { it.id })
         assertTrue(service.list(2, 0).content.isEmpty())
         jdbc.update("UPDATE courses SET published = FALSE WHERE id = ?", courseId)
+        assertEquals(listOf(courseId), service.list(1, 0).content.map { it.id })
+        assertFalse(service.list(1, 0).content.single().published)
+        assertTrue(bookmarked(1))
+        assertFalse(bookmarked(2))
+        assertEquals(404, assertThrows(ResponseStatusException::class.java) {
+            transaction.executeWithoutResult { service.add(2, courseId) }
+        }.statusCode.value())
+        transaction.executeWithoutResult { service.remove(1, courseId) }
         assertTrue(service.list(1, 0).content.isEmpty())
         jdbc.update("UPDATE courses SET published = TRUE WHERE id = ?", courseId)
+        transaction.executeWithoutResult { service.add(1, courseId) }
         assertEquals(listOf(courseId), service.list(1, 0).content.map { it.id })
         jdbc.update("DELETE FROM courses WHERE id = ?", courseId)
         assertTrue(service.list(1, 0).content.isEmpty())

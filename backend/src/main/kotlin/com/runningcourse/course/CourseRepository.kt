@@ -83,15 +83,20 @@ class CourseRepository(
         return FilterSql(conditions.joinToString(" AND "), args)
     }
 
-    fun findPublishedById(id: Long): CourseDetail? = jdbcTemplate.query(
+    fun findVisibleById(id: Long, viewerId: Long?): CourseDetail? = jdbcTemplate.query(
         """
         SELECT id, name, description, distance_meters, course_type, route_geojson, route_waypoints, owner_id, published, elevation_profile,
                region_sido, region_sigungu, region_eup_myeon_dong,
                (SELECT COUNT(*) FROM course_bookmarks b WHERE b.course_id = courses.id) AS bookmark_count,
+               EXISTS(SELECT 1 FROM course_bookmarks b WHERE b.course_id = courses.id AND b.user_id = COALESCE(?, 0)) AS is_bookmarked,
                ST_Y(start_location::geometry) AS latitude,
                ST_X(start_location::geometry) AS longitude
         FROM courses
-        WHERE id = ? AND published = TRUE
+        WHERE id = ? AND (
+            published = TRUE
+            OR owner_id = COALESCE(?, 0)
+            OR EXISTS(SELECT 1 FROM course_bookmarks b WHERE b.course_id = courses.id AND b.user_id = COALESCE(?, 0))
+        )
         """.trimIndent(),
         { rs, _ ->
             CourseDetail(
@@ -108,10 +113,13 @@ class CourseRepository(
                 region = rs.readCourseRegion(),
                 elevationProfile = rs.getString("elevation_profile")?.let { jsonMapper.readValue(it, ElevationProfile::class.java) },
                 bookmarkCount = rs.getLong("bookmark_count"),
+                isBookmarked = rs.getBoolean("is_bookmarked"),
             )
         },
-        id,
+        viewerId ?: 0, id, viewerId ?: 0, viewerId ?: 0,
     ).singleOrNull()
+
+    fun findPublishedById(id: Long): CourseDetail? = findVisibleById(id, null)
 
     fun recordPublishedView(id: Long): Boolean = jdbcTemplate.update(
         "UPDATE courses SET view_count = view_count + 1 WHERE id = ? AND published = TRUE", id,

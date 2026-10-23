@@ -23,7 +23,7 @@ class CourseService(private val courseRepository: CourseRepository) {
     }
 
     @Transactional(readOnly = true)
-    fun detail(id: Long): CourseDetail = courseRepository.findPublishedById(id)
+    fun detail(id: Long, viewerId: Long? = null): CourseDetail = courseRepository.findVisibleById(id, viewerId)
         ?: throw CourseNotFoundException()
 
     @Transactional

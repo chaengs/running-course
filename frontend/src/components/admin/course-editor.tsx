@@ -12,6 +12,7 @@ import {
   type RoutePoint,
 } from "@/lib/route-editor";
 import { CourseVisibilityToggle } from "@/components/course-visibility-toggle";
+import { ConfirmationDialog } from "@/components/private-bookmark-dialog";
 import {
   CourseElevation,
   type CourseElevationProfile,
@@ -71,6 +72,7 @@ export function CourseEditor({
     initialCourse?.courseType ?? "LOOP",
   );
   const [published, setPublished] = useState(initialCourse?.published ?? false);
+  const [confirmPrivate, setConfirmPrivate] = useState(false);
   const [message, setMessage] = useState("");
   const [walkingSegments, setWalkingSegments] = useState<WalkingSegment[]>([]);
   const [routeDirty, setRouteDirty] = useState(false);
@@ -471,7 +473,13 @@ export function CourseEditor({
             </label>
             <CourseVisibilityToggle
               published={published}
-              onChange={setPublished}
+              onChange={(nextPublished) => {
+                if (published && !nextPublished) {
+                  setConfirmPrivate(true);
+                  return;
+                }
+                setPublished(nextPublished);
+              }}
               disabled={saving || routing}
             />
             <button
@@ -492,6 +500,19 @@ export function CourseEditor({
           </section>
         </div>
       </fieldset>
+      {confirmPrivate && (
+        <ConfirmationDialog
+          title="코스를 비공개로 전환할까요?"
+          description="검색과 공개 목록에서 숨겨집니다. 이미 찜한 사용자는 계속 볼 수 있습니다."
+          confirmLabel="비공개로 전환"
+          pending={false}
+          onCancel={() => setConfirmPrivate(false)}
+          onConfirm={() => {
+            setPublished(false);
+            setConfirmPrivate(false);
+          }}
+        />
+      )}
     </>
   );
 }

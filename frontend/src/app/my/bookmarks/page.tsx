@@ -33,6 +33,7 @@ async function Bookmarks({ searchParams }: Props) {
             <ExploreCourseCard
               key={course.id}
               course={course}
+              privateCourse={!course.published}
               refreshOnBookmarkChange
             />
           ))}
@@ -44,7 +45,7 @@ async function Bookmarks({ searchParams }: Props) {
         >
           <h2 id="bookmark-empty-title">
             {page === 0
-              ? "아직 찜한 공개 코스가 없어요"
+              ? "아직 찜한 코스가 없어요"
               : "이 페이지에 표시할 코스가 없어요"}
           </h2>
           <p>마음에 드는 코스의 상세 화면에서 찜해 보세요.</p>

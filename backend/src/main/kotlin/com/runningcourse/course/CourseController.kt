@@ -37,7 +37,10 @@ class CourseController(private val courseService: CourseService, private val aut
     )
 
     @GetMapping("/{id}")
-    fun detail(@PathVariable @Min(1) id: Long): CourseDetail = courseService.detail(id)
+    fun detail(
+        @PathVariable @Min(1) id: Long,
+        @RequestHeader("Authorization", required = false) authorization: String?,
+    ): CourseDetail = courseService.detail(id, auth.current(authorization)?.id)
 
     @PostMapping("/{id}/view")
     @ResponseStatus(HttpStatus.NO_CONTENT)

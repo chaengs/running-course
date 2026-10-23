@@ -13,6 +13,7 @@ data class BookmarkedCourse(
     val courseType: CourseType,
     val region: CourseRegion?,
     val elevationDifficulty: ElevationDifficultyLevel?,
+    val published: Boolean = true,
     val isBookmarked: Boolean = true,
 )
 data class BookmarkPage(val content: List<BookmarkedCourse>, val page: Int, val hasNext: Boolean)
@@ -26,10 +27,8 @@ class CourseBookmarkService(private val repository: CourseBookmarkRepository) {
         return BookmarkPage(rows.take(20), page, rows.size > 20)
     }
 
-    // FOR SHARE requires a write-capable transaction, even for the status lookup.
-    @Transactional
+    @Transactional(readOnly = true)
     fun status(userId: Long, courseId: Long): BookmarkStatus {
-        requirePublished(courseId)
         return BookmarkStatus(repository.exists(userId, courseId))
     }
 

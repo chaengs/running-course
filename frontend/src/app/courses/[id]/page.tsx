@@ -77,11 +77,13 @@ async function CourseDetailContent({ params, searchParams }: Props) {
               <span className={detailStyles.chip}>
                 {courseTypeLabels[course.courseType]}
               </span>
-              <span
-                className={`${detailStyles.chip} ${course.published ? detailStyles.chipPublic : detailStyles.chipPrivate}`}
-              >
-                {course.published ? "전체 공개" : "비공개"}
-              </span>
+              {(course.published || course.ownerId === user?.id) && (
+                <span
+                  className={`${detailStyles.chip} ${course.published ? detailStyles.chipPublic : detailStyles.chipPrivate}`}
+                >
+                  {course.published ? "전체 공개" : "비공개"}
+                </span>
+              )}
             </div>
             <h1>{course.name}</h1>
           </div>
@@ -100,10 +102,28 @@ async function CourseDetailContent({ params, searchParams }: Props) {
                     courseId={course.id}
                     loggedIn={Boolean(user)}
                     bookmarkCount={course.bookmarkCount}
+                    privateCourse={false}
                   />
                 </Suspense>
                 <ShareCourseButton className={detailStyles.headerShare} />
               </>
+            )}
+            {!course.published && course.isBookmarked && (
+              <Suspense
+                fallback={
+                  <span className={detailStyles.chip}>
+                    찜 {course.bookmarkCount}
+                  </span>
+                }
+              >
+                <CourseBookmark
+                  className={detailStyles.headerBookmark}
+                  courseId={course.id}
+                  loggedIn={Boolean(user)}
+                  bookmarkCount={course.bookmarkCount}
+                  privateCourse
+                />
+              </Suspense>
             )}
             {course.ownerId === user?.id && (
               <CourseOwnerActions id={course.id} />

@@ -2,10 +2,11 @@ import uiStyles from "@/styles/ui.module.css";
 import Link from "next/link";
 import { sessionHeaders } from "@/lib/session";
 import { CourseBookmarkButton } from "./course-bookmark-button";
-export async function CourseBookmark({ courseId, loggedIn, bookmarkCount, className = "" }: {
+export async function CourseBookmark({ courseId, loggedIn, bookmarkCount, privateCourse = false, className = "" }: {
     courseId: number;
     loggedIn: boolean;
     bookmarkCount: number;
+    privateCourse?: boolean;
     className?: string;
 }) {
     if (!loggedIn)
@@ -25,5 +26,5 @@ export async function CourseBookmark({ courseId, loggedIn, bookmarkCount, classN
     catch { /* Keep the course and map available if bookmark lookup fails. */ }
     if (bookmarked === null)
         return <p role="status">찜 상태를 확인하지 못했어요. 페이지를 새로고침해 주세요.</p>;
-    return <CourseBookmarkButton key={`${courseId}-${bookmarked}`} courseId={courseId} initialBookmarked={bookmarked} bookmarkCount={bookmarkCount} className={className}/>;
+    return <CourseBookmarkButton key={`${courseId}-${bookmarked}`} courseId={courseId} initialBookmarked={bookmarked} bookmarkCount={bookmarkCount} privateCourse={privateCourse} refreshOnChange={privateCourse} className={className}/>;
 }
