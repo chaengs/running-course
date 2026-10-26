@@ -9,6 +9,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.server.ResponseStatusException
 import tools.jackson.databind.json.JsonMapper
@@ -66,10 +67,28 @@ class AuthOwnershipIntegrationTests {
     }
 
     @Test fun `invalid credentials never create users`() {
-        for (credentials in listOf(Credentials("bad", password, "러너"), Credentials("a@example.com", "short", "러너"), Credentials("a@example.com", "가".repeat(30), "러너"), Credentials("a@example.com", password, " "))) {
+        for (credentials in listOf(Credentials("bad", password, "러너"), Credentials("a@example.com", "short", "러너"), Credentials("a@example.com", "가".repeat(16), "러너"), Credentials("a@example.com", password, " "))) {
             status(400) { auth.register(credentials) }
         }
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM app_users", Int::class.java))
+    }
+
+    @Test fun `password length uses characters and supports multibyte passwords`() {
+        val password = "가".repeat(15)
+        val result = auth.register(Credentials("long-password@example.com", password, "러너"))
+        assertEquals(result.user, auth.login(Credentials("long-password@example.com", password), null).user)
+        status(400) { auth.register(Credentials("too-long@example.com", "가".repeat(16), "러너")) }
+    }
+
+    @Test fun `existing accounts with passwords longer than the registration limit can still login`() {
+        val legacyPassword = "legacy-password-123"
+        val legacyHash = BCryptPasswordEncoder(12).encode(legacyPassword)
+        jdbc.update(
+            "INSERT INTO app_users(email, display_name, password_hash) VALUES (?, ?, ?)",
+            "legacy@example.com", "기존 러너", legacyHash,
+        )
+
+        assertEquals("legacy@example.com", auth.login(Credentials("legacy@example.com", legacyPassword), null).user.email)
     }
 
     @Test fun `duplicate email returns no row without aborting PostgreSQL transaction`() {
