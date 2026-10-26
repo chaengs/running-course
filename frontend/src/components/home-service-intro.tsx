@@ -266,7 +266,7 @@ export function HomeServiceIntro() {
   }
 
   function changeSlide(nextSlide: number) {
-    setSlide(Math.max(0, Math.min(slides.length - 1, nextSlide)));
+    setSlide((nextSlide + slides.length) % slides.length);
   }
 
   if (!isOpen || !portalTarget) return null;
@@ -324,7 +324,6 @@ export function HomeServiceIntro() {
             className={`${styles.arrowButton} ${styles.previousButton}`}
             type="button"
             onClick={() => changeSlide(slide - 1)}
-            disabled={slide === 0}
             aria-label="이전 소개 보기"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -335,7 +334,6 @@ export function HomeServiceIntro() {
             className={`${styles.arrowButton} ${styles.nextButton}`}
             type="button"
             onClick={() => changeSlide(slide + 1)}
-            disabled={slide === slides.length - 1}
             aria-label="다음 소개 보기"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
