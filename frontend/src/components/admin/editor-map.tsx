@@ -39,6 +39,8 @@ function EditorMap(props: Props) {
   const [locating, setLocating] = useState(false);
   const [locationMessage, setLocationMessage] = useState("");
   const locationPending = useRef(false);
+  const locationRequestId = useRef(0);
+  const pendingRequestIsAutomatic = useRef(false);
   const locationMarker = useRef<L.CircleMarker | null>(null);
   const addressMarker = useRef<L.CircleMarker | null>(null);
   const initialLocationRequest = useRef<Promise<GeolocationPosition> | null>(
@@ -47,18 +49,20 @@ function EditorMap(props: Props) {
   const interacted = useRef(false);
   function moveToCurrentLocation(automatic = false) {
     const targetMap = map.current;
-    if (!targetMap || locationPending.current) return;
-    if (!navigator.geolocation) {
-      setLocationMessage("이 브라우저에서는 현재 위치를 사용할 수 없어요.");
+    if (!targetMap) return;
+    if (
+      locationPending.current &&
+      (automatic || !pendingRequestIsAutomatic.current)
+    ) {
       return;
     }
-    if (!window.isSecureContext) {
-      setLocationMessage(
-        "현재 위치는 HTTPS 또는 localhost에서 사용할 수 있어요.",
-      );
+    if (!navigator.geolocation || !window.isSecureContext) {
+      setLocationMessage("위치를 불러오지 못했습니다.");
       return;
     }
     locationPending.current = true;
+    pendingRequestIsAutomatic.current = automatic;
+    const requestId = ++locationRequestId.current;
     setLocating(true);
     setLocationMessage("");
     const requestPosition = () =>
@@ -76,7 +80,13 @@ function EditorMap(props: Props) {
     void positionRequest
       .then(({ coords }) => {
         const instance = map.current;
-        if (!instance || instance !== targetMap) return;
+        if (
+          !instance ||
+          instance !== targetMap ||
+          requestId !== locationRequestId.current
+        ) {
+          return;
+        }
         const position: L.LatLngTuple = [coords.latitude, coords.longitude];
         setLocationMessage("");
         const move = !automatic || !interacted.current;
@@ -91,19 +101,24 @@ function EditorMap(props: Props) {
           interactive: false,
         }).addTo(instance);
       })
-      .catch((error: GeolocationPositionError) => {
-        if (map.current !== targetMap) return;
-        setLocationMessage(
-          error.code === 1
-            ? "위치 권한이 거부됐어요. 브라우저 설정에서 위치 권한을 허용해 주세요."
-            : error.code === 3
-              ? "위치 확인 시간이 초과됐어요. 다시 시도해 주세요."
-              : "현재 위치를 확인할 수 없어요. 잠시 후 다시 시도해 주세요.",
-        );
+      .catch(() => {
+        if (
+          map.current !== targetMap ||
+          requestId !== locationRequestId.current
+        ) {
+          return;
+        }
+        setLocationMessage("위치를 불러오지 못했습니다.");
       })
       .finally(() => {
-        if (map.current !== targetMap) return;
+        if (
+          map.current !== targetMap ||
+          requestId !== locationRequestId.current
+        ) {
+          return;
+        }
         locationPending.current = false;
+        pendingRequestIsAutomatic.current = false;
         setLocating(false);
       });
   }
@@ -200,7 +215,9 @@ function EditorMap(props: Props) {
     // Saved routes take priority in the editor. New routes start at the runner's location.
     if (initialPoints.current.length === 0) requestInitialLocation();
     return () => {
+      locationRequestId.current += 1;
       locationPending.current = false;
+      pendingRequestIsAutomatic.current = false;
       setLocating(false);
       locationMarker.current = null;
       addressMarker.current = null;
@@ -277,19 +294,11 @@ function EditorMap(props: Props) {
             moveToCurrentLocation={() => moveToCurrentLocation()}
           />
         </div>
-        {locationMessage && (
-          <p
-            id="editor-location-status"
-            className={mapStyles.editorLocationStatus}
-            role="status"
-          >
-            {locationMessage}
-          </p>
-        )}
       </div>
       <div
         ref={container}
         className={mapStyles.editorMap}
+        data-tour="course-map"
         aria-label="클릭해서 경로점을 추가하는 OpenStreetMap 편집 지도"
       />
       {tileError && (
