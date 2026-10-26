@@ -18,11 +18,13 @@ export function ExploreCourseCard({
   privateCourse = false,
   detailSearch = "",
   refreshOnBookmarkChange = false,
+  eagerPreview = false,
 }: {
   course: Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType" | "region" | "elevationDifficulty" | "isBookmarked">;
   privateCourse?: boolean;
   detailSearch?: string;
   refreshOnBookmarkChange?: boolean;
+  eagerPreview?: boolean;
 }) {
   const region = [course.region?.sido, course.region?.sigungu, course.region?.eupMyeonDong]
     .filter((part): part is string => Boolean(part))
@@ -61,6 +63,7 @@ export function ExploreCourseCard({
           className={cardStyles.routePreview}
           courseId={course.id}
           name={course.name}
+          eager={eagerPreview}
         />
         <p className={cardStyles.distance}>
           <strong>{formatDistance(course.distanceMeters)}</strong>
