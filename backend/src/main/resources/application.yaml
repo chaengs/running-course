@@ -19,6 +19,11 @@ geocoding:
     keyword-url: ${KAKAO_KEYWORD_SEARCH_URL:https://dapi.kakao.com/v2/local/search/keyword.json}
     walking-url: ${KAKAO_WALKING_ROUTE_URL:https://dapi.kakao.com/v2/routing/walk}
     rest-api-key: ${KAKAO_REST_API_KEY:}
+    walking:
+      cache-ttl-seconds: ${KAKAO_WALKING_CACHE_TTL_SECONDS:900}
+      cache-max-entries: ${KAKAO_WALKING_CACHE_MAX_ENTRIES:2000}
+      per-user-daily-limit: ${KAKAO_WALKING_PER_USER_DAILY_LIMIT:100}
+      global-daily-limit: ${KAKAO_WALKING_GLOBAL_DAILY_LIMIT:800}
   nominatim:
     reverse-url: ${NOMINATIM_REVERSE_URL:https://nominatim.openstreetmap.org/reverse}
     user-agent: ${NOMINATIM_USER_AGENT:RunningCourse/0.1.0 (https://github.com/chaengs/running-course)}

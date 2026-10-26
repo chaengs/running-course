@@ -1,8 +1,9 @@
 "use client";
 
 import styles from "@/components/home-service-intro.module.css";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { HOME_INTRO_DISMISSED_COOKIE } from "@/lib/home-intro";
 
 const DISMISS_KEY = "running-course:home-intro-dismissed";
 const CHANGE_EVENT = "running-course:home-intro-dismissed-change";
@@ -25,22 +26,38 @@ const slides = [
 let dismissedInMemory = false;
 
 function subscribeToDismissal(onChange: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === DISMISS_KEY || event.key === null) onChange();
+  };
   window.addEventListener(CHANGE_EVENT, onChange);
-  return () => window.removeEventListener(CHANGE_EVENT, onChange);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    window.removeEventListener(CHANGE_EVENT, onChange);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
 function getDismissedSnapshot() {
+  if (dismissedInMemory) return true;
   try {
-    return dismissedInMemory || sessionStorage.getItem(DISMISS_KEY) === "true";
+    if (localStorage.getItem(DISMISS_KEY) === "true") return true;
   } catch {
-    return dismissedInMemory;
+    // Continue with the cookie fallback when local storage is unavailable.
   }
+  return document.cookie
+    .split(";")
+    .some((cookie) => cookie.trim() === `${HOME_INTRO_DISMISSED_COOKIE}=true`);
 }
 
-function getServerDismissedSnapshot() {
-  // Render the client-only intro after hydration to avoid showing it to crawlers
-  // or flashing it for a session that has already dismissed the intro.
-  return true;
+function persistDismissal() {
+  dismissedInMemory = true;
+  try {
+    localStorage.setItem(DISMISS_KEY, "true");
+  } catch {
+    // The cookie and in-memory state still keep the intro dismissed.
+  }
+  document.cookie = `${HOME_INTRO_DISMISSED_COOKIE}=true; Max-Age=315360000; Path=/; SameSite=Lax`;
+  window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
 function subscribeToPortal() {
@@ -226,11 +243,19 @@ function ServiceIllustration({ slide }: { slide: number }) {
   );
 }
 
-export function HomeServiceIntro() {
+export function HomeServiceIntro({
+  initiallyDismissed,
+}: {
+  initiallyDismissed: boolean;
+}) {
+  const getServerSnapshot = useCallback(
+    () => initiallyDismissed,
+    [initiallyDismissed],
+  );
   const dismissed = useSyncExternalStore(
     subscribeToDismissal,
     getDismissedSnapshot,
-    getServerDismissedSnapshot,
+    getServerSnapshot,
   );
   const portalTarget = useSyncExternalStore(
     subscribeToPortal,
@@ -240,6 +265,10 @@ export function HomeServiceIntro() {
   const [slide, setSlide] = useState(0);
   const dialogRef = useRef<HTMLElement>(null);
   const isOpen = !dismissed;
+
+  useEffect(() => {
+    if (getDismissedSnapshot()) persistDismissal();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -256,13 +285,7 @@ export function HomeServiceIntro() {
   }, [isOpen]);
 
   function closeIntro() {
-    dismissedInMemory = true;
-    try {
-      sessionStorage.setItem(DISMISS_KEY, "true");
-    } catch {
-      // Keep this tab's intro dismissed for its remaining lifetime.
-    }
-    window.dispatchEvent(new Event(CHANGE_EVENT));
+    persistDismissal();
   }
 
   function changeSlide(nextSlide: number) {
