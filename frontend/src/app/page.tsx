@@ -4,6 +4,8 @@ import uiStyles from "@/styles/ui.module.css";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { HOME_INTRO_DISMISSED_COOKIE } from "@/lib/home-intro";
 import { InfiniteCourseList } from "@/components/infinite-course-list";
 import { CourseListSkeleton } from "@/components/course-list-skeleton";
 import { CourseSearchForm } from "@/components/course-search-form";
@@ -126,10 +128,13 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
     </>
   );
 }
-export default function Home({ searchParams }: { searchParams: SearchParams }) {
+export default async function Home({ searchParams }: { searchParams: SearchParams }) {
+  const initiallyDismissed =
+    (await cookies()).get(HOME_INTRO_DISMISSED_COOKIE)?.value === "true";
+
   return (
     <main id="main-content">
-      <HomeServiceIntro />
+      <HomeServiceIntro initiallyDismissed={initiallyDismissed} />
       <header className={homeStyles.hero}>
         <p className={uiStyles.eyebrow}>
           <span className={uiStyles.liveDot} /> A NEW ROUTE · YOUR OWN PACE

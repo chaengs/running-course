@@ -10,7 +10,7 @@ import {
 } from "@/lib/course-search";
 import layoutStyles from "@/styles/page-layout.module.css";
 import uiStyles from "@/styles/ui.module.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export function InfiniteCourseList({
   initialPage,
@@ -25,6 +25,10 @@ export function InfiniteCourseList({
   const [error, setError] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
+  const eagerPreviewIds = useMemo(
+    () => new Set(initialPage.content.slice(0, 3).map((course) => course.id)),
+    [initialPage.content],
+  );
   const hasMore = page + 1 < initialPage.totalPages;
 
   const loadNextPage = useCallback(async () => {
@@ -67,7 +71,12 @@ export function InfiniteCourseList({
     <>
       <ul className={layoutStyles.courseGrid}>
         {courses.map((course) => (
-          <ExploreCourseCard key={course.id} course={course} detailSearch={detailSearch} />
+          <ExploreCourseCard
+            key={course.id}
+            course={course}
+            detailSearch={detailSearch}
+            eagerPreview={eagerPreviewIds.has(course.id)}
+          />
         ))}
       </ul>
       {(hasMore || loading || error) && (
