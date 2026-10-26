@@ -68,6 +68,10 @@
   box-shadow: var(--shadow-primary);
 }
 
+.authForm.loginMode .buttonPrimary {
+  margin-top: 24px;
+}
+
 .editorFields .buttonPrimary:disabled {
   color: var(--color-neutral);
   background: var(--color-disabled);

@@ -22,7 +22,7 @@ export async function AccountNav() {
           <LogoutButton />
         </>
       ) : (
-        <Link href="/login">로그인 →</Link>
+        <Link href="/login">로그인</Link>
       )}
     </nav>
   );

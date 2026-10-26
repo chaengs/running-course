@@ -8,11 +8,16 @@ export function LoginForm() {
     const [register, setRegister] = useState(false);
     const [pending, setPending] = useState(false);
     const [message, setMessage] = useState("");
-    return <form className={uiStyles.courseInfo + " " + formStyles.editorFields + " " + formStyles.authForm} onSubmit={async (event) => {
+    return <form className={[uiStyles.courseInfo, formStyles.editorFields, formStyles.authForm, !register ? formStyles.loginMode : ""].join(" ")} onSubmit={async (event) => {
             event.preventDefault();
             if (pending)
                 return;
             const form = new FormData(event.currentTarget);
+            const passwordCharacterCount = Array.from(String(form.get("password") ?? "")).length;
+            if (register && (passwordCharacterCount < 10 || passwordCharacterCount > 15)) {
+                setMessage("비밀번호는 10자 이상, 15자 이하로 입력하세요.");
+                return;
+            }
             setPending(true);
             setMessage("");
             try {
@@ -32,8 +37,8 @@ export function LoginForm() {
     <fieldset className={formStyles.editorSaveFields} disabled={pending}>
       {register && <label>닉네임<input name="displayName" required maxLength={40} autoComplete="nickname"/></label>}
       <label>이메일<input type="email" name="email" required maxLength={254} autoComplete="email"/></label>
-      <label>비밀번호<input type="password" name="password" required minLength={10} maxLength={72} autoComplete={register ? "new-password" : "current-password"}/></label>
-      <p className={formStyles.mapCaption}>비밀번호는 10자 이상, UTF-8 기준 72바이트 이하로 입력하세요.</p>
+      <label>비밀번호<input type="password" name="password" required minLength={10} maxLength={register ? 30 : 72} onChange={(event) => { if (!register) return; const characters = Array.from(event.currentTarget.value); if (characters.length > 15) event.currentTarget.value = characters.slice(0, 15).join(""); }} autoComplete={register ? "new-password" : "current-password"}/></label>
+      {register && <p className={formStyles.mapCaption}>비밀번호는 10자 이상, 15자 이하로 입력하세요.</p>}
       <button className={formStyles.buttonPrimary} type="submit">{pending ? "처리 중…" : register ? "가입하고 시작하기" : "로그인"}</button>
       <button className={uiStyles.backLink} type="button" onClick={() => { setRegister(!register); setMessage(""); }}>{register ? "기존 계정으로 로그인" : "처음이라면 회원가입"}</button>
     </fieldset>
