@@ -2,9 +2,7 @@
 import uiStyles from "@/styles/ui.module.css";
 import formStyles from "@/components/form.module.css";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 export function LoginForm() {
-    const router = useRouter();
     const [register, setRegister] = useState(false);
     const [pending, setPending] = useState(false);
     const [message, setMessage] = useState("");
@@ -25,8 +23,7 @@ export function LoginForm() {
                 const result = await response.json();
                 if (!response.ok)
                     throw new Error(result.message);
-                router.replace("/my/courses");
-                router.refresh();
+                window.location.replace("/my/courses");
             }
             catch (error) {
                 setMessage(error instanceof Error ? error.message : "다시 시도해 주세요.");
