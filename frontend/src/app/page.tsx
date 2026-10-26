@@ -8,6 +8,7 @@ import { InfiniteCourseList } from "@/components/infinite-course-list";
 import { CourseListSkeleton } from "@/components/course-list-skeleton";
 import { CourseSearchForm } from "@/components/course-search-form";
 import { CourseResultsError } from "@/components/course-results-error";
+import { HomeServiceIntro } from "@/components/home-service-intro";
 import {
   courseListHref,
   parseCourseListQuery,
@@ -128,6 +129,7 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
 export default function Home({ searchParams }: { searchParams: SearchParams }) {
   return (
     <main id="main-content">
+      <HomeServiceIntro />
       <header className={homeStyles.hero}>
         <p className={uiStyles.eyebrow}>
           <span className={uiStyles.liveDot} /> A NEW ROUTE · YOUR OWN PACE
