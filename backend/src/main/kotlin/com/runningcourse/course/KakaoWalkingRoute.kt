@@ -34,6 +34,8 @@ data class KakaoWalkingRouteResponse(
 class KakaoWalkingRouteController(
     private val auth: AuthService,
     private val mapper: JsonMapper,
+    private val cache: WalkingRouteCache,
+    private val usage: WalkingRouteUsageService,
     @Value("\${geocoding.kakao.rest-api-key:}") private val restApiKey: String,
     @Value("\${geocoding.kakao.walking-url:https://dapi.kakao.com/v2/routing/walk}") private val walkingUrl: String,
 ) {
@@ -45,7 +47,7 @@ class KakaoWalkingRouteController(
         @RequestHeader("Authorization", required = false) authorization: String?,
         @RequestBody request: KakaoWalkingRouteRequest,
     ): KakaoWalkingRouteResponse {
-        auth.requireUser(authorization)
+        val user = auth.requireUser(authorization)
         if (restApiKey.isBlank()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "카카오 REST API 키가 설정되지 않았습니다.")
         if (request.points.size != 2) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "도보 구간은 시작점과 도착점 두 지점으로 요청해 주세요.")
         if (request.points.any { !it.latitude.isFinite() || it.latitude !in -90.0..90.0 || !it.longitude.isFinite() || it.longitude !in -180.0..180.0 }) {
@@ -56,6 +58,20 @@ class KakaoWalkingRouteController(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 경로 옵션입니다.")
         }
 
+        val cacheKey = buildString {
+            append(mode)
+            request.points.forEach { point ->
+                append('|').append(java.lang.Double.toString(point.latitude))
+                append(',').append(java.lang.Double.toString(point.longitude))
+            }
+        }
+        return cache.getOrLoad(cacheKey) {
+            usage.reserve(user.id)
+            fetchRoute(request, mode)
+        }
+    }
+
+    private fun fetchRoute(request: KakaoWalkingRouteRequest, mode: String): KakaoWalkingRouteResponse {
         val query = linkedMapOf(
             "start_x" to request.points.first().longitude.toString(),
             "start_y" to request.points.first().latitude.toString(),
