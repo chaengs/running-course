@@ -13,6 +13,19 @@
   border: 0;
 }
 
+.editorIntroRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.editorIntroRow .editorIntro {
+  flex: 1;
+  margin: 0;
+}
+
 .mapInstructions {
   margin-top: 14px;
   margin-inline: auto;
@@ -206,6 +219,12 @@
 }
 
 @media (max-width: 720px) {
+  .editorIntroRow {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .mapInstructions {
     padding: 18px;
   }

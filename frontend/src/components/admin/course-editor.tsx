@@ -18,6 +18,7 @@ import {
   type CourseElevationProfile,
 } from "@/components/course-elevation";
 import { EditorToolIcon } from "./editor-tool-icon";
+import { CourseEditorGuide } from "./course-editor-guide";
 import type { WalkingRoutePoint } from "@/lib/kakao-walking";
 
 type WalkingSegment = { requestKey: string; distanceMeters: number; points: RoutePoint[] };
@@ -76,6 +77,7 @@ export function CourseEditor({
   const [message, setMessage] = useState("");
   const [walkingSegments, setWalkingSegments] = useState<WalkingSegment[]>([]);
   const [routeDirty, setRouteDirty] = useState(false);
+  const [pointEditVersion, setPointEditVersion] = useState(0);
   const walkingSegmentsRef = useRef<WalkingSegment[]>([]);
   const anchorsRef = useRef(points);
   const [routing, setRouting] = useState(false);
@@ -175,6 +177,11 @@ export function CourseEditor({
   const updatePoints = useCallback((next: RoutePoint[]) => {
     if (routingRef.current) return;
     const previous = anchorsRef.current;
+    const editedExistingPoints =
+      next.length < previous.length ||
+      (next.length === previous.length &&
+        next.some((point, index) => !samePoint(point, previous[index])));
+    if (editedExistingPoints) setPointEditVersion((version) => version + 1);
     anchorsRef.current = next;
     dispatch({ type: "replace", points: next });
     setMessage("");
@@ -270,19 +277,31 @@ export function CourseEditor({
     }) {
       return (
         <>
-          <button
-            type="button"
-            className={mapStyles.editorToolLocation}
-            title="현재 위치로 지도 이동"
-            onClick={moveToCurrentLocation}
-            disabled={locating}
-            aria-describedby={
-              locationMessage ? "editor-location-status" : undefined
-            }
-          >
-            <EditorToolIcon tool="location" />
-            <span>현재 위치로 이동</span>
-          </button>
+          <div className={mapStyles.editorToolLocationGroup}>
+            <button
+              type="button"
+              className={mapStyles.editorToolLocation}
+              title="현재 위치로 지도 이동"
+              onClick={moveToCurrentLocation}
+              aria-busy={locating}
+              aria-describedby={
+                locationMessage ? "editor-location-status" : undefined
+              }
+            >
+              <EditorToolIcon tool="location" />
+              <span>현재 위치로 이동</span>
+            </button>
+            {locationMessage && (
+              <span
+                id="editor-location-status"
+                className={mapStyles.editorLocationStatus}
+                role="status"
+                aria-live="polite"
+              >
+                위치를 불러오지 못했습니다.
+              </span>
+            )}
+          </div>
           <button
             type="button"
             className={mapStyles.editorToolReset}
@@ -300,9 +319,19 @@ export function CourseEditor({
   }, [points.length, updatePoints]);
   return (
     <>
-      <p className={`${uiStyles.editorHint} ${editorStyles.editorIntro}`}>
-        지도에 점을 찍어 나만의 코스를 그려보세요.
-      </p>
+      <div className={editorStyles.editorIntroRow}>
+        <p className={`${uiStyles.editorHint} ${editorStyles.editorIntro}`}>
+          지도에 점을 찍어 나만의 코스를 그려보세요.
+        </p>
+        {!initialCourse && (
+          <CourseEditorGuide
+            pointCount={new Set(points.map(({ lat, lng }) => `${lat},${lng}`)).size}
+            isClosed={closed}
+            isRouting={routing}
+            editVersion={pointEditVersion}
+          />
+        )}
+      </div>
       <fieldset className={formStyles.editorSaveFields} disabled={saving || routing}>
         <div className={editorStyles.editorGrid}>
           <section aria-label="코스 경로 편집">
