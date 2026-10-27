@@ -14,18 +14,25 @@ class CourseSearchTests {
     }
 
     @Test
-    fun `tolerance rounds integer boundaries inward and accepts target without location`() {
-        val search = CourseSearch(targetDistanceMeters = 5001)
-        assertEquals(4501, search.minDistanceMeters)
-        assertEquals(5501, search.maxDistanceMeters)
+    fun `distance choices map to disjoint inclusive meter ranges`() {
+        for ((target, min, max) in listOf(Triple(3000, 1, 4000), Triple(5000, 4001, 7000), Triple(10000, 7001, 11000))) {
+            val search = CourseSearch(targetDistanceMeters = target)
+            assertEquals(min, search.minDistanceMeters)
+            assertEquals(max, search.maxDistanceMeters)
+        }
+        assertNull(CourseSearch().minDistanceMeters)
+        assertNull(CourseSearch().maxDistanceMeters)
+        for (target in listOf(1, 4000, 5001, 11000, 100000)) {
+            assertThrows(InvalidCourseSearchException::class.java) { CourseSearch(targetDistanceMeters = target) }
+        }
     }
 
     @Test
-    fun `minimum distance filter supports greater than ten kilometer searches`() {
-        val search = CourseSearch(minimumDistanceMeters = 10001)
-        assertEquals(10001, search.minimumDistanceMeters)
+    fun `minimum distance filter supports greater than eleven kilometer searches`() {
+        val search = CourseSearch(minimumDistanceMeters = 11001)
+        assertEquals(11001, search.minimumDistanceMeters)
         assertThrows(InvalidCourseSearchException::class.java) {
-            CourseSearch(targetDistanceMeters = 10000, minimumDistanceMeters = 10001)
+            CourseSearch(targetDistanceMeters = 10000, minimumDistanceMeters = 11001)
         }
     }
 
@@ -39,7 +46,7 @@ class CourseSearchTests {
 
     @Test
     fun `valid coordinate radius and target limits are inclusive`() {
-        CourseSearch(-90.0, -180.0, 1, 1)
-        CourseSearch(90.0, 180.0, 50000, 100000)
+        CourseSearch(-90.0, -180.0, 1, 3000)
+        CourseSearch(90.0, 180.0, 50000, 10000)
     }
 }

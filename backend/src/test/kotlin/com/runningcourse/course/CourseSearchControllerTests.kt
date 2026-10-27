@@ -40,9 +40,9 @@ class CourseSearchControllerTests {
 
     @Test
     fun `minimum distance works without location`() {
-        val search = CourseSearch(minimumDistanceMeters = 10001)
+        val search = CourseSearch(minimumDistanceMeters = 11001)
         `when`(service.list(0, 20, search)).thenReturn(CourseListResponse(emptyList(), 0, 20, 0, 0))
-        mvc.perform(get("/api/courses?minimumDistanceMeters=10001")).andExpect(status().isOk)
+        mvc.perform(get("/api/courses?minimumDistanceMeters=11001")).andExpect(status().isOk)
         verify(service).list(0, 20, search)
     }
 
@@ -54,7 +54,7 @@ class CourseSearchControllerTests {
         "latitude=NaN&longitude=0", "latitude=Infinity&longitude=0", "latitude=0&longitude=-Infinity",
         "latitude=0&longitude=0&radiusMeters=0", "latitude=0&longitude=0&radiusMeters=-1",
         "latitude=0&longitude=0&radiusMeters=50001", "latitude=0&longitude=0&radiusMeters=1.5",
-        "targetDistanceMeters=0", "targetDistanceMeters=-1", "targetDistanceMeters=100001",
+        "targetDistanceMeters=4000", "targetDistanceMeters=5001", "targetDistanceMeters=0", "targetDistanceMeters=-1", "targetDistanceMeters=100001",
         "targetDistanceMeters=abc", "targetDistanceMeters=2147483648", "latitude=abc&longitude=0",
         "minimumDistanceMeters=0", "minimumDistanceMeters=100001", "minimumDistanceMeters=abc",
     ])

@@ -16,6 +16,12 @@ type RawSearchParams = { [key: string]: string | string[] | undefined };
 export const COURSE_PAGE_SIZE = 6;
 export const RADIUS_OPTIONS = [1000, 2000, 5000, 10000] as const;
 export const TARGET_DISTANCE_OPTIONS = [3000, 5000, 10000] as const;
+export const GREATER_DISTANCE_MINIMUM = 11001;
+export const TARGET_DISTANCE_LABELS: Record<number, string> = {
+  3000: "4km 이하",
+  5000: "4km 초과 7km 이하",
+  10000: "7km 초과 11km 이하",
+};
 
 function singleValue(value: string | string[] | undefined) {
   return typeof value === "string" ? value : undefined;
@@ -47,6 +53,8 @@ export function parseCourseListQuery(query: RawSearchParams): CourseListQuery | 
   if (
     page === null || page === undefined ||
     latitude === null || longitude === null || radiusMeters === null || targetDistanceMeters === null || minimumDistanceMeters === null ||
+    (targetDistanceMeters !== undefined && !TARGET_DISTANCE_OPTIONS.some((distance) => distance === targetDistanceMeters)) ||
+    (minimumDistanceMeters !== undefined && minimumDistanceMeters !== GREATER_DISTANCE_MINIMUM) ||
     (targetDistanceMeters !== undefined && minimumDistanceMeters !== undefined) ||
     (latitude === undefined) !== (longitude === undefined) ||
     (radiusMeters !== undefined && latitude === undefined)
