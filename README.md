@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="frontend/public/running-course-logo.png" alt="러닝코스 Running Course 로고" width="480" />
+</p>
+
 # Running Course
 
 **어디서 출발해 어디까지 달려야 원하는 거리가 될까?**
