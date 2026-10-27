@@ -1,163 +1,37 @@
 # Running Course
 
-**어디서 출발해 어디까지 달려야 원하는 거리가 될까?**
+지도에 러닝 코스를 직접 그리고 저장·공유하며, 주변의 공개 코스를 발견하는 웹 서비스입니다.
+요구사항은 [PRD](docs/prd.md)를 참고하세요.
 
-Running Course는 지도에서 러닝 코스를 만들고, 주변의 공개 코스를 찾아 저장·공유하는 웹 서비스입니다.
-익숙한 3km에서 5km로 거리를 늘리고 싶을 때, 이사한 동네에서 달릴 길을 찾을 때, 다른 러너가 만든 코스를 참고할 때 사용할 수 있습니다.
+## 구성
 
-**[서비스 이용하기](https://running-course-making.vercel.app/)**
+- `frontend/`: Next.js App Router + TypeScript + ESLint, npm (VS Code)
+- `backend/`: Kotlin + Spring Boot + Spring MVC + JPA + Flyway, Gradle Kotlin DSL (IntelliJ)
+- `compose.yaml`: PostgreSQL 17 + PostGIS 3.5
 
-## 서비스 목적과 방향
+## 준비
 
-달리기 전 코스를 정하는 데 드는 시간을 줄이는 것이 목표입니다.
-
-- **원하는 거리로 계획하기**: 지도에서 경유 지점을 선택하고 실제 도보 경로와 거리를 확인합니다.
-- **주변 코스 발견하기**: 출발 위치와 목표 거리에 맞는 공개 코스를 찾습니다.
-- **내 코스 모아두기**: 직접 만든 코스와 찜한 코스를 따로 관리합니다.
-- **경험 공유하기**: 공개한 코스의 주소를 공유해 다른 러너도 같은 경로를 살펴볼 수 있게 합니다.
-
-현재는 사용자가 선택한 지점을 도보 경로로 연결하는 코스 편집과 공개 코스 탐색에 집중합니다.
-목표 거리의 코스를 자동 추천하거나 실제 달리기를 기록하는 기능은 아직 제공하지 않습니다.
-
-## 주요 기능
-
-| 기능 | 제공 내용 |
-| --- | --- |
-| 코스 탐색 | 공개 코스 목록, 지도 미리보기, 위치·반경·거리 조건 검색 |
-| 코스 상세 | 전체 경로, 거리, 지역, 소개, 고도 정보, 고도 기준 예상 난이도 |
-| 코스 만들기 | 지도에서 경로점 선택, 카카오 도보 경로 연결, 지점 이동·삭제·되돌리기 |
-| 내 코스 | 저장한 코스 조회, 수정·삭제, 공개 범위 변경, 조회·찜 통계 |
-| 찜한 코스 | 공개 코스 찜·해제, 최근 찜한 순서로 목록 조회 |
-| 공유 | 공개 코스 상세 주소 복사 |
-| 계정 | 이메일 회원가입, 로그인·로그아웃, 세션 기반 접근 제어 |
-
-## 사용 방법
-
-### 1. 달릴 코스 찾기
-
-1. 홈에서 공개 코스를 둘러봅니다. 공개 목록과 상세 화면은 로그인하지 않아도 볼 수 있습니다.
-2. 현재 위치를 사용하거나 주소·장소를 검색해 출발 위치를 정합니다.
-3. 검색 반경과 목표 거리를 선택합니다.
-4. 코스 카드를 열어 전체 경로와 거리를 확인합니다.
-5. 다시 보고 싶은 공개 코스는 로그인 후 찜합니다.
-
-위치 검색은 **설정한 위치에서 코스 출발점까지의 직선거리**를 기준으로 합니다.
-현재 위치에서 출발점까지 걸어가는 거리나 코스 전체와의 최단거리를 뜻하지 않습니다.
-목표 거리는 입력한 거리의 ±10% 범위로 검색합니다.
-
-### 2. 나만의 코스 만들기
-
-1. 회원가입 또는 로그인 후 **코스 만들기** 화면으로 이동합니다.
-2. 지도에서 출발점과 경유 지점을 차례로 선택합니다.
-3. 각 구간의 도보 경로가 계산되면 지도에 표시된 선과 거리를 확인합니다.
-4. 경로점을 이동·삭제하거나 되돌리기를 사용해 코스를 조정합니다.
-5. 출발점으로 돌아오는 경로를 완성하고, 코스 이름·소개·유형을 입력합니다.
-6. 필요한 경우 고도를 조회해 경사와 고도 기준 예상 난이도를 확인합니다.
-7. 공개 범위를 선택하고 저장합니다.
-
-코스는 비공개가 기본입니다. 저장 가능한 코스는 출발점과 도착점이 같아야 하며, 경로 길이는 1m~100km입니다.
-지도에 점을 찍는 작업은 경로 계산 API를 사용하므로 응답까지 기다림이 생길 수 있습니다.
-
-### 3. 저장·공유·관리하기
-
-- **내 코스**에서 직접 만든 코스를 수정·삭제하거나 공개 범위를 바꿉니다.
-- 공개 코스는 상세 주소를 공유할 수 있습니다.
-- **찜한 코스**에서 저장한 다른 러너의 코스를 다시 확인하고 찜을 해제합니다.
-- 공개 코스가 비공개로 바뀌어도 기존에 찜한 사용자는 목록·상세·경로 미리보기를 계속 볼 수 있습니다. 찜을 해제하면 다시 공개되기 전까지 접근할 수 없습니다.
-- 코스 수정·삭제·공개 범위 변경은 작성자만 할 수 있으며, 서버에서도 소유권을 검사합니다.
-
-## 기술 구성
-
-| 영역 | 사용 기술·역할 |
-| --- | --- |
-| 프론트엔드 | Next.js App Router, React, TypeScript |
-| 백엔드 | Kotlin, Spring Boot, Spring MVC |
-| 데이터 접근 | JdbcTemplate과 명시적 SQL, Spring 트랜잭션 |
-| 데이터베이스 | PostgreSQL, PostGIS |
-| 스키마 관리 | Flyway SQL 마이그레이션 |
-| 지도 표시·편집 | Leaflet, OpenStreetMap |
-| 주소·장소 검색 / 경로 계산 | 카카오 로컬 API / 카카오 도보 경로 API |
-| 고도 / 지역 정보 | Open Topo Data / Nominatim 역지오코딩 |
-| 배포 | Vercel 프론트엔드, Render 백엔드 |
-
-```text
-브라우저
-  ├─ Leaflet + 지도 타일: 지도 표시
-  └─ Next.js (Vercel): 화면 렌더링·API 중계·세션 쿠키
-       └─ Kotlin / Spring Boot (Render)
-            ├─ PostgreSQL + PostGIS: 사용자·세션·코스·찜·요청 사용량
-            ├─ Kakao: 주소·장소 검색, 도보 경로 계산
-            ├─ Open Topo Data: 고도 조회
-            └─ Nominatim: 출발점 지역 정보 조회
-```
-
-Leaflet은 지도 표시와 편집을, 카카오는 선택한 두 지점 사이의 도보 경로 계산을 담당합니다.
-코스 경로는 GeoJSON으로 저장하고, PostGIS로 거리 계산과 출발점 주변 검색을 처리합니다.
-브라우저가 우리 백엔드를 호출하는 요청은 Next.js 서버를 거치며, 카카오 REST API 키는 백엔드에만 둡니다.
-
-### 조회와 인증
-
-- 공개 목록의 무한 스크롤은 전체 개수를 매번 세지 않고, 한 개를 더 조회해 다음 페이지 유무를 판단합니다.
-- 지도 미리보기는 전체 상세 데이터 대신 경로만 조회합니다.
-- 공개·소유자·기존 찜 사용자의 조회 권한을 상세와 미리보기에 동일하게 적용합니다.
-- 찜 목록과 내 코스는 토큰이 없으면 목록 API를 호출하지 않고 로그인 화면으로 이동합니다. 토큰이 있으면 목록 API가 세션을 검증하고, 401 응답 시 로그인 화면으로 이동합니다.
-- 세션 토큰은 HttpOnly 쿠키로 관리하고 Next.js 서버에서 백엔드의 Bearer 헤더로 전달합니다. DB에는 토큰 원문 대신 해시를 저장합니다.
-- 개인정보와 찜 상태가 포함된 조회는 공용 캐시로 공유하지 않습니다.
-
-## 배포 서비스
-
-- 웹: [running-course-making.vercel.app](https://running-course-making.vercel.app/)
-- 백엔드 상태: [running-course-api.onrender.com/api/health](https://running-course-api.onrender.com/api/health)
-
-| 배포 대상 | 설정 |
-| --- | --- |
-| Vercel | 프로젝트 루트 `frontend`, 서버 환경변수 `BACKEND_URL=https://running-course-api.onrender.com` |
-| Render | 프로젝트 루트 `backend`, Dockerfile `Dockerfile` |
-| 운영 DB | PostGIS 확장을 사용할 수 있는 PostgreSQL, 백엔드의 DB 환경변수로 연결 |
-
-Render Free를 사용하는 경우 유휴 후 첫 요청에서 서버가 다시 시작되는 시간이 발생할 수 있습니다.
-로그인 화면은 백엔드 상태 확인과 재시도를 제공하지만, 서버 재시작 자체의 대기 시간을 없애지는 않습니다.
-
-새 API를 사용하는 프론트 변경은 백엔드가 먼저 배포되어야 합니다.
-로컬·개발·운영 DB 연결 설정은 구분해서 관리하며, `main` 병합 후 실제 배포 성공 여부는 각 플랫폼의 로그와 상태 API로 확인합니다.
+- Node.js 24 LTS 권장 (`frontend/.nvmrc`), npm
+- JDK 21: IntelliJ의 Project SDK와 Gradle JVM도 21로 설정
+- Docker Desktop 또는 Docker Compose를 제공하는 실행 환경 (엔진 실행 필요)
 
 ## 로컬 실행
 
-### 준비 사항
-
-- Node.js 24 (`frontend/.nvmrc`), npm
-- JDK 21 — IntelliJ의 Project SDK와 Gradle JVM도 21로 설정
-- Docker Desktop 또는 Docker Compose 실행 환경
-- 주소·장소 검색과 도보 경로 계산에 사용할 카카오 REST API 키
-
-### 1. 데이터베이스
-
-저장소 루트에서 실행합니다.
+저장소 루트에서 DB를 실행합니다.
 
 ```sh
 cp .env.example .env
 docker compose up -d --wait
 ```
 
-PostgreSQL 17 + PostGIS 3.5를 사용합니다. 로컬 DB는 기본적으로 `127.0.0.1:5432`에서 접근합니다.
-
-### 2. 백엔드
-
-별도 터미널에서 실행합니다.
+다른 터미널에서 백엔드를 실행합니다.
 
 ```sh
 cd backend
-export KAKAO_REST_API_KEY='발급받은_REST_API_키'
 ./gradlew bootRun
 ```
 
-DB 연결은 기본값으로 로컬 Compose DB와 맞춰져 있습니다.
-애플리케이션 시작 시 Flyway가 필요한 마이그레이션을 적용합니다.
-상태 확인: [localhost:8080/api/health](http://localhost:8080/api/health)
-
-### 3. 프론트엔드
-
-다른 터미널에서 실행합니다.
+다른 터미널에서 프론트엔드를 실행합니다.
 
 ```sh
 cd frontend
@@ -166,115 +40,105 @@ npm ci
 npm run dev
 ```
 
-[localhost:3000](http://localhost:3000)에서 서비스를 이용합니다.
+http://localhost:3000 에서 공개 코스 목록을 확인하세요.
 
-### 환경변수
+`/login`에서 가입·로그인 후 `/courses/new`에서 작성하고 `/my/courses`에서 내 코스를 확인합니다.
+새 코스는 비공개가 기본이며 작성·수정 화면의 '비공개로 저장' 토글로 공개 범위를 선택합니다. 상세 화면에서 공개·비공개 전환, 수정, 삭제, 공유 URL 복사를 제공합니다.
+백엔드를 재시작하면 V2 사용자·세션·소유권 마이그레이션이 자동 적용됩니다.
+기존 코스와 데이터는 유지합니다. 임시 관리자 키는 더 이상 사용하지 않습니다.
+세션/운영 제한은 [인증 안내](docs/api/auth.md)를 참고하세요.
 
-루트 `.env`는 Docker Compose용이며 Spring Boot가 자동으로 읽지 않습니다.
-백엔드 변수는 셸 또는 IDE 실행 설정에, 프론트 변수는 `frontend/.env.local`에 설정합니다.
-운영 비밀값과 실제 환경변수 파일은 커밋하지 않습니다.
+- `GET http://localhost:8080/api/courses`: 주변·목표 거리 검색을 지원하는 공개 코스 목록 ([API 문서](docs/api/courses.md))
+- `GET http://localhost:8080/api/courses/{id}`: 공개 코스 상세와 전체 경로 ([API 문서](docs/api/course-detail.md))
+- `GET http://localhost:8080/api/health`: DB에서 PostGIS 버전을 실제 조회
+- `GET http://localhost:8080/actuator/health`: 운영용 상태 확인 (상세 비공개)
 
-| 대상 | 변수 | 기본값·용도 |
-| --- | --- | --- |
-| Compose | `POSTGRES_DB`, `POSTGRES_USER` | `running_course` |
-| Compose | `POSTGRES_PASSWORD` | `local_password` — 로컬 개발 전용 |
-| Compose | `POSTGRES_PORT` | `5432` |
-| 백엔드 | `DATABASE_URL` | `jdbc:postgresql://localhost:5432/running_course` |
-| 백엔드 | `DATABASE_USERNAME`, `DATABASE_PASSWORD` | `running_course`, `local_password` — 로컬 기본값 |
-| 백엔드 | `PORT` | `8080` |
-| 백엔드 | `KAKAO_REST_API_KEY` | 기본값 없음, 주소 검색·도보 경로에 사용 |
-| 백엔드 | `KAKAO_WALKING_CACHE_TTL_SECONDS` | `900` — 구간 캐시 15분 |
-| 백엔드 | `KAKAO_WALKING_CACHE_MAX_ENTRIES` | `2000` — 캐시 최대 구간 수 |
-| 백엔드 | `KAKAO_WALKING_PER_USER_DAILY_LIMIT` | `800` — 사용자별 일일 호출 예약 상한 |
-| 백엔드 | `KAKAO_WALKING_GLOBAL_DAILY_LIMIT` | `900` — 서비스 전체 일일 호출 예약 상한 |
-| 프론트엔드 | `BACKEND_URL` | `http://localhost:8080` — Next.js 서버에서 사용 |
-| 프론트엔드 | `NEXT_PUBLIC_OSM_TILE_URL` | 선택 사항, 비워두면 기본 OSM 타일 사용 |
+Next.js 서버가 백엔드에 요청하므로 현재 연결에는 CORS 설정이 필요하지 않습니다.
+브라우저에서 백엔드를 직접 호출하는 기능을 추가할 때 호출 경로와 인증 방식을 함께 결정하세요.
 
-운영 DB URL도 JDBC 형식으로 설정하고 제공자의 SSL 연결 요구사항을 적용합니다.
-운영에서는 로컬 기본 비밀번호를 사용하지 않습니다.
+## 환경변수
 
-## API 사용량과 운영 제한
+루트 `.env`는 Docker Compose용입니다. Spring Boot는 이 파일을 자동으로 읽지 않습니다.
+기본값으로는 별도 설정 없이 연결됩니다. DB 설정 변경 시 백엔드 실행 환경도 맞추세요.
 
-도보 경로의 서비스 자체 기본 한도는 **사용자별 하루 800회, 전체 하루 900회**입니다.
-전체 한도는 모든 사용자가 공유하며 카카오 앱의 쿼터와는 별도로 적용됩니다.
-환경변수가 없으면 코드 기본값을 사용하고, 명시한 환경변수가 있으면 해당 값을 우선합니다.
+| 위치     | 변수                                  | 기본값                                          |
+| -------- | ------------------------------------- | ----------------------------------------------- |
+| Docker   | POSTGRES_DB / POSTGRES_USER           | running_course                                  |
+| Docker   | POSTGRES_PASSWORD                     | local_password (로컬 개발 전용)                 |
+| Docker   | POSTGRES_PORT                         | 5432                                            |
+| Backend  | DATABASE_URL                          | jdbc:postgresql://localhost:5432/running_course |
+| Backend  | DATABASE_USERNAME / DATABASE_PASSWORD | running_course / local_password                 |
+| Backend  | PORT                                  | 8080                                            |
+| Backend  | KAKAO_REST_API_KEY                    | Kakao 주소 검색 및 도보 경로 REST API 키 (기본값 없음) |
+| Backend  | KAKAO_WALKING_CACHE_TTL_SECONDS       | 도보 구간 응답 캐시 유지 시간 (기본 900초)      |
+| Backend  | KAKAO_WALKING_CACHE_MAX_ENTRIES       | 메모리 캐시 최대 구간 수 (기본 2,000개)         |
+| Backend  | KAKAO_WALKING_PER_USER_DAILY_LIMIT    | 사용자별 실제 API 요청 상한 (기본 800회/일)     |
+| Backend  | KAKAO_WALKING_GLOBAL_DAILY_LIMIT      | 전체 실제 API 요청 상한 (기본 900회/일)         |
+| Frontend | BACKEND_URL                           | http://localhost:8080                           |
 
-- 캐시 적중에는 사용량을 추가하지 않습니다.
-- 같은 구간의 동시 요청은 하나의 외부 요청으로 합칩니다.
-- 구간 캐시는 서버 메모리에 있으므로 재시작하면 사라집니다.
-- 사용량은 DB의 `walking_route_daily_usage`에 한국 시간 날짜별로 저장하므로 서버 재시작으로 초기화되지 않습니다.
-- 외부 호출 전에 사용량을 예약합니다. 이후 호출 실패도 집계되므로 카카오 콘솔의 실제 사용량과 다를 수 있습니다.
+백엔드 변수는 IntelliJ Run Configuration 또는 셸 환경변수로 전달합니다.
+실제 환경변수 파일은 커밋하지 마세요. 운영 환경에서는 별도 비밀값을 사용하세요.
+주소 검색과 도보 경로 계산을 사용하려면 [Kakao Developers](https://developers.kakao.com/)에서 REST API 키를 발급한 뒤 백엔드 실행 환경에 `KAKAO_REST_API_KEY`로 설정하고 Spring Boot를 재시작하세요. 이 키는 프론트엔드 환경변수에 넣지 마세요.
 
-| HTTP 상태 | 오류 코드 | 의미 |
-| --- | --- | --- |
-| 429 | `USER_DAILY_LIMIT_EXCEEDED` | 사용자 일일 한도 초과 |
-| 429 | `GLOBAL_DAILY_LIMIT_EXCEEDED` | 서비스 전체 일일 한도 초과 |
+도보 경로 응답은 백엔드 메모리에 기본 15분간 캐시되며, 같은 구간에 대한 동시 요청은 하나의 Kakao 요청으로 합쳐집니다. 캐시가 만료되거나 구간이 달라 실제 Kakao API를 호출할 때만 사용자별·전체 일일 한도를 사용량 테이블에 기록합니다. 기본 전체 상한은 Kakao 무료 일일 쿼터보다 낮은 900회이며, 설정값은 배포 환경에 맞게 조정할 수 있습니다.
 
-오류 응답의 `message`는 화면 안내, `scope`·`limit`는 제한 범위·상한, `resetsAt`은 다음 한국 시간 자정을 나타냅니다.
-고도 조회는 별도 외부 API와 사용량 제한을 사용합니다.
+일일 사용량은 DB의 `walking_route_daily_usage` 테이블에서 확인할 수 있습니다. `quota_scope = 'GLOBAL'` 행의 `request_count`는 당일 전체 Kakao 호출 예약 수입니다. 예약 후 외부 호출이 실패한 경우도 포함하므로 카카오 콘솔의 실제 사용량과 다를 수 있습니다.
 
-### 상태 확인과 데이터 관리
-
-- `GET /api/health`: DB 연결과 PostGIS 버전을 실제 조회합니다.
-- `GET /actuator/health`: 운영용 상태 확인이며 상세 정보는 공개하지 않습니다.
-- Flyway SQL은 `backend/src/main/resources/db/migration/`에 있습니다. 이미 적용한 파일 대신 다음 버전의 마이그레이션을 추가합니다.
-- 로컬 DB 중지: `docker compose stop` — 볼륨 데이터 유지
-- Compose DB 이미지는 `linux/amd64`로 지정되어 Apple Silicon에서는 에뮬레이션을 사용합니다.
-
-## 검증 방법
-
-프론트엔드:
+## 검증
 
 ```sh
 cd frontend
 npm run lint
-npm run typecheck
+npx tsc --noEmit
 npm run build
 ```
-
-백엔드:
 
 ```sh
 cd backend
 ./gradlew test bootJar
 ```
 
-실제 PostgreSQL/PostGIS 통합 테스트는 로컬 DB를 실행하고 마이그레이션을 적용한 뒤 별도로 활성화합니다.
-DB 환경변수는 로컬 테스트 DB를 가리키도록 설정합니다.
+백엔드 테스트는 상태 확인, 목록 응답, 페이지 검증을 확인합니다.
+실제 DB 조회 테스트는 `RUN_DB_TESTS=true ./gradlew test --rerun-tasks`로 실행합니다. 실제 DB 연결은 DB와 앱을 실행하고
+`/api/health`에서 확인하세요. 프론트엔드는 조회 실패 시 오류 안내와 재시도 버튼을 표시합니다.
 
-```sh
-cd backend
-RUN_DB_TESTS=true ./gradlew test --rerun-tasks
-```
+## DB 관리
 
-DB 테스트는 세션 전용 임시 테이블을 사용해 운영 데이터와 분리합니다.
-인증·소유권·찜·검색·거리 계산·일일 사용량 제한 등의 동작을 검증합니다.
-테스트 통과와 실제 외부 API의 경로 품질·배포 환경 응답 시간 검증은 구분합니다.
+Flyway가 시작 시 `backend/src/main/resources/db/migration/`의 SQL을 적용합니다.
+적용한 파일은 수정하지 않고 `V2__...sql`처럼 새 파일을 추가하세요.
+JPA는 `ddl-auto=validate`로 스키마를 검증하고 자동 변경하지 않습니다.
+초기 스키마는 코스 정보, WGS84 출발점(공간 인덱스), GeoJSON 경로를 저장합니다.
+사용자·세션·코스 소유권은 V2 마이그레이션에 포함됩니다. 북마크는 후속 구현입니다.
 
-## 현재 한계와 개선 방향
+DB 종료: `docker compose stop` (데이터 유지).
+DB 이미지는 linux/amd64로 지정했습니다. Apple Silicon에서는 Docker의 에뮬레이션을 사용합니다.
+`docker compose` 명령이 없으면 Docker Desktop을 업데이트하거나 `docker-compose` 명령을 사용하세요.
 
-- **자동 코스 추천**: 현재는 지점을 선택하는 편집 방식입니다. 목표 거리 기반 자동 순환 코스 추천은 향후 검토 대상입니다.
-- **고도 해석**: 지형 고도 데이터 기반 추정치이며 교량·터널의 실제 높이나 현장 경사를 완전히 반영하지 못합니다. 예상 난이도는 고도 기준 비교 지표이며 거리 전체의 운동 강도나 안전을 보장하지 않습니다.
-- **외부 API와 서버 대기**: 경로·고도·지역 정보는 외부 서비스에 의존합니다. 유휴 후 첫 접속, 외부 응답 지연, 사용량 제한을 별도로 관찰하고 개선합니다.
-- **계정 기능**: 소셜 로그인, 이메일 소유 확인, 비밀번호 재설정·변경, 가입·로그인 요청 속도 제한은 아직 제공하지 않습니다.
-- **탐색·공유 확장**: 노면·경사 조건 탐색, GPX 가져오기·내보내기, 완주 기록·리뷰 등은 이후 검토할 방향입니다.
+## 다음 구현
 
-## 저장소 구조와 관련 문서
+1. 관리자 코스 등록
+2. 인증·권한 및 북마크
+3. 주소·지도 기반 검색 위치 선택
+4. 실제 도로를 따르는 코스 데이터 확장
 
-```text
-frontend/     Next.js 화면·서버 API 중계
-backend/      Kotlin API·SQL·마이그레이션·테스트
-compose.yaml  로컬 PostgreSQL/PostGIS
-docs/        기획·API·설계 문서
-```
+## 의존성 검사 참고
 
-- [기획 배경과 요구사항](docs/prd.md)
-- [코스 목록·검색 API](docs/api/courses.md)
-- [코스 생성 API](docs/api/course-create.md)
-- [코스 상세 API](docs/api/course-detail.md)
-- [찜 API와 공개 범위 정책](docs/api/bookmarks.md)
-- [인증과 세션](docs/api/auth.md)
-- [고도 API](docs/api/elevation.md)
-- [고도 기준 예상 난이도 설계](docs/elevation-difficulty.md)
+초기 npm audit에서 ESLint 개발 의존성의 braces 관련 경고가 발견되었습니다.
+런타임 의존성과 구분해 `npm audit` / `npm audit --omit=dev`로 확인하세요.
+프레임워크를 구버전으로 내리는 강제 수정은 적용하지 않았습니다.
 
-관련 문서에는 초기 구현 시점의 설명이 일부 남아 있습니다. 현재 제공 기능과 배포 구성은 이 README와 현재 코드를 기준으로 확인합니다.
+### 도보 경로 일일 제한 오류
+
+사용자별 800회와 전체 900회는 서비스 자체 기본 상한이며, 카카오가 사용자별로 부과한 한도가 아닙니다. 전체 한도는 모든 사용자가 공유합니다. Render에 `KAKAO_WALKING_PER_USER_DAILY_LIMIT=100`을 명시했다면 기본값보다 환경변수가 우선하므로 `800`으로 변경하고 재배포해야 합니다.
+
+두 제한 모두 HTTP 429이며 `code`와 `message`로 구분합니다.
+
+- `USER_DAILY_LIMIT_EXCEEDED`: 사용자 일일 한도 초과
+- `GLOBAL_DAILY_LIMIT_EXCEEDED`: 서비스 전체 일일 한도 초과
+- `scope`: `USER` 또는 `GLOBAL`
+- `limit`: 적용된 일일 상한
+- `resetsAt`: 다음 한국 시간 자정(ISO 8601)
+
+카운터는 한국 시간 날짜별로 집계하며, 배포·서버 재시작으로 초기화되지 않습니다. 캐시 적중에는 사용량을 추가하지 않습니다.
+
+전체 한도를 환경변수로 지정한 배포 환경에서는 `KAKAO_WALKING_GLOBAL_DAILY_LIMIT=900`으로 변경한 뒤 재배포해야 합니다.
