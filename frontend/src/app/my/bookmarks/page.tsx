@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getBookmarkedCourses } from "@/lib/courses";
 import { ExploreCourseCard } from "@/components/explore-course-card";
-export const metadata: Metadata = { title: "찜한 코스 | Running Course" };
+export const metadata: Metadata = { title: "찜한 코스" };
 type Props = {
   searchParams: Promise<{
     page?: string | string[];

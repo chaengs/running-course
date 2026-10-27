@@ -1,5 +1,6 @@
 import type { CourseElevationProfile } from "@/components/course-elevation";
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { sessionHeaders } from "@/lib/session";
 import type { CourseSearchFilters } from "@/lib/course-search";
@@ -68,7 +69,7 @@ export type CourseDetail = Omit<CourseSummary, "distanceToStartMeters"> & {
   isBookmarked: boolean;
 };
 
-export async function getCourse(id: string): Promise<CourseDetail | null> {
+export const getCourse = cache(async (id: string): Promise<CourseDetail | null> => {
   const baseUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
   const headers = await sessionHeaders();
   // This endpoint handles public courses, private owner access, and existing bookmarks.
@@ -80,7 +81,7 @@ export async function getCourse(id: string): Promise<CourseDetail | null> {
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`Course detail request failed (${response.status})`);
   return response.json();
-}
+});
 
 export type MyCourse = { id: number; name: string; distanceMeters: number; courseType: CourseType; createdAt: string; region: CourseRegion | null; published: boolean; bookmarkCount: number; viewCount: number };
 export type MyCourseStats = { totalCourses: number; totalDistanceMeters: number; totalViews: number; totalBookmarks: number; publishedCourses: number; privateCourses: number };
