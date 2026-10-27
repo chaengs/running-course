@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import {
   RADIUS_OPTIONS,
   TARGET_DISTANCE_OPTIONS,
+  TARGET_DISTANCE_LABELS,
+  GREATER_DISTANCE_MINIMUM,
   type CourseSearchFilters,
 } from "@/lib/course-search";
 type Location = {
@@ -73,11 +75,6 @@ export function CourseSearchForm({
     !RADIUS_OPTIONS.includes(
       filters.radiusMeters as (typeof RADIUS_OPTIONS)[number],
     );
-  const hasCustomTarget =
-    filters.targetDistanceMeters !== undefined &&
-    !TARGET_DISTANCE_OPTIONS.includes(
-      filters.targetDistanceMeters as (typeof TARGET_DISTANCE_OPTIONS)[number],
-    );
   function findCurrentLocation() {
     if (!navigator.geolocation) return;
     setIsLocating(true);
@@ -124,7 +121,7 @@ export function CourseSearchForm({
           <input type="hidden" name="targetDistanceMeters" value={distanceChoice} />
         )}
         {distanceChoice === "greater" && (
-          <input type="hidden" name="minimumDistanceMeters" value="10001" />
+          <input type="hidden" name="minimumDistanceMeters" value={GREATER_DISTANCE_MINIMUM} />
         )}
         {location && (
           <>
@@ -190,24 +187,13 @@ export function CourseSearchForm({
               />
               <span>전체</span>
             </label>
-            {hasCustomTarget && (
-              <label className={searchStyles.distanceChip}>
-                <input
-                  type="radio"
-                  name="distanceChoice"
-                  value={filters.targetDistanceMeters}
-                  checked={distanceChoice === String(filters.targetDistanceMeters)}
-                  onChange={() => setDistanceChoice(String(filters.targetDistanceMeters))}
-                />
-                <span>{filters.targetDistanceMeters! / 1000}km</span>
-              </label>
-            )}
             {TARGET_DISTANCE_OPTIONS.map((distance) => (
-              <label className={searchStyles.distanceChip} key={distance}>
+              <label className={searchStyles.distanceChip} key={distance} title={TARGET_DISTANCE_LABELS[distance]}>
                 <input
                   type="radio"
                   name="distanceChoice"
                   value={distance}
+                  aria-label={`${distance / 1000}km: ${TARGET_DISTANCE_LABELS[distance]}`}
                   checked={distanceChoice === String(distance)}
                   onChange={() => setDistanceChoice(String(distance))}
                 />
@@ -219,10 +205,11 @@ export function CourseSearchForm({
                 type="radio"
                 name="distanceChoice"
                 value="greater"
+                aria-label="그 이상: 11km 초과"
                 checked={distanceChoice === "greater"}
                 onChange={() => setDistanceChoice("greater")}
               />
-              <span>그 이상</span>
+              <span title="11km 초과">그 이상</span>
             </label>
           </div>
         </fieldset>

@@ -78,6 +78,7 @@ export function CourseEditor({
   const [walkingSegments, setWalkingSegments] = useState<WalkingSegment[]>([]);
   const [routeDirty, setRouteDirty] = useState(false);
   const [pointEditVersion, setPointEditVersion] = useState(0);
+  const [mapSession, setMapSession] = useState(0);
   const walkingSegmentsRef = useRef<WalkingSegment[]>([]);
   const anchorsRef = useRef(points);
   const [routing, setRouting] = useState(false);
@@ -254,6 +255,8 @@ export function CourseEditor({
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       if (!initialCourse) {
+        // Next.js preserves route state; also reset the map's address search and selection.
+        setMapSession((session) => session + 1);
         dispatch({ type: "reset" });
         anchorsRef.current = [];
         walkingSegmentsRef.current = [];
@@ -353,6 +356,7 @@ export function CourseEditor({
         <div className={editorStyles.editorGrid}>
           <section aria-label="코스 경로 편집">
             <EditorMap
+              key={mapSession}
               points={points}
               displayRoute={walkingRoute}
               selected={selected}

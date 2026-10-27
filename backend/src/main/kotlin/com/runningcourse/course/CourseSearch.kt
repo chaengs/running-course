@@ -25,8 +25,8 @@ data class CourseSearch(
         if (radiusMeters != null && radiusMeters !in 1..50_000) {
             throw InvalidCourseSearchException("검색 반경은 1~50000m 사이여야 합니다.")
         }
-        if (targetDistanceMeters != null && targetDistanceMeters !in 1..100_000) {
-            throw InvalidCourseSearchException("목표 거리는 1~100000m 사이여야 합니다.")
+        if (targetDistanceMeters != null && targetDistanceMeters !in setOf(3000, 5000, 10000)) {
+            throw InvalidCourseSearchException("목표 거리는 3000m, 5000m, 10000m 중에서 선택해 주세요.")
         }
         if (minimumDistanceMeters != null && minimumDistanceMeters !in 1..100_000) {
             throw InvalidCourseSearchException("최소 거리는 1~100000m 사이여야 합니다.")
@@ -42,10 +42,20 @@ data class CourseSearch(
     val effectiveRadiusMeters: Int?
         get() = if (center != null) radiusMeters ?: 2_000 else null
 
-    // 거리는 정수 m이므로 ±10% 구간의 하한은 올림, 상한은 내림합니다.
+    // 저장 거리는 정수 m이므로 하한 초과는 다음 정수부터 포함합니다.
     val minDistanceMeters: Int?
-        get() = targetDistanceMeters?.let { (it * 9 + 9) / 10 }
+        get() = when (targetDistanceMeters) {
+            3000 -> 1
+            5000 -> 4001
+            10000 -> 7001
+            else -> null
+        }
 
     val maxDistanceMeters: Int?
-        get() = targetDistanceMeters?.let { it * 11 / 10 }
+        get() = when (targetDistanceMeters) {
+            3000 -> 4000
+            5000 -> 7000
+            10000 -> 11000
+            else -> null
+        }
 }

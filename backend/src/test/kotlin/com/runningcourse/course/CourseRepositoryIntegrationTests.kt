@@ -198,24 +198,25 @@ class CourseRepositoryIntegrationTests {
     }
 
     @Test
-    fun `distance tolerance includes boundaries and excludes outside values without requiring a location`() {
+    fun `distance buckets partition boundary values in both list and count`() {
         jdbc.update("DELETE FROM pg_temp.courses")
-        for (distance in listOf(4499, 4500, 5000, 5500, 5501)) insert("길이 $distance", true, distance)
+        val distances = listOf(1, 3000, 3999, 4000, 4001, 5000, 6999, 7000, 7001, 10000, 10999, 11000, 11001, 12000, 100000)
+        distances.forEach { insert("길이 $it", true, it) }
         insert("비공개 길이 5000", false, 5000)
-        val search = CourseSearch(targetDistanceMeters = 5000)
-        val result = repository.findPublished(20, 0, search)
-        assertEquals(listOf(4500, 5000, 5500), result.map { it.distanceMeters })
-        assertEquals(3L, repository.countPublished(search))
-        org.junit.jupiter.api.Assertions.assertTrue(result.all { it.distanceToStartMeters == null })
-    }
-
-    @Test
-    fun `minimum distance filter returns courses over ten kilometers`() {
-        jdbc.update("DELETE FROM pg_temp.courses")
-        for (distance in listOf(9999, 10000, 10001, 12000)) insert("길이 $distance", true, distance)
-        val search = CourseSearch(minimumDistanceMeters = 10001)
-        assertEquals(listOf(10001, 12000), repository.findPublished(20, 0, search).map { it.distanceMeters })
-        assertEquals(2L, repository.countPublished(search))
+        val cases = listOf(
+            CourseSearch(targetDistanceMeters = 3000) to listOf(1, 3000, 3999, 4000),
+            CourseSearch(targetDistanceMeters = 5000) to listOf(4001, 5000, 6999, 7000),
+            CourseSearch(targetDistanceMeters = 10000) to listOf(7001, 10000, 10999, 11000),
+            CourseSearch(minimumDistanceMeters = 11001) to listOf(11001, 12000, 100000),
+        )
+        for ((search, expected) in cases) {
+            assertEquals(expected, repository.findPublished(100, 0, search).map { it.distanceMeters })
+            assertEquals(expected.size.toLong(), repository.countPublished(search))
+        }
+        val allMatches = cases.flatMap { (search, _) -> repository.findPublished(100, 0, search).map { it.distanceMeters } }
+        assertEquals(distances, allMatches)
+        assertEquals(distances.size, allMatches.distinct().size)
+        assertEquals(distances.size.toLong(), repository.countPublished())
     }
 
     @Test
