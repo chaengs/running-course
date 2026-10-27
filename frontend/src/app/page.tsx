@@ -1,3 +1,4 @@
+import { CourseCollectionRefresh } from "@/components/course-collection-refresh";
 import type { Metadata } from "next";
 import homeStyles from "@/app/home.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
@@ -137,6 +138,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
 
   return (
     <main id="main-content">
+      <CourseCollectionRefresh />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify({

@@ -1,3 +1,4 @@
+import { CourseCollectionRefresh } from "@/components/course-collection-refresh";
 import collectionStyles from "@/styles/collection.module.css";
 import myStyles from "@/app/my/courses/page.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
@@ -179,6 +180,7 @@ async function MyCourses({ searchParams }: PageProps) {
 export default function MyCoursesPage(props: PageProps) {
   return (
     <main id="main-content" className={layoutStyles.detailPage}>
+      <CourseCollectionRefresh />
       <header
         className={`${layoutStyles.detailHeading} ${myStyles.pageHeading}`}
       >

@@ -1,4 +1,5 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 import ownerStyles from "@/components/course-owner-actions.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ export function CourseOwnerActions({ id }: { id: number }) {
     try {
       const response = await fetch(`/api/courses/${id}`, { method: "DELETE" });
       if (!response.ok) throw new Error((await response.json()).message);
+      courseCollectionsChanged();
       router.replace("/my/courses");
       router.refresh();
     } catch (error) {

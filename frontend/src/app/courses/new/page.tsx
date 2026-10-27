@@ -3,10 +3,10 @@ import uiStyles from "@/styles/ui.module.css";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { CourseEditor } from "@/components/admin/course-editor";
+import { NewCourseEditor } from "@/components/admin/new-course-editor";
 async function NewCourse() {
   if (!(await getCurrentUser())) redirect("/login");
-  return <CourseEditor />;
+  return <NewCourseEditor />;
 }
 export default function NewCoursePage() {
   return (

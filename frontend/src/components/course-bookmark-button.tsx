@@ -1,4 +1,5 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 import bookmarkStyles from "@/components/course-bookmark-button.module.css";
 import { ConfirmationDialog } from "@/components/private-bookmark-dialog";
 import { useRef, useState } from "react";
@@ -31,12 +32,13 @@ export function CourseBookmarkButton({ courseId, initialBookmarked, bookmarkCoun
                 throw new Error(body.message || "찜 상태를 변경하지 못했어요.");
             }
             setBookmarked(nextBookmarked);
+            const collectionRefreshed = courseCollectionsChanged();
             setCount((current) => current === undefined ? current : Math.max(0, current + (nextBookmarked ? 1 : -1)));
             setConfirmPrivateUnbookmark(false);
             if (privateCourse && !nextBookmarked) {
                 router.replace("/my/bookmarks");
             }
-            else if (refreshOnChange)
+            else if (refreshOnChange && !collectionRefreshed)
                 router.refresh();
         }
         catch (cause) {

@@ -1,3 +1,4 @@
+import { CourseCollectionRefresh } from "@/components/course-collection-refresh";
 import collectionStyles from "@/styles/collection.module.css";
 import uiStyles from "@/styles/ui.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
@@ -82,6 +83,7 @@ async function Bookmarks({ searchParams }: Props) {
 export default function BookmarksPage(props: Props) {
   return (
     <main id="main-content" className={layoutStyles.detailPage}>
+      <CourseCollectionRefresh />
       <header className={layoutStyles.detailHeading}>
         <p className={uiStyles.eyebrow}>SAVED FOR YOUR NEXT RUN</p>
         <h1>찜한 러닝 코스</h1>

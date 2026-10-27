@@ -1,4 +1,5 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 
 import actionStyles from "@/components/my-course-row-actions.module.css";
 import Link from "next/link";
@@ -82,7 +83,8 @@ export function MyCourseRowActions({
         throw new Error(result?.message ?? "코스를 삭제하지 못했어요.");
       }
       setConfirmDelete(false);
-      router.refresh();
+      const collectionRefreshed = courseCollectionsChanged();
+      if (!collectionRefreshed) router.refresh();
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "코스를 삭제하지 못했어요.",
