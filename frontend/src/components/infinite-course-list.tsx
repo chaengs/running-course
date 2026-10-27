@@ -29,7 +29,7 @@ export function InfiniteCourseList({
     () => new Set(initialPage.content.slice(0, 3).map((course) => course.id)),
     [initialPage.content],
   );
-  const hasMore = page + 1 < initialPage.totalPages;
+  const [hasMore, setHasMore] = useState(initialPage.hasNext);
 
   const loadNextPage = useCallback(async () => {
     if (!hasMore || loadingRef.current) return;
@@ -44,6 +44,7 @@ export function InfiniteCourseList({
       const result: CourseListResponse = await response.json();
       setCourses((current) => [...current, ...result.content]);
       setPage(result.page);
+      setHasMore(result.hasNext);
     } catch {
       setError(true);
     } finally {

@@ -11,6 +11,33 @@ class CourseServiceTests {
     private val service = CourseService(repository)
 
     @Test
+    fun `feed fetches one extra row without counting and preserves viewer filters`() {
+        val search = CourseSearch(37.528, 126.934, 2000, 5000)
+        val rows = (1L..3L).map { CourseSummary(it, "코스", 5000, CourseType.LOOP, StartLocation(37.528, 126.934)) }
+        `when`(repository.findPublished(3, 2, search, 7)).thenReturn(rows)
+        val result = service.feed(1, 2, search, 7)
+        assertEquals(rows.take(2), result.content)
+        assertEquals(true, result.hasNext)
+        verify(repository).findPublished(3, 2, search, 7)
+        verifyNoMoreInteractions(repository)
+    }
+
+    @Test
+    fun `feed stops on exact final page and handles empty large offset`() {
+        val rows = listOf(CourseSummary(1, "코스", 5000, CourseType.LOOP, StartLocation(37.528, 126.934)))
+        `when`(repository.findPublished(2, 0)).thenReturn(rows)
+        assertEquals(false, service.feed(0, 1).hasNext)
+        `when`(repository.findPublished(101, 214748364700L)).thenReturn(emptyList())
+        assertEquals(false, service.feed(Int.MAX_VALUE, 100).hasNext)
+    }
+
+    @Test
+    fun `preview hides unavailable course`() {
+        `when`(repository.findVisiblePreview(99, null)).thenReturn(null)
+        assertThrows(CourseNotFoundException::class.java) { service.preview(99) }
+    }
+
+    @Test
     fun `partial final page is included in total pages`() {
         `when`(repository.countPublished()).thenReturn(5)
         `when`(repository.findPublished(2, 4)).thenReturn(emptyList())

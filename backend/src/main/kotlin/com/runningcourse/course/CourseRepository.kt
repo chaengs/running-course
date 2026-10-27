@@ -119,6 +119,19 @@ class CourseRepository(
         viewerId ?: 0, id, viewerId ?: 0, viewerId ?: 0,
     ).singleOrNull()
 
+    // Preserve the detail endpoint's visibility rules without loading its other fields or bookmark counts.
+    fun findVisiblePreview(id: Long, viewerId: Long?): tools.jackson.databind.JsonNode? = jdbcTemplate.query(
+        """
+        SELECT route_geojson FROM courses
+        WHERE id = ? AND (
+            published = TRUE OR owner_id = COALESCE(?, 0)
+            OR EXISTS(SELECT 1 FROM course_bookmarks b WHERE b.course_id = courses.id AND b.user_id = COALESCE(?, 0))
+        )
+        """.trimIndent(),
+        { rs, _ -> jsonMapper.readTree(rs.getString("route_geojson")) },
+        id, viewerId ?: 0, viewerId ?: 0,
+    ).singleOrNull()
+
     fun findPublishedById(id: Long): CourseDetail? = findVisibleById(id, null)
 
     fun recordPublishedView(id: Long): Boolean = jdbcTemplate.update(

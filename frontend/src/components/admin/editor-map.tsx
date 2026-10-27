@@ -111,6 +111,10 @@ function EditorMap(props: Props) {
         setLocationMessage("위치를 불러오지 못했습니다.");
       })
       .finally(() => {
+        // Reuse the automatic request only while pending; later map activations must retry.
+        if (automatic && initialLocationRequest.current === positionRequest) {
+          initialLocationRequest.current = null;
+        }
         if (
           map.current !== targetMap ||
           requestId !== locationRequestId.current

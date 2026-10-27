@@ -8,6 +8,21 @@ import org.springframework.transaction.annotation.Transactional
 //전체 페이지 수를 계산해 응답 구성
 @Service
 class CourseService(private val courseRepository: CourseRepository) {
+    private val logger = org.slf4j.LoggerFactory.getLogger(javaClass)
+
+    @Transactional(readOnly = true)
+    fun feed(page: Int, size: Int, search: CourseSearch = CourseSearch(), viewerId: Long? = null): CourseFeedResponse {
+        val started = System.nanoTime()
+        val rows = courseRepository.findPublished(size + 1, page.toLong() * size, search, viewerId)
+        logger.info("course_feed query_ms={} page={} size={} nearby={}",
+            (System.nanoTime() - started) / 1_000_000, page, size, search.center != null)
+        return CourseFeedResponse(rows.take(size), page, size, rows.size > size)
+    }
+
+    @Transactional(readOnly = true)
+    fun preview(id: Long, viewerId: Long? = null): tools.jackson.databind.JsonNode =
+        courseRepository.findVisiblePreview(id, viewerId) ?: throw CourseNotFoundException()
+
     // 목록과 전체 개수를 같은 DB 스냅샷에서 조회
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
 //트랜잭션은 여러 DB 작업을 하나의 단위로 묶는 장치. 이번에는 조회만 하지만, 전체 개수와 실제 목록을 일관된 기준으로 읽기 위해 사용

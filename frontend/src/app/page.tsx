@@ -95,14 +95,14 @@ async function CourseResults({ query }: { query: CourseListQuery }) {
         ) : (
           <div className={uiStyles.emptyState}>
             <h3>
-              {courses.totalElements > 0
+              {page > 0
                 ? "이 페이지에는 코스가 없어요"
                 : hasFilters
                   ? "조건에 맞는 코스가 없어요"
                   : "아직 등록된 코스가 없어요"}
             </h3>
             <p>
-              {courses.totalElements > 0
+              {page > 0
                 ? "첫 페이지에서 달릴 코스를 찾아보세요."
                 : hasFilters
                   ? "검색 반경을 넓히거나 목표 거리를 바꿔보세요."

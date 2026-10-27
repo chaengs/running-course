@@ -16,6 +16,13 @@ data class CourseSummary(
     val isBookmarked: Boolean = false,
 )
 
+data class CourseFeedResponse(
+    val content: List<CourseSummary>,
+    val page: Int,
+    val size: Int,
+    val hasNext: Boolean,
+)
+
 data class CourseListResponse(
     val content: List<CourseSummary>,
     val page: Int,

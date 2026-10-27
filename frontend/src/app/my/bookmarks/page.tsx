@@ -4,8 +4,7 @@ import layoutStyles from "@/styles/page-layout.module.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { notFound, redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
+import { notFound } from "next/navigation";
 import { getBookmarkedCourses } from "@/lib/courses";
 import { ExploreCourseCard } from "@/components/explore-course-card";
 export const metadata: Metadata = { title: "찜한 코스 | Running Course" };
@@ -15,7 +14,6 @@ type Props = {
   }>;
 };
 async function Bookmarks({ searchParams }: Props) {
-  if (!(await getCurrentUser())) redirect("/login");
   const { page: rawPage = "0" } = await searchParams;
   if (
     typeof rawPage !== "string" ||

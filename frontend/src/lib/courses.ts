@@ -1,5 +1,6 @@
 import type { CourseElevationProfile } from "@/components/course-elevation";
 import "server-only";
+import { redirect } from "next/navigation";
 import { sessionHeaders } from "@/lib/session";
 import type { CourseSearchFilters } from "@/lib/course-search";
 
@@ -26,14 +27,13 @@ export type CourseListResponse = {
   content: CourseSummary[];
   page: number;
   size: number;
-  totalElements: number;
-  totalPages: number;
+  hasNext: boolean;
 };
 
 // Server Components에서만 호출합니다. 브라우저는 Kotlin 서버에 직접 요청하지 않습니다.
 export async function getCourses(page: number, size: number, filters: CourseSearchFilters = {}): Promise<CourseListResponse> {
   const baseUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
-  const url = new URL("/api/courses", baseUrl);
+  const url = new URL("/api/courses/feed", baseUrl);
   url.searchParams.set("page", String(page));
   url.searchParams.set("size", String(size));
   if (filters.latitude !== undefined && filters.longitude !== undefined) {
@@ -71,11 +71,7 @@ export type CourseDetail = Omit<CourseSummary, "distanceToStartMeters"> & {
 export async function getCourse(id: string): Promise<CourseDetail | null> {
   const baseUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
   const headers = await sessionHeaders();
-  if (headers.Authorization) {
-    const owned = await fetch(new URL(`/api/my/courses/${id}`, baseUrl), { headers, cache: "no-store", signal: AbortSignal.timeout(5000) });
-    if (owned.ok) return owned.json();
-    if (owned.status !== 404 && owned.status !== 401) throw new Error("코스를 조회하지 못했어요.");
-  }
+  // This endpoint handles public courses, private owner access, and existing bookmarks.
   const response = await fetch(new URL(`/api/courses/${id}`, baseUrl), {
     headers,
     cache: "no-store",
@@ -92,21 +88,27 @@ export type MyCoursesResponse = { content: MyCourse[]; stats: MyCourseStats; pag
 export type BookmarkedCourse = Pick<CourseSummary, "id" | "name" | "distanceMeters" | "courseType" | "region" | "elevationDifficulty" | "isBookmarked"> & { published: boolean };
 export type BookmarkPage = { content: BookmarkedCourse[]; page: number; hasNext: boolean };
 export async function getBookmarkedCourses(page: number): Promise<BookmarkPage> {
+  const headers = await sessionHeaders();
+  if (!headers.Authorization) redirect("/login");
   const url = new URL("/api/my/bookmarks", process.env.BACKEND_URL ?? "http://localhost:8080");
   url.searchParams.set("page", String(page));
-  const response = await fetch(url, { headers: await sessionHeaders(), cache: "no-store", signal: AbortSignal.timeout(5000) });
+  const response = await fetch(url, { headers, cache: "no-store", signal: AbortSignal.timeout(5000) });
+  if (response.status === 401) redirect("/login");
   if (!response.ok) throw new Error("찜한 코스를 불러오지 못했어요.");
   return response.json();
 }
 
 export async function getMyCourses(page = 0, visibility = "all", sort = "recent"): Promise<MyCoursesResponse> {
+  const headers = await sessionHeaders();
+  if (!headers.Authorization) redirect("/login");
   const url = new URL("/api/my/courses", process.env.BACKEND_URL ?? "http://localhost:8080");
   url.searchParams.set("page", String(page));
   url.searchParams.set("visibility", visibility);
   url.searchParams.set("sort", sort);
   const response = await fetch(url, {
-    headers: await sessionHeaders(), cache: "no-store", signal: AbortSignal.timeout(5000),
+    headers, cache: "no-store", signal: AbortSignal.timeout(5000),
   });
+  if (response.status === 401) redirect("/login");
   if (!response.ok) throw new Error("내 코스를 불러오지 못했어요.");
   return response.json();
 }
