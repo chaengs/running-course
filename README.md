@@ -72,17 +72,17 @@ Next.js 서버가 백엔드에 요청하므로 현재 연결에는 CORS 설정�
 | Backend  | KAKAO_REST_API_KEY                    | Kakao 주소 검색 및 도보 경로 REST API 키 (기본값 없음) |
 | Backend  | KAKAO_WALKING_CACHE_TTL_SECONDS       | 도보 구간 응답 캐시 유지 시간 (기본 900초)      |
 | Backend  | KAKAO_WALKING_CACHE_MAX_ENTRIES       | 메모리 캐시 최대 구간 수 (기본 2,000개)         |
-| Backend  | KAKAO_WALKING_PER_USER_DAILY_LIMIT    | 사용자별 실제 API 요청 상한 (기본 100회/일)     |
-| Backend  | KAKAO_WALKING_GLOBAL_DAILY_LIMIT      | 전체 실제 API 요청 상한 (기본 800회/일)         |
+| Backend  | KAKAO_WALKING_PER_USER_DAILY_LIMIT    | 사용자별 실제 API 요청 상한 (기본 800회/일)     |
+| Backend  | KAKAO_WALKING_GLOBAL_DAILY_LIMIT      | 전체 실제 API 요청 상한 (기본 900회/일)         |
 | Frontend | BACKEND_URL                           | http://localhost:8080                           |
 
 백엔드 변수는 IntelliJ Run Configuration 또는 셸 환경변수로 전달합니다.
 실제 환경변수 파일은 커밋하지 마세요. 운영 환경에서는 별도 비밀값을 사용하세요.
 주소 검색과 도보 경로 계산을 사용하려면 [Kakao Developers](https://developers.kakao.com/)에서 REST API 키를 발급한 뒤 백엔드 실행 환경에 `KAKAO_REST_API_KEY`로 설정하고 Spring Boot를 재시작하세요. 이 키는 프론트엔드 환경변수에 넣지 마세요.
 
-도보 경로 응답은 백엔드 메모리에 기본 15분간 캐시되며, 같은 구간에 대한 동시 요청은 하나의 Kakao 요청으로 합쳐집니다. 캐시가 만료되거나 구간이 달라 실제 Kakao API를 호출할 때만 사용자별·전체 일일 한도를 사용량 테이블에 기록합니다. 기본 전체 상한은 Kakao 무료 일일 쿼터보다 낮은 800회이며, 설정값은 배포 환경에 맞게 조정할 수 있습니다.
+도보 경로 응답은 백엔드 메모리에 기본 15분간 캐시되며, 같은 구간에 대한 동시 요청은 하나의 Kakao 요청으로 합쳐집니다. 캐시가 만료되거나 구간이 달라 실제 Kakao API를 호출할 때만 사용자별·전체 일일 한도를 사용량 테이블에 기록합니다. 기본 전체 상한은 Kakao 무료 일일 쿼터보다 낮은 900회이며, 설정값은 배포 환경에 맞게 조정할 수 있습니다.
 
-일일 사용량은 DB의 `walking_route_daily_usage` 테이블에서 확인할 수 있습니다. `quota_scope = 'GLOBAL'` 행의 `request_count`가 당일 전체 실제 Kakao 호출 수입니다.
+일일 사용량은 DB의 `walking_route_daily_usage` 테이블에서 확인할 수 있습니다. `quota_scope = 'GLOBAL'` 행의 `request_count`는 당일 전체 Kakao 호출 예약 수입니다. 예약 후 외부 호출이 실패한 경우도 포함하므로 카카오 콘솔의 실제 사용량과 다를 수 있습니다.
 
 ## 검증
 
@@ -126,3 +126,19 @@ DB 이미지는 linux/amd64로 지정했습니다. Apple Silicon에서는 Docker
 초기 npm audit에서 ESLint 개발 의존성의 braces 관련 경고가 발견되었습니다.
 런타임 의존성과 구분해 `npm audit` / `npm audit --omit=dev`로 확인하세요.
 프레임워크를 구버전으로 내리는 강제 수정은 적용하지 않았습니다.
+
+### 도보 경로 일일 제한 오류
+
+사용자별 800회와 전체 900회는 서비스 자체 기본 상한이며, 카카오가 사용자별로 부과한 한도가 아닙니다. 전체 한도는 모든 사용자가 공유합니다. Render에 `KAKAO_WALKING_PER_USER_DAILY_LIMIT=100`을 명시했다면 기본값보다 환경변수가 우선하므로 `800`으로 변경하고 재배포해야 합니다.
+
+두 제한 모두 HTTP 429이며 `code`와 `message`로 구분합니다.
+
+- `USER_DAILY_LIMIT_EXCEEDED`: 사용자 일일 한도 초과
+- `GLOBAL_DAILY_LIMIT_EXCEEDED`: 서비스 전체 일일 한도 초과
+- `scope`: `USER` 또는 `GLOBAL`
+- `limit`: 적용된 일일 상한
+- `resetsAt`: 다음 한국 시간 자정(ISO 8601)
+
+카운터는 한국 시간 날짜별로 집계하며, 배포·서버 재시작으로 초기화되지 않습니다. 캐시 적중에는 사용량을 추가하지 않습니다.
+
+전체 한도를 환경변수로 지정한 배포 환경에서는 `KAKAO_WALKING_GLOBAL_DAILY_LIMIT=900`으로 변경한 뒤 재배포해야 합니다.

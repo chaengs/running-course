@@ -11,17 +11,32 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 import java.time.ZoneId
 
+enum class WalkingRouteQuotaScope { USER, GLOBAL }
+
+class WalkingRouteLimitExceededException(
+    val scope: WalkingRouteQuotaScope,
+    val limit: Int,
+    date: LocalDate,
+) : ResponseStatusException(
+    HttpStatus.TOO_MANY_REQUESTS,
+    if (scope == WalkingRouteQuotaScope.USER) "사용자 일일 한도 초과: 오늘 사용할 수 있는 도보 경로 요청 ${limit}회를 모두 사용했어요. 한국 시간 자정 이후 다시 이용해 주세요."
+    else "서비스 전체 일일 한도 초과: 오늘 서비스 전체 도보 경로 요청 ${limit}회를 모두 사용했어요. 한국 시간 자정 이후 다시 이용해 주세요.",
+) {
+    val code = if (scope == WalkingRouteQuotaScope.USER) "USER_DAILY_LIMIT_EXCEEDED" else "GLOBAL_DAILY_LIMIT_EXCEEDED"
+    val resetsAt = date.plusDays(1).atStartOfDay(ZoneId.of("Asia/Seoul")).toOffsetDateTime()
+}
+
 @Repository
 class WalkingRouteUsageRepository(private val jdbc: JdbcTemplate) {
     fun reserve(date: LocalDate, userId: Long, userLimit: Int, globalLimit: Int) {
         val userCount = increment(date, "USER", userId, userLimit)
         if (userCount == null) {
-            throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "오늘 사용할 수 있는 도보 경로 요청 횟수를 초과했습니다.")
+            throw WalkingRouteLimitExceededException(WalkingRouteQuotaScope.USER, userLimit, date)
         }
 
         val globalCount = increment(date, "GLOBAL", 0, globalLimit)
         if (globalCount == null) {
-            throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "오늘 서비스 전체 도보 경로 요청 한도에 도달했습니다. 내일 다시 이용해 주세요.")
+            throw WalkingRouteLimitExceededException(WalkingRouteQuotaScope.GLOBAL, globalLimit, date)
         }
     }
 
@@ -43,8 +58,8 @@ class WalkingRouteUsageRepository(private val jdbc: JdbcTemplate) {
 class WalkingRouteUsageService(
     private val repository: WalkingRouteUsageRepository,
     transactionManager: PlatformTransactionManager,
-    @Value("\${geocoding.kakao.walking.per-user-daily-limit:100}") private val perUserDailyLimit: Int,
-    @Value("\${geocoding.kakao.walking.global-daily-limit:800}") private val globalDailyLimit: Int,
+    @Value("\${geocoding.kakao.walking.per-user-daily-limit:800}") private val perUserDailyLimit: Int,
+    @Value("\${geocoding.kakao.walking.global-daily-limit:900}") private val globalDailyLimit: Int,
 ) {
     private val transaction = TransactionTemplate(transactionManager)
 

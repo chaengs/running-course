@@ -22,8 +22,8 @@ geocoding:
     walking:
       cache-ttl-seconds: ${KAKAO_WALKING_CACHE_TTL_SECONDS:900}
       cache-max-entries: ${KAKAO_WALKING_CACHE_MAX_ENTRIES:2000}
-      per-user-daily-limit: ${KAKAO_WALKING_PER_USER_DAILY_LIMIT:100}
-      global-daily-limit: ${KAKAO_WALKING_GLOBAL_DAILY_LIMIT:800}
+      per-user-daily-limit: ${KAKAO_WALKING_PER_USER_DAILY_LIMIT:800}
+      global-daily-limit: ${KAKAO_WALKING_GLOBAL_DAILY_LIMIT:900}
   nominatim:
     reverse-url: ${NOMINATIM_REVERSE_URL:https://nominatim.openstreetmap.org/reverse}
     user-agent: ${NOMINATIM_USER_AGENT:RunningCourse/0.1.0 (https://github.com/chaengs/running-course)}
