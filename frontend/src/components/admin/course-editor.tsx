@@ -1,11 +1,12 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 import mapStyles from "@/components/admin/editor-map.module.css";
 import uiStyles from "@/styles/ui.module.css";
 import editorStyles from "@/components/admin/course-editor.module.css";
 import formStyles from "@/components/form.module.css";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   initialRouteEditorState,
   routeEditorReducer,
@@ -89,6 +90,20 @@ export function CourseEditor({
     useState<CourseElevationProfile | null>(
       initialCourse?.elevationProfile ?? null,
     );
+  const routingRequest = useRef<AbortController | null>(null);
+  const saveRequest = useRef<AbortController | null>(null);
+
+  useLayoutEffect(() => () => {
+    routingRequest.current?.abort();
+    saveRequest.current?.abort();
+    routingRequest.current = null;
+    saveRequest.current = null;
+    routingRef.current = false;
+    savingRef.current = false;
+    setRouting(false);
+    setSaving(false);
+  }, []);
+
   const closed =
     points.length > 2 &&
     points[0].lat === points.at(-1)?.lat &&
@@ -122,6 +137,9 @@ export function CourseEditor({
       setWalkingSegments([]);
       return;
     }
+    const controller = new AbortController();
+    routingRequest.current?.abort();
+    routingRequest.current = controller;
     routingRef.current = true;
     setRouting(true);
     const cachedSegments = new Map(walkingSegmentsRef.current.map(segment => [segment.requestKey, segment]));
@@ -130,6 +148,7 @@ export function CourseEditor({
     setWalkingSegments([...nextSegments]);
     try {
       for (let index = fromSegment; index < next.length - 1; index += 1) {
+        if (controller.signal.aborted) return;
         const previousEnd = index > 0 ? nextSegments[index - 1]?.points.at(-1) : undefined;
         const start = previousEnd ?? next[index];
         const closingPoint = next.length > 2 && samePoint(next[0], next.at(-1)!) && index === next.length - 2
@@ -145,6 +164,7 @@ export function CourseEditor({
         }
         const response = await fetch("/api/walking-routes/segment", {
           method: "POST",
+          signal: controller.signal,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             points: [
@@ -155,6 +175,7 @@ export function CourseEditor({
           }),
         });
         const body = await response.json();
+        if (controller.signal.aborted || routingRequest.current !== controller) return;
         if (!response.ok) throw new Error(body.message ?? "카카오 도보 경로를 계산하지 못했어요.");
         const routePoints = (body.points as WalkingRoutePoint[]).map(({ latitude, longitude }) => ({ lat: latitude, lng: longitude }));
         if (routePoints.length < 2) throw new Error("표시할 도보 경로가 없습니다.");
@@ -169,10 +190,15 @@ export function CourseEditor({
         setWalkingSegments([...nextSegments]);
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "도보 경로를 계산하지 못했어요.");
+      if (!controller.signal.aborted && routingRequest.current === controller) {
+        setMessage(error instanceof Error ? error.message : "도보 경로를 계산하지 못했어요.");
+      }
     } finally {
-      routingRef.current = false;
-      setRouting(false);
+      if (routingRequest.current === controller) {
+        routingRequest.current = null;
+        routingRef.current = false;
+        setRouting(false);
+      }
     }
   }, []);
   const updatePoints = useCallback((next: RoutePoint[]) => {
@@ -229,6 +255,8 @@ export function CourseEditor({
       );
       return;
     }
+    const controller = new AbortController();
+    saveRequest.current = controller;
     savingRef.current = true;
     setSaving(true);
     setMessage("");
@@ -237,6 +265,7 @@ export function CourseEditor({
         initialCourse ? `/api/courses/${initialCourse.id}` : "/api/courses",
         {
           method: initialCourse ? "PUT" : "POST",
+          signal: controller.signal,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: name.trim(),
@@ -253,7 +282,9 @@ export function CourseEditor({
         },
       );
       const result = await response.json();
+      if (controller.signal.aborted || saveRequest.current !== controller) return;
       if (!response.ok) throw new Error(result.message);
+      courseCollectionsChanged();
       if (!initialCourse) {
         // Next.js preserves route state; also reset the map's address search and selection.
         setMapSession((session) => session + 1);
@@ -275,14 +306,19 @@ export function CourseEditor({
       }
       router.push(`/courses/${result.id}`);
     } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "저장하지 못했어요. 연결을 확인해 주세요.",
-      );
+      if (!controller.signal.aborted && saveRequest.current === controller) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "저장하지 못했어요. 연결을 확인해 주세요.",
+        );
+      }
     } finally {
-      savingRef.current = false;
-      setSaving(false);
+      if (saveRequest.current === controller) {
+        saveRequest.current = null;
+        savingRef.current = false;
+        setSaving(false);
+      }
     }
   }
   const routeTools = useMemo(() => {

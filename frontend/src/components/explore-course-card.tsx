@@ -49,7 +49,7 @@ export function ExploreCourseCard({
             </span>
           )}
           <div className={cardStyles.bookmarkPosition}>
-            <CourseCardBookmark courseId={course.id} initialBookmarked={course.isBookmarked} privateCourse={privateCourse} refreshOnChange={refreshOnBookmarkChange} />
+            <CourseCardBookmark course={course} privateCourse={privateCourse} refreshOnChange={refreshOnBookmarkChange} />
           </div>
         </div>
         <h3 id={`explore-course-${course.id}`} className={cardStyles.courseName}>

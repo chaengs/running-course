@@ -1,4 +1,5 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 
 import styles from "@/components/course-card-bookmark.module.css";
 import { ConfirmationDialog } from "@/components/private-bookmark-dialog";
@@ -6,18 +7,20 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function CourseCardBookmark({
-  courseId,
-  initialBookmarked,
+  course,
   privateCourse = false,
   refreshOnChange = false,
 }: {
-  courseId: number;
-  initialBookmarked: boolean;
+  course: { id: number; isBookmarked: boolean };
   privateCourse?: boolean;
   refreshOnChange?: boolean;
 }) {
   const router = useRouter();
-  const [bookmarked, setBookmarked] = useState(initialBookmarked);
+  const courseId = course.id;
+  const [bookmark, setBookmark] = useState({ source: course, value: course.isBookmarked });
+  // A fresh list snapshot is authoritative, even if its boolean matches older props.
+  if (bookmark.source !== course) setBookmark({ source: course, value: course.isBookmarked });
+  const bookmarked = bookmark.source === course ? bookmark.value : course.isBookmarked;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [confirmPrivateUnbookmark, setConfirmPrivateUnbookmark] =
@@ -39,9 +42,10 @@ export function CourseCardBookmark({
         const body = await response.json();
         throw new Error(body.message || "찜 상태를 변경하지 못했어요.");
       }
-      setBookmarked(nextBookmarked);
+      setBookmark({ source: course, value: nextBookmarked });
+      const collectionRefreshed = courseCollectionsChanged();
       setConfirmPrivateUnbookmark(false);
-      if (refreshOnChange) router.refresh();
+      if (refreshOnChange && !collectionRefreshed) router.refresh();
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : "찜 상태를 변경하지 못했어요.",

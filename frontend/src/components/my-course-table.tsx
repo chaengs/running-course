@@ -1,4 +1,5 @@
 "use client";
+import { courseCollectionsChanged } from "@/lib/course-collection-events";
 
 import myStyles from "@/app/my/courses/page.module.css";
 import { MyCourseRowActions } from "@/components/my-course-row-actions";
@@ -80,9 +81,10 @@ export function MyCourseTable({
         const body = await response.json().catch(() => null);
         throw new Error(body?.message ?? "선택한 코스를 공개하지 못했어요.");
       }
+      const collectionRefreshed = courseCollectionsChanged();
       setSelectedIds([]);
       setConfirming(false);
-      router.refresh();
+      if (!collectionRefreshed) router.refresh();
     } catch (cause) {
       setError(
         cause instanceof Error
