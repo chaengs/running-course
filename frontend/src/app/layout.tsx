@@ -1,5 +1,6 @@
 import shellStyles from "@/components/site-shell.module.css";
 import type { Metadata } from "next";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SHARE_IMAGE } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -10,8 +11,16 @@ import "./reset.css";
 import "@/styles/palette.css";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Running Course | 러닝 코스 탐색",
-  description: "출발점으로 돌아오는 러닝 코스를 거리와 유형으로 살펴보세요.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: "러닝코스 | 나만의 러닝 코스 만들기와 주변 코스 찾기", template: "%s | 러닝코스" },
+  description: SITE_DESCRIPTION,
+  applicationName: "러닝코스",
+  openGraph: {
+    type: "website", locale: "ko_KR", siteName: SITE_NAME,
+    title: "러닝코스 | 나만의 러닝 코스 만들기와 주변 코스 찾기",
+    description: SITE_DESCRIPTION, images: [SHARE_IMAGE],
+  },
+  twitter: { card: "summary", title: SITE_NAME, description: SITE_DESCRIPTION, images: [SHARE_IMAGE.url] },
 };
 export default function RootLayout({
   children,

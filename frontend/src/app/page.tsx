@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import homeStyles from "@/app/home.module.css";
 import layoutStyles from "@/styles/page-layout.module.css";
 import uiStyles from "@/styles/ui.module.css";
@@ -17,6 +18,8 @@ import {
   type CourseListQuery,
 } from "@/lib/course-search";
 import { getCourses } from "@/lib/courses";
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
 type SearchParams = Promise<{
   [key: string]: string | string[] | undefined;
 }>;
@@ -134,6 +137,18 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
 
   return (
     <main id="main-content">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "러닝코스",
+          alternateName: "Running Course",
+          url: "https://running-course-making.vercel.app",
+          inLanguage: "ko-KR",
+          description: "지도에서 러닝 코스를 만들고 주변의 공개 코스를 찾아 저장·공유하는 서비스",
+        }).replace(/</g, "\\u003c") }}
+      />
       <HomeServiceIntro initiallyDismissed={initiallyDismissed} />
       <header className={homeStyles.hero}>
         <p className={uiStyles.eyebrow}>

@@ -2,6 +2,7 @@ import layoutStyles from "@/styles/page-layout.module.css";
 import uiStyles from "@/styles/ui.module.css";
 import detailStyles from "@/components/course-detail.module.css";
 import type { Metadata } from "next";
+import { PRIVATE_ROBOTS, SHARE_IMAGE, SITE_NAME } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
@@ -25,7 +26,31 @@ type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export const metadata: Metadata = { title: "코스 상세 | Running Course" };
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > BigInt("9223372036854775807")) notFound();
+  const course = await getCourse(id);
+  if (!course) notFound();
+  // Never include private course names or descriptions in sharing metadata.
+  if (!course.published) return { title: "비공개 코스", robots: PRIVATE_ROBOTS };
+  const region = [course.region?.sido, course.region?.sigungu].filter(Boolean).join(" ");
+  const title = `${course.name} · ${formatDistance(course.distanceMeters)}km ${courseTypeLabels[course.courseType]}`;
+  const description = course.description.trim().slice(0, 160) ||
+    `${region ? `${region}의 ` : ""}${formatDistance(course.distanceMeters)}km 러닝 코스입니다. 지도에서 경로와 고도 정보를 확인하세요.`;
+  const ogTitle = `${course.name}| | Running Course`;
+  const descriptionCharacters = Array.from(
+    new Intl.Segmenter("ko", { granularity: "grapheme" }).segment(course.description.trim()),
+    ({ segment }) => segment,
+  );
+  const ogDescription = descriptionCharacters.slice(0, 15).join("") +
+    (descriptionCharacters.length > 15 ? "…" : "");
+  const url = `/courses/${course.id}`;
+  return {
+    title, description, alternates: { canonical: url },
+    openGraph: { type: "website", locale: "ko_KR", siteName: SITE_NAME, title: ogTitle, description: ogDescription, url, images: [SHARE_IMAGE] },
+    twitter: { card: "summary", title, description, images: [SHARE_IMAGE.url] },
+  };
+}
 
 async function CourseDetailContent({ params, searchParams }: Props) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
