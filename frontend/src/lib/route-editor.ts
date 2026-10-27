@@ -3,12 +3,14 @@ export type RouteEditorState = { points: RoutePoint[]; history: RoutePoint[][]; 
 export type RouteEditorAction =
   | { type: "replace"; points: RoutePoint[] }
   | { type: "select"; index: number }
-  | { type: "undo" };
+  | { type: "undo" }
+  | { type: "reset" };
 
 export const initialRouteEditorState: RouteEditorState = { points: [], history: [], selected: null };
 
 export function routeEditorReducer(state: RouteEditorState, action: RouteEditorAction): RouteEditorState {
   switch (action.type) {
+    case "reset": return initialRouteEditorState;
     case "select": return { ...state, selected: action.index };
     case "replace": return { points: action.points, history: [...state.history.slice(-49), state.points], selected: null };
     case "undo": {

@@ -253,6 +253,23 @@ export function CourseEditor({
       );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
+      if (!initialCourse) {
+        dispatch({ type: "reset" });
+        anchorsRef.current = [];
+        walkingSegmentsRef.current = [];
+        setName("");
+        setDescription("");
+        setCourseType("LOOP");
+        setPublished(false);
+        setConfirmPrivate(false);
+        setMessage("");
+        setWalkingSegments([]);
+        setRouteDirty(false);
+        setPointEditVersion(0);
+        setElevationProfile(null);
+        routingRef.current = false;
+        setRouting(false);
+      }
       router.push(`/courses/${result.id}`);
     } catch (error) {
       setMessage(
