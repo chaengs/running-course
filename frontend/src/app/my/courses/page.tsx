@@ -5,8 +5,6 @@ import uiStyles from "@/styles/ui.module.css";
 import { MyCourseTable } from "@/components/my-course-table";
 import Link from "next/link";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/session";
 import { getMyCourses } from "@/lib/courses";
 import { formatDistance } from "@/lib/course-format";
 
@@ -50,9 +48,6 @@ function MetricCard({
 }
 
 async function MyCourses({ searchParams }: PageProps) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/login");
-
   const rawParams = await searchParams;
   const rawVisibility = Array.isArray(rawParams.visibility)
     ? rawParams.visibility[0]

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   );
   if (!query) return NextResponse.json({ message: "검색 조건이 올바르지 않아요." }, { status: 400 });
 
-  const backendUrl = new URL("/api/courses", process.env.BACKEND_URL ?? "http://localhost:8080");
+  const backendUrl = new URL("/api/courses/feed", process.env.BACKEND_URL ?? "http://localhost:8080");
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined) backendUrl.searchParams.set(key, String(value));
   }

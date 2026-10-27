@@ -45,6 +45,36 @@ class CourseRepositoryIntegrationTests {
     }
 
     @Test
+    fun `unified detail matches owner endpoint including editable private data`() {
+        val id = requireNotNull(jdbc.queryForObject(
+            "SELECT id FROM pg_temp.courses WHERE published = FALSE", Long::class.java))
+        jdbc.update("UPDATE pg_temp.courses SET owner_id = 7, route_waypoints = route_geojson WHERE id = ?", id)
+        val owned = OwnedCourseRepository(jdbc, JsonMapper.builder().build())
+        assertEquals(requireNotNull(owned.findById(id, 7)), repository.findVisibleById(id, 7))
+        assertNull(repository.findVisibleById(id, 8))
+        assertNull(repository.findVisibleById(id, null))
+        jdbc.update("INSERT INTO pg_temp.course_bookmarks(user_id, course_id) VALUES (7, ?)", id)
+        assertEquals(requireNotNull(owned.findById(id, 7)), repository.findVisibleById(id, 7))
+    }
+
+    @Test
+    fun `preview uses detail visibility for public owner bookmarked and unrelated viewers`() {
+        val publicId = repository.findPublished(1, 0).single().id
+        assertEquals(repository.findVisibleById(publicId, null)?.routeGeojson, repository.findVisiblePreview(publicId, null))
+        val privateId = requireNotNull(jdbc.queryForObject(
+            "SELECT id FROM pg_temp.courses WHERE published = FALSE", Long::class.java))
+        jdbc.update("UPDATE pg_temp.courses SET owner_id = 7 WHERE id = ?", privateId)
+        jdbc.update("INSERT INTO pg_temp.course_bookmarks(user_id, course_id) VALUES (8, ?)", privateId)
+        assertNull(repository.findVisiblePreview(privateId, null))
+        assertNull(repository.findVisiblePreview(privateId, 9))
+        for (viewer in listOf(7L, 8L)) {
+            val expected = requireNotNull(repository.findVisibleById(privateId, viewer)).routeGeojson
+            assertEquals(expected, repository.findVisiblePreview(privateId, viewer))
+        }
+        assertNull(repository.findVisiblePreview(Long.MAX_VALUE, 7))
+    }
+
+    @Test
     fun `created route computes distance and remains private until owner publishes`() {
         val profile = ElevationProfile(
             samples = listOf(ElevationSample(0.0, 10.0, 10.0)),

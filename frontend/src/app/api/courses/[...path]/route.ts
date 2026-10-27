@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
   try {
     const token = request.cookies.get(SESSION_COOKIE)?.value;
-    const response = await fetch(new URL(`/api/courses/${path[0]}`, process.env.BACKEND_URL ?? "http://localhost:8080"), {
+    const response = await fetch(new URL(`/api/courses/${path[0]}/preview`, process.env.BACKEND_URL ?? "http://localhost:8080"), {
       headers: token
         ? { Authorization: `Bearer ${token}` }
         : undefined,
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     });
     if (!response.ok) return NextResponse.json({}, { status: response.status === 404 ? 404 : 502 });
     const course = await response.json();
-    return NextResponse.json(course.routeGeojson, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(course, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({}, { status: 502 });
   }
