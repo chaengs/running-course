@@ -4,6 +4,7 @@ import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SHARE_IMAGE } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { AccountNav } from "@/components/account-nav";
 import { MyCoursesToast } from "@/components/my-courses-toast";
 import { SiteNav, SiteNavFallback } from "@/components/site-nav";
@@ -72,6 +73,7 @@ export default function RootLayout({
           </div>
           <span>© RUNNING COURSE. All rights reserved.</span>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
